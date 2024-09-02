@@ -20,7 +20,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #fff;
+    background-color: #000;
     font-family: "Departure Mono", Arial, sans-serif;
     overflow: scroll;
     position: relative;
