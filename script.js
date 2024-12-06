@@ -25,3 +25,5 @@ async function fetchBlogPosts() {
       "Failed to load blog posts.";
   }
 }
+
+fetchBlogPosts();
