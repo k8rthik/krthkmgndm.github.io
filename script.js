@@ -6,15 +6,14 @@ async function fetchBlogPosts() {
     const blogContainer = document.getElementById("blog-container");
     blogContainer.innerHTML = "";
 
-    posts.forEach((post) => {
-      const postElement = document.createElement("div");
+    posts.slice(0, 3).forEach((post) => {
+      const postElement = document.createElement("p");
       postElement.classList.add("blog-post");
 
       postElement.innerHTML = `
-        <h3>${post.title}</h3>
-        <p>${post.description}</p>
-        <small>Published on ${new Date(post.date).toLocaleDateString()}</small>
-        <a href="/blog/${post.slug}">Read More</a>
+        <span><a href="/blog/${post.slug}">${post.title}</a></span>
+        <span><em>${new Date(post.date).toLocaleDateString()} • ${post.time} minute read</em></span>
+        <span>${post.description}</span>
       `;
 
       blogContainer.appendChild(postElement);
