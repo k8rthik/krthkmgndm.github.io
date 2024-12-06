@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import marked from "marked";
 
 export default function handler(req, res) {
   const { slug } = req.query;
@@ -10,13 +11,10 @@ export default function handler(req, res) {
     return res.status(404).json({ error: "Post not found" });
   }
 
-  const fileContents = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(fileContents); // Extract frontmatter and content
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  const { content, data } = matter(fileContent); // Extract frontmatter and content
 
-  res.status(200).json({
-    title: data.title,
-    date: data.date,
-    description: data.description,
-    content, // Return the Markdown content
-  });
+  const htmlContent = marked(content); // Convert Markdown to HTML
+
+  res.status(200).json({ ...data, content: htmlContent });
 }

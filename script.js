@@ -1,12 +1,10 @@
 async function fetchBlogPosts() {
   try {
-    const response = await fetch("/api/posts"); // Call the API
+    const response = await fetch("/api/posts");
     const posts = await response.json();
 
     const blogContainer = document.getElementById("blog-container");
-    blogContainer.innerHTML = ""; // Clear "Loading..." text
-
-    posts.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date (newest first)
+    blogContainer.innerHTML = "";
 
     posts.forEach((post) => {
       const postElement = document.createElement("div");
@@ -27,5 +25,3 @@ async function fetchBlogPosts() {
       "Failed to load blog posts.";
   }
 }
-
-fetchBlogPosts();
