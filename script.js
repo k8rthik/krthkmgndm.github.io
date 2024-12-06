@@ -8,10 +8,9 @@ async function fetchBlogPosts() {
 
     posts.slice(0, 3).forEach((post) => {
       const postElement = document.createElement("p");
-      postElement.classList.add("blog-post");
 
       postElement.innerHTML = `
-        <span><a href="/blog/${post.slug}">${post.title}</a></span>
+        <span><a href="/post.html?slug=${post.slug}">${post.title}</a></span>
         <span><em>${new Date(post.date).toLocaleDateString()} • ${post.time} minute read</em></span>
         <span>${post.description}</span>
       `;

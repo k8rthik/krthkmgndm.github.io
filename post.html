@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog Post</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="post-container">Loading...</div>
+      <a href="/">Back to Home</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      async function fetchPost() {
+        // Get the slug from the query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get("slug");
+
+        try {
+          const response = await fetch(`/api/${slug}`);
+          const post = await response.json();
+
+          const postContainer = document.getElementById("post-container");
+          postContainer.innerHTML = `
+          <h1>${post.title}</h1>
+          <p><em>${new Date(post.date).toLocaleDateString()} • ${post.time} minute read</em></p>
+          <article>${marked(post.content)}</article>
+        `;
+        } catch (error) {
+          console.error("Error fetching post:", error);
+          document.getElementById("post-container").innerText =
+            "Failed to load the blog post.";
+        }
+      }
+
+      fetchPost();
+    </script>
+  </body>
+</html>
