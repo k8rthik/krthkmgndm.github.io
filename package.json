@@ -1,0 +1,17 @@
+{
+  "name": "krthkmgndm.github.io",
+  "version": "1.0.0",
+  "main": "blog.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dompurify": "^3.2.2",
+    "gray-matter": "^4.0.3",
+    "marked": "^15.0.3"
+  }
+}
