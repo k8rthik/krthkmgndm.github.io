@@ -9,16 +9,18 @@ async function fetchProjects() {
     const projectContainer = document.getElementById("project-container");
     projectContainer.innerHTML = "";
 
-    projects.forEach((project) => {
-      const projectElem = document.createElement("p");
+    projects
+      .filter((post) => post.active)
+      .forEach((project) => {
+        const projectElem = document.createElement("p");
 
-      projectElem.innerHTML = `
+        projectElem.innerHTML = `
         <span><strong>${project.name}</strong></span>
         <span>${project.description}</span>
         <span>[<a href="${project.demo}">demo</a>] [<a href="${project.code}">code</a>]</span>
       `;
-      projectContainer.append(projectElem);
-    });
+        projectContainer.append(projectElem);
+      });
   } catch (error) {
     console.error("Error fetching projects:", error);
     document.getElementById("project-container").textContent =
