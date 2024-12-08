@@ -1,7 +1,7 @@
 [
   {
     "name": "dr.active",
-    "description": "Developed a classifier and regression model using RDKit, Random Forest, and XGBoost to predict molecular activity (ROC-AUC) and binding affinity (RMSE) from SMILES strings.",
+    "description": "Developed regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name.",
     "code": "https://github.com/krthkmgndm/dr.active",
     "demo": "#"
   },
