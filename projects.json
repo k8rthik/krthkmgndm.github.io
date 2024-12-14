@@ -28,7 +28,7 @@
     "active": false
   },
   {
-    "name": "folderzzz",
+    "name": "folduzz",
     "description": "Developed a deep convolutional generative adversarial neural network to predict protein folding.",
     "code": "https://github.com/krthkmgndm/protein-gan",
     "demo": "#",
