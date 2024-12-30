@@ -4,8 +4,7 @@ async function fetchBlogPosts() {
     const posts = await response.json();
 
     const blogContainer = document.getElementById("blog-container");
-    blogContainer.innerHTML = "No posts yet, but stay tuned!";
-
+    
     posts
       .filter((post) => post.active !== 0)
       .slice(0, 3)
