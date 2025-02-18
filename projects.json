@@ -7,6 +7,13 @@
     "active": false
   },
   {
+    "name": "Rippple",
+    "description": "We built this for Minnehack 2025. The theme was strengthening local communities, and although we didn't win anything, I still had a ton of fun building this! We used Next.js & Supabase with a Vercel deployment.",
+    "code": "https://github.com/k8rthik/socialchain",
+    "demo": "https://socialchain-liart.vercel.app/",
+    "active": true
+  },
+  {
     "name": "GopherGuessr",
     "description": "Wrote frontend code for a UMN-based location guessing app using JSX, React, and Tailwind to implement leaderboards, user profiles, and gameplay loop UI.",
     "code": "https://github.com/Divyesh-Thirukonda/gopherguessr",
