@@ -7,7 +7,7 @@
     "active": false
   },
   {
-    "name": "Rippple",
+    "name": "Ripple",
     "description": "We built this for Minnehack 2025. The theme was strengthening local communities, and although we didn't win anything, I still had a ton of fun building this! We used Next.js & Supabase with a Vercel deployment.",
     "code": "https://github.com/k8rthik/socialchain",
     "demo": "https://socialchain-liart.vercel.app/",
