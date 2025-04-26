@@ -4,7 +4,7 @@ date: "2025-03-30"
 description: "The title."
 slug: "devlog"
 time: 10
-active: 1
+active: 0
 ---
 
 Quick daily recaps of what I've been up to.
