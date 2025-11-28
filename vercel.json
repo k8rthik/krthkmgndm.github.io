@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/api/posts", "destination": "/api/posts" },
+    { "source": "/api/:slug", "destination": "/api/[slug]" },
+    { "source": "/((?!api|assets|projects.json).*)", "destination": "/index.html" }
+  ]
+}
