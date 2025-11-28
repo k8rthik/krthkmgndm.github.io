@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 
 function Post() {
   const { slug } = useParams();
@@ -46,6 +47,9 @@ function Post() {
     );
   }
 
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizedContent = DOMPurify.sanitize(post.content);
+
   return (
     <div className="container">
       <div id="post-container">
@@ -55,7 +59,7 @@ function Post() {
             {new Date(post.date).toLocaleDateString()} • {post.time} minute read
           </em>
         </p>
-        <article dangerouslySetInnerHTML={{ __html: post.content }} />
+        <article dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
       </div>
       <hr />
       <Link to="/">Back to Home</Link>
