@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
+    // Exclude api folder from optimization as it contains Vercel serverless functions
+    // that use Node.js modules (fs, path, gray-matter) not compatible with browser
     exclude: ['api']
   }
 })
