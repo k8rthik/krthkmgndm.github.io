@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -9,26 +9,26 @@ function Home() {
 
   useEffect(() => {
     // Fetch blog posts
-    fetch('/api/posts')
-      .then(response => response.json())
-      .then(data => {
-        setPosts(data.filter(post => post.active !== 0).slice(0, 3));
+    fetch("/api/posts")
+      .then((response) => response.json())
+      .then((data) => {
+        setPosts(data.filter((post) => post.active !== 0).slice(0, 3));
         setLoadingPosts(false);
       })
-      .catch(error => {
-        console.error('Error fetching blog posts:', error);
+      .catch((error) => {
+        console.error("Error fetching blog posts:", error);
         setLoadingPosts(false);
       });
 
     // Fetch projects
-    fetch('/projects.json')
-      .then(response => response.json())
-      .then(data => {
-        setProjects(data.filter(project => project.active));
+    fetch("/projects.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setProjects(data.filter((project) => project.active));
         setLoadingProjects(false);
       })
-      .catch(error => {
-        console.error('Error fetching projects:', error);
+      .catch((error) => {
+        console.error("Error fetching projects:", error);
         setLoadingProjects(false);
       });
   }, []);
@@ -39,15 +39,15 @@ function Home() {
       <p className="subtitle">human</p>
       <p>
         murug030 [at] umn [dot] edu <br />
-        <a href="https://www.linkedin.com/in/mkeerthik/">LinkedIn</a> /
+        <a href="https://www.linkedin.com/in/mkeerthik/">LinkedIn</a> /{" "}
         <a href="https://github.com/krthkmgndm">GitHub</a>
       </p>
       <p>
-        I'm a biomedical engineering and computer science undergrad at the{' '}
+        I'm a biomedical engineering and computer science undergrad at the{" "}
         <a href="https://twin-cities.umn.edu/">University of Minnesota</a>. My
         interests include machine learning, cell programming, bioinformatics,
         bioengineering, productivity, politics, and entrepreneurship. Shoot me
-        an email or DM on{' '}
+        an email or DM on{" "}
         <a href="https://linkedin.com/in/mkeerthik">LinkedIn</a> if you want to
         chat!
       </p>
@@ -55,28 +55,28 @@ function Home() {
       <section className="blog-recent">
         <h2>Recent Blog Posts</h2>
         <div id="blog-container">
-          {loadingPosts ? (
-            'Loading...'
-          ) : posts.length === 0 ? (
-            'No posts available.'
-          ) : (
-            posts.map(post => (
-              <p key={post.slug}>
-                <span>
-                  <Link to={`/post/${post.slug}`}>{post.title}</Link>
-                </span>
-                <span>
-                  <em>
-                    {new Date(post.date).toLocaleDateString()} • {post.time} minute read
-                  </em>
-                </span>
-                <span>{post.description}</span>
-              </p>
-            ))
-          )}
+          {loadingPosts
+            ? "Loading..."
+            : posts.length === 0
+              ? "No posts available."
+              : posts.map((post) => (
+                  <p key={post.slug}>
+                    <span>
+                      <Link to={`/post/${post.slug}`}>{post.title}</Link>
+                    </span>
+                    <span>
+                      <em>
+                        {new Date(post.date).toLocaleDateString()} • {post.time}{" "}
+                        minute read
+                      </em>
+                    </span>
+                    <span>{post.description}</span>
+                  </p>
+                ))}
         </div>
         <p>
-          A full list of blog posts can be found <Link to="/all-posts">here</Link>.
+          A full list of blog posts can be found{" "}
+          <Link to="/all-posts">here</Link>.
         </p>
       </section>
       <hr />
@@ -90,8 +90,8 @@ function Home() {
             <em>Sachs Lab (The Laboratory of Molecular Therapeutics)</em>
           </span>
           <span>
-            Learning a ton of laboratory techniques and getting my hands dirty with
-            bench work.
+            Learning a ton of laboratory techniques and getting my hands dirty
+            with bench work.
           </span>
         </p>
         <p>
@@ -111,23 +111,22 @@ function Home() {
       <section className="projects">
         <h2>Projects</h2>
         <div id="project-container">
-          {loadingProjects ? (
-            'Loading...'
-          ) : projects.length === 0 ? (
-            'No projects available.'
-          ) : (
-            projects.map(project => (
-              <p key={project.name}>
-                <span>
-                  <strong>{project.name}</strong>
-                </span>
-                <span>{project.description}</span>
-                <span>
-                  [<a href={project.demo}>demo</a>] [<a href={project.code}>code</a>]
-                </span>
-              </p>
-            ))
-          )}
+          {loadingProjects
+            ? "Loading..."
+            : projects.length === 0
+              ? "No projects available."
+              : projects.map((project) => (
+                  <p key={project.name}>
+                    <span>
+                      <strong>{project.name}</strong>
+                    </span>
+                    <span>{project.description}</span>
+                    <span>
+                      [<a href={project.demo}>demo</a>] [
+                      <a href={project.code}>code</a>]
+                    </span>
+                  </p>
+                ))}
         </div>
       </section>
       <hr />
@@ -135,7 +134,8 @@ function Home() {
         <h2>Education</h2>
         <p>
           <span>
-            <strong>University of Minnesota, Twin Cities</strong> (Sep 2024 - Present)
+            <strong>University of Minnesota, Twin Cities</strong> (Sep 2024 -
+            Present)
           </span>
           <span>
             <em>
@@ -146,7 +146,8 @@ function Home() {
         </p>
         <p>
           <span>
-            <strong>University of Minnesota, Twin Cities</strong> (Sep 2023 - May 2024)
+            <strong>University of Minnesota, Twin Cities</strong> (Sep 2023 -
+            May 2024)
           </span>
           <span>
             <em>
@@ -166,7 +167,8 @@ function Home() {
         </p>
         <p>
           <span>
-            <strong>University of Minnesota, Twin Cities</strong> (Sep 2018 - May 2023)
+            <strong>University of Minnesota, Twin Cities</strong> (Sep 2018 -
+            May 2023)
           </span>
           <span>
             <em>
