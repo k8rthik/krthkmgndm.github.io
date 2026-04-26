@@ -1,37 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import { getAllPosts } from "../lib/posts";
+import { getAllProjects } from "../lib/projects";
 
-function Home() {
-  const [posts, setPosts] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
-  const [loadingProjects, setLoadingProjects] = useState(true);
-
-  useEffect(() => {
-    // Fetch blog posts
-    fetch("/api/posts")
-      .then((response) => response.json())
-      .then((data) => {
-        setPosts(data.filter((post) => post.active !== 0).slice(0, 3));
-        setLoadingPosts(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching blog posts:", error);
-        setLoadingPosts(false);
-      });
-
-    // Fetch projects
-    fetch("/projects.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setProjects(data.filter((project) => project.active));
-        setLoadingProjects(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching projects:", error);
-        setLoadingProjects(false);
-      });
-  }, []);
+export default function Home() {
+  const posts = getAllPosts()
+    .filter((post) => post.active !== 0)
+    .slice(0, 3);
+  const projects = getAllProjects().filter((project) => project.active);
 
   return (
     <div className="container">
@@ -55,28 +30,26 @@ function Home() {
       <section className="blog-recent">
         <h2>Recent Blog Posts</h2>
         <div id="blog-container">
-          {loadingPosts
-            ? "Loading..."
-            : posts.length === 0
-              ? "No posts available."
-              : posts.map((post) => (
-                  <p key={post.slug}>
-                    <span>
-                      <Link to={`/post/${post.slug}`}>{post.title}</Link>
-                    </span>
-                    <span>
-                      <em>
-                        {new Date(post.date).toLocaleDateString()} • {post.time}{" "}
-                        minute read
-                      </em>
-                    </span>
-                    <span>{post.description}</span>
-                  </p>
-                ))}
+          {posts.length === 0
+            ? "No posts available."
+            : posts.map((post) => (
+                <p key={post.slug}>
+                  <span>
+                    <Link href={`/post/${post.slug}`}>{post.title}</Link>
+                  </span>
+                  <span>
+                    <em>
+                      {new Date(post.date).toLocaleDateString()} • {post.time}{" "}
+                      minute read
+                    </em>
+                  </span>
+                  <span>{post.description}</span>
+                </p>
+              ))}
         </div>
         <p>
           A full list of blog posts can be found{" "}
-          <Link to="/all-posts">here</Link>.
+          <Link href="/all-posts">here</Link>.
         </p>
       </section>
       <hr />
@@ -111,22 +84,20 @@ function Home() {
       <section className="projects">
         <h2>Projects</h2>
         <div id="project-container">
-          {loadingProjects
-            ? "Loading..."
-            : projects.length === 0
-              ? "No projects available."
-              : projects.map((project) => (
-                  <p key={project.name}>
-                    <span>
-                      <strong>{project.name}</strong>
-                    </span>
-                    <span>{project.description}</span>
-                    <span>
-                      [<a href={project.demo}>demo</a>] [
-                      <a href={project.code}>code</a>]
-                    </span>
-                  </p>
-                ))}
+          {projects.length === 0
+            ? "No projects available."
+            : projects.map((project) => (
+                <p key={project.name}>
+                  <span>
+                    <strong>{project.name}</strong>
+                  </span>
+                  <span>{project.description}</span>
+                  <span>
+                    [<a href={project.demo}>demo</a>] [
+                    <a href={project.code}>code</a>]
+                  </span>
+                </p>
+              ))}
         </div>
       </section>
       <hr />
@@ -184,5 +155,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
