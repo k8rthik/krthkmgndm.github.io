@@ -1,16 +1,16 @@
-import { Link } from 'react-router-dom';
+import Link from "next/link";
 
-function Tutoring() {
+export default function Tutoring() {
   return (
     <div className="container">
       <h2>Tutoring Offers</h2>
       <section>
         <p>
           So why should you hire me? I'm an AP Scholar with Distinction,
-          National Merit Finalist, Presidential Scholar Candidate, and{' '}
+          National Merit Finalist, Presidential Scholar Candidate, and{" "}
           <a href="https://cse.umn.edu/mathcep/university-minnesota-talented-youth-mathematics-program-umtymp">
             UMTYMP
-          </a>{' '}
+          </a>{" "}
           grad. I've scored 36/36 on the ACT, 1600/1600 on the SAT, and a 5/5 on
           every AP I've taken. For my students, I've distilled my experience
           into a set of simple ideas to learn efficiently and effectively.
@@ -56,9 +56,7 @@ function Tutoring() {
         </ul>
       </section>
       <hr />
-      <Link to="/">Back to Home</Link>
+      <Link href="/">Back to Home</Link>
     </div>
   );
 }
-
-export default Tutoring;
