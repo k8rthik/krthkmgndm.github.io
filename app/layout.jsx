@@ -10,7 +10,7 @@ const themeScript = `(function(){try{var s=localStorage.getItem('theme');var t=s
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
