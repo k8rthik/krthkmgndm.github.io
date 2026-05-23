@@ -30,6 +30,7 @@ const RUNG_R_MULT = 0.32;       // rung atoms — thin readable bars
 const RUNG_INTENSITY = 0.7;     // rungs render slightly dimmer than backbones
 const HELIX_X_AMP = 0.52;       // helix radius
 const HELIX_Y_AMP = 0.82;       // helix height span (kept under 1 so tilt fits)
+const DEPTH_FADE_MIN = 0.28;    // back-most multiplier (lower = stronger front↔back contrast)
 const TILT_RAD = (25 * Math.PI) / 180; // 25° in-plane tilt of the helix axis
 const VISUAL_X_OFFSET = 0;      // geometric center stays at world-x=0; visual nudge is in CSS (.helix__pre)
 
@@ -144,10 +145,16 @@ function renderFrame(theta) {
         const nDotL = Math.max(0, nx * LIGHT[0] + -ny * LIGHT[1] + nz * LIGHT[2]);
         // Add a touch of rim lighting for definition
         const rim = Math.pow(1 - nz, 2.5) * 0.18;
-        const intensity = clamp01(AMBIENT + (1 - AMBIENT) * nDotL + rim);
+        const lit = clamp01(AMBIENT + (1 - AMBIENT) * nDotL + rim);
 
         // Surface depth in world units
         const pixelZ = p.z + nz * radiusWorld;
+        // Depth fade — closer to camera (higher z) stays bright,
+        // farther (lower z) dims toward DEPTH_FADE_MIN. zRange ≈ ±HELIX_X_AMP.
+        const depthT = clamp01((pixelZ + HELIX_X_AMP) / (2 * HELIX_X_AMP));
+        const depthFactor = DEPTH_FADE_MIN + (1 - DEPTH_FADE_MIN) * depthT;
+        const intensity = lit * depthFactor;
+
         const idx = py * SRC_W + px;
         if (pixelZ > zbuf[idx]) {
           zbuf[idx] = pixelZ;
