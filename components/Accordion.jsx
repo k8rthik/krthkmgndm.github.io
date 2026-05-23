@@ -63,7 +63,7 @@ export default function Accordion({ projectsSlot, postsSlot }) {
 
       <ul className="now" aria-label="status">
         <li>reading atlas shrugged,</li>
-        <li>looping don tolivery, laufey</li>
+        <li>looping don toliver, laufey,</li>
         <li>playing mtg, ti4</li>
       </ul>
     </div>
