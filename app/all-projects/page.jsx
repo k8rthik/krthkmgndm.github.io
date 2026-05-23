@@ -7,10 +7,7 @@ export default function AllProjects() {
 
   return (
     <main className="page">
-      <h1>All projects</h1>
-      <p className="subtitle">active and archived</p>
-
-      <hr />
+      <h1>all projects</h1>
 
       {projects.length === 0 ? (
         <p>No projects yet.</p>
