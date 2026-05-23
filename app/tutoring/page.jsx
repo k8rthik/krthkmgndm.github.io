@@ -2,39 +2,42 @@ import Link from "next/link";
 
 export default function Tutoring() {
   return (
-    <div className="container">
-      <h2>Tutoring Offers</h2>
-      <section>
-        <p>
-          So why should you hire me? I'm an AP Scholar with Distinction,
-          National Merit Finalist, Presidential Scholar Candidate, and{" "}
-          <a href="https://cse.umn.edu/mathcep/university-minnesota-talented-youth-mathematics-program-umtymp">
-            UMTYMP
-          </a>{" "}
-          grad. I've scored 36/36 on the ACT, 1600/1600 on the SAT, and a 5/5 on
-          every AP I've taken. For my students, I've distilled my experience
-          into a set of simple ideas to learn efficiently and effectively.
-        </p>
-        <p>
-          The prices listed below are per 45 minute session. I charge the same
-          amount for both online and in-person lessons. The cost also includes
-          asynchronous homework help / review.
-        </p>
-      </section>
+    <main className="page">
+      <h1>Tutoring</h1>
+      <p className="subtitle">a short rate card</p>
+
+      <p>
+        Why hire me? AP Scholar with Distinction, National Merit Finalist,
+        Presidential Scholar Candidate, and{" "}
+        <a href="https://cse.umn.edu/mathcep/university-minnesota-talented-youth-mathematics-program-umtymp">
+          UMTYMP
+        </a>{" "}
+        grad. 36/36 ACT, 1600/1600 SAT, 5 on every AP I&apos;ve taken. For my
+        students I&apos;ve distilled this into a small set of ideas for
+        learning efficiently.
+      </p>
+      <p>
+        Prices below are per 45-minute session, same online or in person, and
+        include async homework help and review.
+      </p>
+
       <hr />
+
       <section>
-        <h3>$25</h3>
+        <h2>$25</h2>
         <ul>
-          <li>Algebra I & II</li>
+          <li>Algebra I &amp; II</li>
           <li>Geometry</li>
           <li>Precalculus</li>
-          <li>Non-AP High School STEM</li>
+          <li>Non-AP high school STEM</li>
           <li>AP Computer Science A (Java)</li>
         </ul>
       </section>
+
       <hr />
+
       <section>
-        <h3>$30</h3>
+        <h2>$30</h2>
         <ul>
           <li>AP Biology</li>
           <li>AP Statistics</li>
@@ -43,9 +46,11 @@ export default function Tutoring() {
           <li>AP Latin</li>
         </ul>
       </section>
+
       <hr />
+
       <section>
-        <h3>$40</h3>
+        <h2>$40</h2>
         <ul>
           <li>ACT / SAT</li>
           <li>AP Physics</li>
@@ -55,8 +60,12 @@ export default function Tutoring() {
           <li>College STEM</li>
         </ul>
       </section>
+
       <hr />
-      <Link href="/">Back to Home</Link>
-    </div>
+
+      <Link href="/" className="back">
+        ← back home
+      </Link>
+    </main>
   );
 }

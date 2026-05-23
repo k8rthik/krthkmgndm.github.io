@@ -1,73 +1,651 @@
-@import url("https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700,700italic&subset=latin,cyrillic-ext,cyrillic,latin-ext");
+:root {
+  /* paper + inks */
+  --paper:      #f1e6cf;
+  --paper-deep: #e8dcc0;
+  --ink:        #1a1614;
+  --ink-faded:  #4a3f33;
+  --ink-pencil: #5a5246;
+  --ink-red:    #8a2a2a;
+  --ink-blue:   #1f3a6b;
+  --rule:       #c4b89f;
+  --rule-soft:  rgba(90, 82, 70, 0.35);
+
+  /* font roles wired from next/font in app/layout.jsx */
+  --serif:    var(--font-body), "Cormorant Garamond", "EB Garamond", Georgia, "Times New Roman", ui-serif, serif;
+  --display:  var(--font-display), "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --mono:     var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --measure: 42rem;
+  --gutter:  1.75rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100%;
+}
 
 body {
-  font-family: "PT Serif", serif;
-  line-height: 1.6;
-  padding-left: 30px;
-  padding-right: 30px;
-  color: #333;
-  background-color: #fff8e7;
-  margin: 0;
+  font-family: var(--serif);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.55;
+  font-feature-settings: "kern", "liga", "onum";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  color: #fff8e7;
-  background-color: #c5c5c5;
+  background: var(--ink);
+  color: var(--paper);
 }
 
-.container {
-  max-width: 60em;
-  margin: 0px auto;
-  height: auto;
-  word-break: normal;
-  padding-top: 36px;
+/* paper-grain overlay (fixed, behind content, above paper bg) */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.22  0 0 0 0 0.18  0 0 0 0 0.14  0 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+}
+
+/* old-school "centered article" layout — for /all-posts, /post, /tutoring, /lab */
+.page {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+  position: relative;
+  z-index: 1;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--display);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 2.25em 0 0.5em;
+}
+
+h1 {
+  font-size: 2.4rem;
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 0.1em;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink);
+  font-family: var(--serif);
+}
+
+h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 1.1em;
+}
+
+a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--ink-blue);
+}
+
+a:visited {
+  color: var(--ink-faded);
+  text-decoration-color: var(--ink-red);
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 3rem 0;
+  width: 100%;
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+strong,
+b {
+  font-weight: 600;
 }
 
 .subtitle {
   font-style: italic;
-  color: #666;
-  margin: 10px 0;
+  color: var(--ink-pencil);
+  margin: 0 0 1.5em;
+  font-size: 1.05rem;
 }
 
-a {
-  text-decoration: none;
-  font-weight: bold;
-  color: #065588;
-  cursor: pointer;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-h2 {
-  font-size: 1.3125em;
-  line-height: 1.15;
-  margin-top: 2.285714em;
-  margin-bottom: 0.75em;
-}
-
-p {
-  margin-bottom: 1.5em;
-  margin-top: 1rem;
-}
-
-span {
+.dateline {
+  font-style: italic;
+  color: var(--ink-pencil);
+  font-size: 1rem;
   display: block;
+  margin-top: 0.15em;
+}
+
+dl {
+  margin: 0 0 1.25em;
+}
+
+dl.entries {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4em;
+}
+
+dl.entries dt {
+  font-weight: 500;
+  font-size: 1.08rem;
+}
+
+dl.entries dt .meta {
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-pencil);
+  margin-left: 0.4em;
+  font-size: 0.95em;
+}
+
+dl.entries dd {
+  margin: 0.15em 0 0;
+  color: var(--ink);
+}
+
+dl.entries dd .org {
+  font-style: italic;
+  color: var(--ink-pencil);
+  display: block;
+  margin-bottom: 0.1em;
+}
+
+dl.entries dd .links {
+  display: block;
+  margin-top: 0.25em;
+  font-size: 0.95em;
+  color: var(--ink-pencil);
+}
+
+ul {
+  padding-left: 1.25em;
+  margin: 0 0 1em;
+}
+
+ul li {
+  margin-bottom: 0.25em;
 }
 
 article {
-  line-height: 1.8;
+  line-height: 1.65;
+  font-size: 20px;
 }
 
-article h1, article h2, article h3 {
-  margin-top: 1.5em;
-}
-
-article ul, article ol {
-  margin-bottom: 1.5em;
-}
-
-article li {
+article h1,
+article h2,
+article h3 {
+  margin-top: 1.6em;
   margin-bottom: 0.5em;
+}
+
+article h1 { font-size: 1.8rem; }
+article h2 { font-size: 1.3rem; font-style: italic; }
+article p  { margin: 0 0 1.2em; }
+
+article ul,
+article ol {
+  margin: 0 0 1.2em;
+  padding-left: 1.5em;
+}
+
+article li { margin-bottom: 0.4em; }
+
+article code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  background: rgba(26, 22, 20, 0.06);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+article pre {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  background: rgba(26, 22, 20, 0.05);
+  border: 1px solid var(--rule);
+  padding: 0.9em 1em;
+  overflow-x: auto;
+  border-radius: 2px;
+}
+
+article pre code {
+  background: none;
+  padding: 0;
+}
+
+article blockquote {
+  border-left: 2px solid var(--rule);
+  margin: 0 0 1.2em;
+  padding: 0.2em 0 0.2em 1.2em;
+  color: var(--ink-pencil);
+  font-style: italic;
+}
+
+article sup {
+  font-size: 0.75em;
+  vertical-align: super;
+  line-height: 0;
+}
+
+.colophon {
+  margin-top: 4rem;
+  font-style: italic;
+  color: var(--ink-pencil);
+  font-size: 1rem;
+}
+
+.colophon::before {
+  content: "— ";
+}
+
+.back {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* still used by ProjectDemo hover rows */
+.project-row dd {
+  transition: max-height 380ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.project-demo {
+  margin-top: 0.6em;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 380ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 240ms ease;
+  pointer-events: none;
+}
+
+.project-row:hover .project-demo,
+.project-row:focus-within .project-demo {
+  max-height: 140px;
+  opacity: 1;
+}
+
+.project-demo canvas {
+  display: block;
+  width: 100%;
+  height: 96px;
+  background: transparent;
+}
+
+.project-demo__caption {
+  display: block;
+  font-style: italic;
+  color: var(--ink-pencil);
+  font-size: 0.85em;
+  margin-top: 0.2em;
+}
+
+/* ─────────────────────────────────────────────────────────
+   HOME (accordion) — only used by app/page.jsx
+   Full-bleed: spans the viewport edge-to-edge
+   ───────────────────────────────────────────────────────── */
+
+.home {
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  padding: 2.5rem var(--gutter) 1.75rem;
+  display: grid;
+  grid-template-rows:
+    auto              /* header */
+    auto              /* projects bar */
+    minmax(0, 0fr)    /* projects panel */
+    auto              /* posts bar */
+    minmax(0, 0fr)    /* posts panel */
+    minmax(0, 1fr);   /* ascii gap */
+  row-gap: 0;
+  transition: grid-template-rows 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.home[data-open="projects"] {
+  grid-template-rows:
+    auto auto minmax(0, 1fr) auto minmax(0, 0fr) minmax(0, 0fr);
+}
+
+.home[data-open="posts"] {
+  grid-template-rows:
+    auto auto minmax(0, 0fr) auto minmax(0, 1fr) minmax(0, 0fr);
+}
+
+/* when a panel is open, drop the bottom padding so the last visible
+   border / panel content sits flush against the viewport edge */
+.home[data-open] {
+  padding-bottom: 0;
+}
+
+/* helix is purely decorative — when a panel is open, take it out of the
+   layout entirely so nothing can bleed through */
+.home[data-open] .helix {
+  display: none;
+}
+
+.home__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 2rem;
+  margin-bottom: 1.8rem;
+}
+
+.home__name {
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 6.5vw, 5.5rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+  margin: 0;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.home__contact {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink-pencil);
+  margin: 0.6rem 0 0;
+  line-height: 1.45;
+  letter-spacing: 0.005em;
+}
+
+.home__contact a {
+  color: var(--ink-faded);
+  text-decoration-color: var(--ink-blue);
+  text-decoration-thickness: 1px;
+}
+
+.home__colophon {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-pencil);
+  text-align: right;
+  justify-self: end;
+  align-self: end;
+  line-height: 1.4;
+  margin: 0 0 0.5em;
+  letter-spacing: 0.01em;
+}
+
+.home__colophon-time { display: block; color: var(--ink-faded); }
+.home__colophon-commit {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-pencil);
+  opacity: 0.85;
+}
+
+/* section bars (clickable headers) — bounded top + bottom */
+.bar {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-top:    1.5px solid var(--ink-pencil);
+  border-bottom: 1.5px solid var(--ink-pencil);
+  width: 100%;
+  text-align: left;
+  padding: 1rem 0;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.005em;
+  text-transform: lowercase;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 44px;
+  position: relative;
+  transition: color 200ms ease, background-color 200ms ease;
+}
+
+/* when posts bar sits flush below projects bar (both closed, or posts open),
+   share the border between them — only show a top border on posts bar
+   when projects panel is actively open and separating them */
+.home:not([data-open="projects"]) .bar--posts { border-top: 0; }
+
+.bar:hover {
+  background-color: rgba(26, 22, 20, 0.035);
+}
+
+.bar:focus-visible {
+  outline: 2px dashed var(--ink-pencil);
+  outline-offset: 4px;
+}
+
+.bar--projects { color: var(--ink-red); }
+.bar--posts    { color: var(--ink-blue); }
+
+.bar__caret {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-style: normal;
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  color: inherit;
+  line-height: 1;
+  transform-origin: 50% 55%;
+  opacity: 0.8;
+}
+
+.bar[aria-expanded="true"] .bar__caret {
+  transform: rotate(180deg);
+}
+
+/* the two collapsible panels */
+.panel {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.panel__scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.5rem 0 1.75rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+
+.panel__scroll::-webkit-scrollbar { width: 8px; }
+.panel__scroll::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 4px;
+}
+
+.panel__list {
+  display: grid;
+  gap: 1.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* one entry (project or post) */
+.entry {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.entry__title {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+
+.entry__title a {
+  color: var(--ink);
+  text-decoration-color: var(--ink-red);
+}
+
+.entry__meta {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-pencil);
+  margin-left: 0.5em;
+  font-weight: 400;
+}
+
+.entry__desc {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--ink-faded);
+  line-height: 1.55;
+  margin: 0.2em 0 0;
+  max-width: 62rem;
+}
+
+.entry__links {
+  display: inline-block;
+  margin-top: 0.4em;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-pencil);
+  letter-spacing: 0.02em;
+}
+
+.entry__links a { color: var(--ink-blue); }
+
+.panel__footer {
+  margin: 1.75rem 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-pencil);
+}
+
+/* ascii bio-art — the void-filler when both panels closed */
+.helix {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.helix__pre {
+  font-family: var(--mono);
+  font-size: clamp(7px, 0.85vw, 11px);
+  line-height: 1.0;
+  color: var(--ink-faded);
+  margin: 0;
+  white-space: pre;
+  user-select: none;
+  letter-spacing: 0;
+  opacity: 0.9;
+  /* The tilted helix has more visual weight on the right side; nudge left
+     so it reads as optically centered. Tweak this value to taste. */
+  transform: translateX(-3.5rem);
+}
+
+
+/* responsive */
+@media (prefers-reduced-motion: reduce) {
+  .home,
+  .bar,
+  .bar__arrow,
+  .project-demo {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  body { font-size: 19px; }
+  h1 { font-size: 2rem; }
+
+  .page { padding: 2.5rem 1.25rem 4rem; }
+
+  :root { --gutter: 1.25rem; }
+
+  .home {
+    padding: 1.5rem var(--gutter) 1.25rem;
+  }
+
+  .home__header {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .home__colophon {
+    justify-self: start;
+    text-align: left;
+    margin-top: 0.25rem;
+  }
+
+  .home__name {
+    font-size: clamp(2rem, 11vw, 3rem);
+    white-space: normal;
+    line-height: 0.95;
+  }
+
+  .bar {
+    font-size: 1.2rem;
+  }
+
+  .bar__leader {
+    margin: 0 0.6rem;
+  }
+
+  .helix__pre {
+    /* 100 cols × ~3.2px char width ≈ 320px — fits a 375px viewport */
+    font-size: 5.5px;
+    line-height: 1.0;
+    transform: translateX(-0.6rem);
+  }
 }
