@@ -10,7 +10,12 @@ const OPP = { n: "s", s: "n", e: "w", w: "e" };
 function generateMaze() {
   const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
   const walls = Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({ n: true, s: true, e: true, w: true })),
+    Array.from({ length: COLS }, () => ({
+      n: true,
+      s: true,
+      e: true,
+      w: true,
+    })),
   );
   const stack = [[0, 0]];
   visited[0][0] = true;
@@ -129,10 +134,7 @@ export default function NotFound() {
   return (
     <main className="page maze-page">
       <h1>404</h1>
-      <p>
-        you took a wrong turn. <span className="serif">@</span> is you,{" "}
-        <span className="serif">&gt;</span> is the door home.
-      </p>
+      <p>looks like you took a wrong turn</p>
 
       <div
         ref={containerRef}
@@ -150,8 +152,7 @@ export default function NotFound() {
       <p className="maze__status">
         {atExit ? (
           <>
-            you made it in {steps} steps.{" "}
-            <a href="/">[ go home ↵ ]</a>
+            you made it in {steps} steps. <a href="/">[go home ↵]</a>
           </>
         ) : (
           <>
@@ -166,8 +167,7 @@ export default function NotFound() {
             >
               r: new maze
             </button>{" "}
-            ·{" "}
-            <a href="/">give up</a>
+            · <a href="/">give up</a>
           </>
         )}
       </p>
