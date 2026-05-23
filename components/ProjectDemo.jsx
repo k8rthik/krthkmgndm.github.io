@@ -1,15 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Folduzz from "./demos/Folduzz";
-import DrActive from "./demos/DrActive";
-import BioScrolls from "./demos/BioScrolls";
 
-const DEMOS = {
-  folduzz: Folduzz,
-  "dr.active": DrActive,
-  BioScrolls: BioScrolls,
-};
+// Register real demos here when ready, e.g.:
+//   import Foo from "./demos/Foo";
+//   const DEMOS = { "foo": Foo };
+// Each demo component receives an `active` boolean prop.
+const DEMOS = {};
 
 export default function ProjectDemo({ name, children }) {
   const Demo = DEMOS[name] || null;
