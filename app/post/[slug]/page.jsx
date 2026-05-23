@@ -18,18 +18,23 @@ export default async function Post({ params }) {
   const sanitizedContent = DOMPurify.sanitize(post.content);
 
   return (
-    <div className="container">
-      <div id="post-container">
-        <h2>{post.title}</h2>
-        <p>
-          <em>
-            {new Date(post.date).toLocaleDateString()} • {post.time} minute read
-          </em>
+    <main className="page">
+      <header>
+        <h1>{post.title}</h1>
+        <p className="dateline">
+          {new Date(post.date).toLocaleDateString()} · {post.time} minute read
         </p>
-        <article dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
-      </div>
+      </header>
+
       <hr />
-      <Link href="/">Back to Home</Link>
-    </div>
+
+      <article dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+
+      <hr />
+
+      <Link href="/all-posts" className="back">
+        ← all writing
+      </Link>
+    </main>
   );
 }

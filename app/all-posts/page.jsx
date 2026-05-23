@@ -5,30 +5,35 @@ export default function AllPosts() {
   const posts = getAllPosts().filter((post) => post.active !== 0);
 
   return (
-    <div className="container">
-      <section className="all-blogs">
-        <h2>All Blog Posts</h2>
-        <div id="blog-container">
-          {posts.length === 0
-            ? "No posts available."
-            : posts.map((post) => (
-                <p key={post.slug}>
-                  <span>
-                    <Link href={`/post/${post.slug}`}>{post.title}</Link>
-                  </span>
-                  <span>
-                    <em>
-                      {new Date(post.date).toLocaleDateString()} • {post.time}{" "}
-                      minute read
-                    </em>
-                  </span>
-                  <span>{post.description}</span>
-                </p>
-              ))}
-        </div>
-      </section>
+    <main className="page">
+      <h1>All writing</h1>
+      <p className="subtitle">everything, oldest dates at the bottom</p>
+
       <hr />
-      <Link href="/">Back to Home</Link>
-    </div>
+
+      {posts.length === 0 ? (
+        <p>No posts yet.</p>
+      ) : (
+        <dl className="entries">
+          {posts.map((post) => (
+            <div key={post.slug}>
+              <dt>
+                <Link href={`/post/${post.slug}`}>{post.title}</Link>
+                <span className="meta">
+                  {new Date(post.date).toLocaleDateString()} · {post.time} min
+                </span>
+              </dt>
+              <dd>{post.description}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      <hr />
+
+      <Link href="/" className="back">
+        ← back home
+      </Link>
+    </main>
   );
 }
