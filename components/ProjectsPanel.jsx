@@ -16,14 +16,14 @@ export default function ProjectsPanel({ projects }) {
               </p>
               <p className="entry__desc">{project.description}</p>
               <span className="entry__links">
-                [{" "}
+                [
                 <a href={project.demo} target="_blank" rel="noreferrer">
                   demo
-                </a>{" "}
-                ] [{" "}
+                </a>
+                ] [
                 <a href={project.code} target="_blank" rel="noreferrer">
                   code
-                </a>{" "}
+                </a>
                 ]
               </span>
             </ProjectDemo>
@@ -31,8 +31,7 @@ export default function ProjectsPanel({ projects }) {
         ))}
       </ul>
       <p className="panel__footer">
-        the full list, including archived bits, lives on the{" "}
-        <Link href="/all-projects">projects page</Link>.
+        <Link href="/all-projects">all projects</Link>.
       </p>
     </div>
   );
