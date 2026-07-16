@@ -90,6 +90,9 @@ body {
 .home__aside {
   flex: 0 0 17rem;
   max-width: 17rem;
+  /* clear the fixed light/dark toggle pinned to the top-right corner
+     so the devlog [edit] control doesn't collide with it */
+  margin-top: 1.75rem;
 }
 
 .home__header {
