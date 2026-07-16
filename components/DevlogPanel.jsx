@@ -169,7 +169,7 @@ export default function DevlogPanel({ entries: initial }) {
           {entries.map((entry) => (
             <li key={entry.id} className="devlog__entry">
               <span className="devlog__marker" aria-hidden="true">
-                *
+                •
               </span>
               <div className="devlog__body">
                 <span className="devlog__date">{shortDate(entry.date)}</span>
