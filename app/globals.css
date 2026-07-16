@@ -73,6 +73,25 @@ body {
   display: block;
 }
 
+/* two-column split: main content left, devlog aside right on desktop.
+   below the mobile breakpoint the aside drops under everything else. */
+.home--split {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.home__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.home__aside {
+  flex: 0 0 17rem;
+  max-width: 17rem;
+}
+
 .home__header {
   display: block;
   margin-bottom: 0;
@@ -308,6 +327,153 @@ dl.entries dd .links {
 
 .now li { margin: 0; }
 
+/* devlog — a small git-log style column. mono dates like commit ids,
+   serif blurbs, a thin rule down the left evoking a commit graph. */
+.devlog {
+  font-size: 0.9em;
+}
+
+.devlog__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.2em;
+  margin-bottom: 0.6em;
+}
+
+.devlog__title {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.devlog__edit,
+.devlog__del,
+.devlog__btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  color: var(--link);
+  cursor: pointer;
+}
+
+.devlog__edit:hover,
+.devlog__del:hover,
+.devlog__btn:hover {
+  text-decoration: underline;
+}
+
+.devlog__btn:disabled {
+  color: var(--dim);
+  cursor: default;
+  text-decoration: none;
+}
+
+.devlog__editor {
+  margin-bottom: 0.9em;
+  padding-bottom: 0.6em;
+  border-bottom: 1px dashed var(--rule-soft);
+}
+
+.devlog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.devlog__input {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  padding: 0.3em 0.4em;
+  width: 100%;
+}
+
+.devlog__textarea {
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.devlog__btn {
+  align-self: flex-start;
+  border: 1px solid var(--rule);
+  padding: 0.25em 0.6em;
+}
+
+.devlog__msg {
+  margin: 0.5em 0 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.78em;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.devlog__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--rule);
+}
+
+.devlog__entry {
+  position: relative;
+  padding: 0 0 0.9em 1em;
+}
+
+.devlog__entry:last-child {
+  padding-bottom: 0;
+}
+
+.devlog__marker {
+  position: absolute;
+  left: -0.4em;
+  top: -0.05em;
+  font-family: "Courier New", Courier, monospace;
+  color: var(--dim);
+  background: var(--bg);
+  line-height: 1;
+}
+
+.devlog__date {
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.78em;
+  color: var(--muted);
+}
+
+.devlog__text {
+  margin: 0.15em 0 0;
+  line-height: 1.4;
+}
+
+.devlog__img {
+  display: block;
+  margin: 0.4em 0 0;
+  max-width: 100%;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--rule-soft);
+}
+
+.devlog__del {
+  margin-top: 0.2em;
+  color: var(--dim);
+}
+
+.devlog__empty {
+  margin: 0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  color: var(--dim);
+}
+
 /* 404 maze */
 .maze-page h1 {
   margin-bottom: 0.2em;
@@ -369,5 +535,20 @@ dl.entries dd .links {
   .helix__pre {
     font-size: 5.5px;
     line-height: 1;
+  }
+
+  /* stack the split: devlog drops below the main column, full width */
+  .home--split {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .home__aside {
+    flex-basis: auto;
+    max-width: 100%;
+    width: 100%;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 1rem;
   }
 }
