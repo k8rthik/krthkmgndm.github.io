@@ -446,18 +446,23 @@ dl.entries dd .links {
 
 .devlog__marker {
   position: absolute;
-  left: -0.4em;
-  top: -0.05em;
+  left: 0;
+  top: 0;
+  /* match the date's font metrics so the node shares its first line box
+     and lands on the same horizontal line as the date text */
   font-family: "Courier New", Courier, monospace;
+  font-size: 0.78em;
+  line-height: 1.4;
   color: var(--dim);
   background: var(--bg);
-  line-height: 1;
+  transform: translateX(-50%);
 }
 
 .devlog__date {
   display: block;
   font-family: "Courier New", Courier, monospace;
   font-size: 0.78em;
+  line-height: 1.4;
   color: var(--muted);
 }
 
