@@ -340,16 +340,14 @@ dl.entries dd .links {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 0.2em;
   margin-bottom: 0.6em;
 }
 
+/* match the site name: bold serif, same rendered size (16px) */
 .devlog__title {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.85em;
-  letter-spacing: 0.02em;
-  color: var(--muted);
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--fg);
 }
 
 .devlog__edit,
