@@ -343,14 +343,28 @@ dl.entries dd .links {
   margin-bottom: 0.6em;
 }
 
-/* match the site name: bold serif, same rendered size (16px) */
+/* the title doubles as the (hidden) editor trigger: styled exactly like
+   the site name, with no hover/focus cue so it reads as plain text */
 .devlog__title {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: Times, "Times New Roman", serif;
   font-size: 1rem;
   font-weight: bold;
   color: var(--fg);
+  cursor: default;
+  text-align: left;
 }
 
-.devlog__edit,
+.devlog__title:hover,
+.devlog__title:focus {
+  color: var(--fg);
+  text-decoration: none;
+  outline: none;
+}
+
 .devlog__del,
 .devlog__btn {
   background: transparent;
@@ -362,7 +376,6 @@ dl.entries dd .links {
   cursor: pointer;
 }
 
-.devlog__edit:hover,
 .devlog__del:hover,
 .devlog__btn:hover {
   text-decoration: underline;

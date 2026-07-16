@@ -101,17 +101,17 @@ export default function DevlogPanel({ entries: initial }) {
   return (
     <aside className="devlog" aria-label="devlog">
       <div className="devlog__head">
-        <span className="devlog__title">devlog</span>
         <button
           type="button"
-          className="devlog__edit"
+          className="devlog__title"
           aria-expanded={open}
+          aria-label={open ? "close devlog editor" : "open devlog editor"}
           onClick={() => {
             setOpen((v) => !v);
             setMsg("");
           }}
         >
-          {open ? "[close]" : "[edit]"}
+          devlog
         </button>
       </div>
 
