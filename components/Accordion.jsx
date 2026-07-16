@@ -11,12 +11,14 @@ export default function Accordion({
   selectedSlot,
   projectsSlot,
   postsSlot,
+  devlogSlot,
 }) {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [postsOpen, setPostsOpen] = useState(false);
 
   return (
-    <div className="home">
+    <div className="home home--split">
+      <div className="home__main">
       <header className="home__header">
         <div>
           <h1 className="home__name">keerthik muruganandam</h1>
@@ -92,6 +94,9 @@ export default function Accordion({
         <li>playing ti4, root</li>
       </ul>
       */}
+      </div>
+
+      <div className="home__aside">{devlogSlot}</div>
     </div>
   );
 }
