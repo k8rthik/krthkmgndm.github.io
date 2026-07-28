@@ -73,10 +73,7 @@ export default function EloDashboard({ data }) {
       />
 
       <h2>leaderboard</h2>
-      <p className="elo-sub">
-        through {date} — pae = actual − expected win share. click a header to
-        sort.
-      </p>
+      <p className="elo-sub">through {date}</p>
       <Leaderboard stats={stats} corePlayers={corePlayers} />
 
       <h2>head-to-head</h2>
