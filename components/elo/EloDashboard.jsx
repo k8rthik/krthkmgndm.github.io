@@ -32,7 +32,7 @@ export default function EloDashboard({ data }) {
 
   return (
     <div className="elo">
-      <h2>session summary</h2>
+      <h2>session summaries</h2>
       <SessionSummary
         sessions={sessions}
         corePlayers={corePlayers}
@@ -82,8 +82,15 @@ export default function EloDashboard({ data }) {
       <h2>head-to-head</h2>
       <p className="elo-sub">
         through {date} — row player&rsquo;s relative wins vs. column player.
+        click a matchup for its play log.
       </p>
-      <HeadToHead records={records} corePlayers={corePlayers} tooltip={tooltip} />
+      <HeadToHead
+        records={records}
+        corePlayers={corePlayers}
+        tooltip={tooltip}
+        events={events}
+        date={date}
+      />
 
       <Tooltip tip={tooltip.tip} />
     </div>

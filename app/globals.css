@@ -546,6 +546,8 @@ table.elo-h2h td {
   border: 2px solid var(--bg);
 }
 
+table.elo-h2h td.elo-h2h__cell { cursor: pointer; }
+
 .elo-tip {
   position: fixed;
   z-index: 10;
