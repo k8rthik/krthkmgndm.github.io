@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import SectionBar from "./SectionBar";
 import AsciiBioArt from "./AsciiBioArt";
 import Colophon from "./Colophon";
@@ -65,9 +64,7 @@ export default function Accordion({ projectsSlot, postsSlot }) {
       <ul className="now" aria-label="status">
         <li>reading atlas shrugged,</li>
         <li>looping apple pie</li>
-        <li>
-          <Link href="/playing">playing ti4, root</Link>
-        </li>
+        <li>playing ti4, root</li>
       </ul>
     </div>
   );

@@ -1,4 +1,4 @@
-// Shared helpers for the /playing elo dashboard.
+// Shared helpers for the /bgelo dashboard.
 // Colors are CSS custom properties so light/dark theming needs no re-render;
 // slot order is pinned to corePlayers so a player's color never changes.
 
