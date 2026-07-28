@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
 import { getPostBySlug, getPostSlugs } from "../../../lib/posts";
+import { parseLocalDate } from "../../../lib/dates";
 
 export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
@@ -22,7 +23,7 @@ export default async function Post({ params }) {
       <header>
         <h1>{post.title}</h1>
         <p className="dateline">
-          {new Date(post.date).toLocaleDateString()} · {post.time} minute read
+          {parseLocalDate(post.date).toLocaleDateString()} · {post.time} minute read
         </p>
       </header>
 

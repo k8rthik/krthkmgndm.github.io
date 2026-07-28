@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPosts } from "../../lib/posts";
+import { parseLocalDate } from "../../lib/dates";
 
 export default function AllPosts() {
   const posts = getAllPosts().filter((post) => post.active !== 0);
@@ -20,7 +21,7 @@ export default function AllPosts() {
               <dt>
                 <Link href={`/post/${post.slug}`}>{post.title}</Link>
                 <span className="meta">
-                  {new Date(post.date).toLocaleDateString()} · {post.time} min
+                  {parseLocalDate(post.date).toLocaleDateString()} · {post.time} min
                 </span>
               </dt>
               <dd>{post.description}</dd>

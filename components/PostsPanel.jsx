@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { parseLocalDate } from "../lib/dates";
 
 function formatDate(iso) {
-  const d = new Date(iso);
+  const d = parseLocalDate(iso);
   return d.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
