@@ -36,27 +36,43 @@ html, body {
 a            { color: var(--link); }
 a:visited    { color: var(--link-visited); }
 
-.theme-toggle {
+.theme-toggle,
+.home-link {
   position: fixed;
   top: 0.5rem;
-  right: 0.75rem;
   background: transparent;
   border: 0;
   padding: 0.15em 0.35em;
   font-family: "Courier New", Courier, monospace;
   font-size: 0.8em;
+  line-height: 1.2;
   color: var(--muted);
-  cursor: pointer;
   z-index: 10;
 }
 
-.theme-toggle:hover { color: var(--link); }
+.theme-toggle {
+  right: 0.75rem;
+  cursor: pointer;
+}
+
+.home-link {
+  right: 4.6rem;
+  text-decoration: none;
+}
+
+.home-link:visited { color: var(--muted); }
+
+.theme-toggle:hover,
+.home-link:hover { color: var(--link); }
 
 body {
   font-family: Times, "Times New Roman", serif;
   font-size: 16px;
   line-height: 1.4;
 }
+
+/* keep headings tight to whatever follows them (subtitles especially) */
+h1, h2, h3 { margin-bottom: 0.25em; }
 
 /* one shared content gutter so things aren't flush against the edge */
 .home,
@@ -361,6 +377,181 @@ dl.entries dd .links {
     transition: none !important;
   }
 }
+
+/* ---- /playing — pod elo dashboard ---- */
+
+/* categorical player slots (fixed order, color follows the player),
+   sequential blue ramp, and pos/neg pair. validated for CVD + contrast
+   per mode; dark values are re-picked, not auto-flipped. */
+:root {
+  --elo-s1: #3333ee;
+  --elo-s2: #d97706;
+  --elo-s3: #cf649f;
+  --elo-s4: #1a7a1a;
+  --elo-s5: #6a35c8;
+  --elo-s6: #b82a2a;
+  --elo-pos: #3333ee;
+  --elo-neg: #b82a2a;
+}
+
+[data-theme="dark"] {
+  --elo-s1: #5588e8;
+  --elo-s2: #b8822a;
+  --elo-s3: #cc5d99;
+  --elo-s4: #3d8f3d;
+  --elo-s5: #8a5fe0;
+  --elo-s6: #d15252;
+  --elo-pos: #5588e8;
+  --elo-neg: #d15252;
+}
+
+.page--wide { max-width: 62rem; }
+
+.elo h2 { margin-top: 1em; }
+.elo h2:first-child { margin-top: 0.5em; }
+
+.elo-sub {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.9em;
+  margin: 0 0 0.8em;
+  max-width: 62ch;
+}
+
+.elo-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em 1.2em;
+  margin: 0 0 0.6em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+.elo-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+}
+
+.elo-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+
+.elo-swatch--line { height: 3px; width: 14px; }
+
+.elo-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 0.5em;
+}
+
+.elo-chart text {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11.5px;
+  fill: var(--muted);
+}
+
+.elo-chart text.elo-lbl { fill: var(--fg); }
+
+.elo-grid { stroke: var(--rule-soft); stroke-width: 1; }
+.elo-baseline { stroke: var(--rule); stroke-width: 1; }
+.elo-dot { stroke: var(--bg); stroke-width: 2; }
+
+.elo-pos { color: var(--elo-pos); }
+.elo-neg { color: var(--elo-neg); }
+.elo-dim { color: var(--dim); }
+
+.elo-tablewrap { overflow-x: auto; margin: 0 0 0.5em; }
+
+table.elo-data {
+  border-collapse: collapse;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+table.elo-data th {
+  text-align: right;
+  font-weight: bold;
+  color: var(--muted);
+  padding: 0.3em 0.7em;
+  border-bottom: 1px solid var(--rule);
+}
+
+table.elo-data td {
+  text-align: right;
+  padding: 0.3em 0.7em;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+table.elo-data th:first-child,
+table.elo-data td:first-child { text-align: left; padding-left: 0; }
+
+.elo-pname {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.elo-selectrow { margin: 0 0 0.4em; }
+
+.elo-select {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  padding: 0.1em 0.3em;
+}
+
+table.elo-h2h {
+  border-collapse: collapse;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+}
+
+table.elo-h2h th {
+  font-weight: bold;
+  color: var(--muted);
+  padding: 0.25em 0.4em;
+  text-align: center;
+}
+
+table.elo-h2h th.elo-h2h__rowh { text-align: right; }
+
+table.elo-h2h td {
+  text-align: center;
+  padding: 0.4em 0.3em;
+  min-width: 3.2em;
+  border: 2px solid var(--bg);
+}
+
+.elo-tip {
+  position: fixed;
+  z-index: 10;
+  pointer-events: none;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--rule);
+  padding: 0.5em 0.7em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.75em;
+  line-height: 1.45;
+  max-width: 300px;
+}
+
+.elo-tip__title { font-weight: bold; }
+.elo-tip__sub { color: var(--muted); }
+
+.elo-tip table { border-collapse: collapse; width: 100%; }
+.elo-tip td { padding: 0.05em 0; }
+.elo-tip td:first-child { padding-right: 0.8em; }
+.elo-tip td:last-child { text-align: right; }
 
 /* mobile — shrink the helix so it fits a 375px viewport */
 @media (max-width: 720px) {

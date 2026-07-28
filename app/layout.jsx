@@ -1,5 +1,6 @@
 import { Analytics } from "@vercel/analytics/react";
 import ThemeToggle from "../components/ThemeToggle";
+import HomeLink from "../components/HomeLink";
 import "./globals.css";
 
 export const metadata = {
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <HomeLink />
         <ThemeToggle />
         {children}
         <Analytics />
