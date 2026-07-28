@@ -2,8 +2,8 @@
 
 import { fmt } from "./format";
 
-export default function HeadToHead({ headToHead, corePlayers, tooltip }) {
-  const names = corePlayers.filter((n) => headToHead[n]);
+export default function HeadToHead({ records, corePlayers, tooltip }) {
+  const names = corePlayers.filter((n) => records[n]);
 
   const cellTone = (share) =>
     share >= 0.5
@@ -34,7 +34,7 @@ export default function HeadToHead({ headToHead, corePlayers, tooltip }) {
                       ·
                     </td>
                   );
-                const r = headToHead[row][col];
+                const r = records[row][col];
                 const games = r.w + r.l + r.t;
                 if (!games)
                   return (

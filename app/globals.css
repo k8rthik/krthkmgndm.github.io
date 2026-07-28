@@ -471,6 +471,18 @@ dl.entries dd .links {
 
 .elo-tablewrap { overflow-x: auto; margin: 0 0 0.5em; }
 
+.elo-sortbtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.elo-sortbtn:hover { color: var(--link); }
+
 table.elo-data {
   border-collapse: collapse;
   font-family: "Courier New", Courier, monospace;
