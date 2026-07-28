@@ -78,8 +78,7 @@ export default function EloDashboard({ data }) {
 
       <h2>head-to-head</h2>
       <p className="elo-sub">
-        through {date} — row player&rsquo;s relative wins vs. column player.
-        click a matchup for its play log.
+        through {date} — click a matchup for its play log.
       </p>
       <HeadToHead
         records={records}
