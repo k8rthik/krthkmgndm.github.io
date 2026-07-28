@@ -67,7 +67,7 @@ function placeLabels(games, counts) {
   return placed;
 }
 
-export default function GameScatter({ games, events, tooltip }) {
+export default function GameScatter({ games, events, tooltip, highlight }) {
   const { played, counts, labels } = useMemo(() => {
     const tally = events.reduce(
       (acc, e) => ({ ...acc, [e.game]: (acc[e.game] || 0) + 1 }),
@@ -124,19 +124,27 @@ export default function GameScatter({ games, events, tooltip }) {
         skill intensity
       </text>
 
-      {played.map((g) => (
-        <circle
-          key={g.name}
-          cx={x(g.bggWeight)}
-          cy={y(g.skillIntensity)}
-          r={radius(g)}
-          style={{ fill: "var(--elo-pos)" }}
-          fillOpacity="0.6"
-          className="elo-dot"
-          onMouseMove={showTip(g)}
-          onMouseLeave={tooltip.hide}
-        />
-      ))}
+      {played.map((g) => {
+        const lit = highlight?.has(g.name);
+        return (
+          <circle
+            key={g.name}
+            cx={x(g.bggWeight)}
+            cy={y(g.skillIntensity)}
+            r={radius(g)}
+            style={
+              lit
+                ? { fill: "var(--elo-pos)", stroke: "var(--elo-pos)" }
+                : { fill: "var(--elo-pos)" }
+            }
+            fillOpacity={lit ? 0.8 : highlight?.size ? 0.25 : 0.6}
+            strokeWidth={lit ? 2 : undefined}
+            className={lit ? undefined : "elo-dot"}
+            onMouseMove={showTip(g)}
+            onMouseLeave={tooltip.hide}
+          />
+        );
+      })}
       {labels.map((lab) => (
         <text key={lab.label} x={lab.x} y={lab.y + 4} textAnchor="middle" className="elo-lbl">
           {lab.label}

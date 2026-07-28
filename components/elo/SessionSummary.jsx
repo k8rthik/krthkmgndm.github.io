@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { colorFor, isCore, fmt, sign } from "./format";
 
-export default function SessionSummary({ sessions, corePlayers }) {
-  const [date, setDate] = useState(sessions[0]?.date ?? "");
+export default function SessionSummary({ sessions, corePlayers, date, onDateChange }) {
   const session = sessions.find((s) => s.date === date) ?? sessions[0];
   if (!session) return null;
 
@@ -14,7 +12,7 @@ export default function SessionSummary({ sessions, corePlayers }) {
         <select
           className="elo-select"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => onDateChange(e.target.value)}
           aria-label="choose session date"
         >
           {sessions.map((s, i) => (

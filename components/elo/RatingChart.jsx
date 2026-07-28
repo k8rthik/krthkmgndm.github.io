@@ -41,7 +41,7 @@ function buildLayout(series, corePlayers) {
   return { xMax, yMin, yMax, x, y, lines, labels };
 }
 
-export default function RatingChart({ series, events, corePlayers, tooltip }) {
+export default function RatingChart({ series, events, corePlayers, tooltip, band }) {
   const svgRef = useRef(null);
   const [hovered, setHovered] = useState(null);
   const layout = useMemo(() => buildLayout(series, corePlayers), [series, corePlayers]);
@@ -96,6 +96,16 @@ export default function RatingChart({ series, events, corePlayers, tooltip }) {
 
   return (
     <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="elo-chart">
+      {band && (
+        <rect
+          x={x(band.start)}
+          y={T}
+          width={Math.max(x(band.end) - x(band.start), 2)}
+          height={H - T - B}
+          style={{ fill: "var(--elo-pos)" }}
+          fillOpacity="0.08"
+        />
+      )}
       {yTicks.map((v) => (
         <g key={v}>
           <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} className="elo-grid" />

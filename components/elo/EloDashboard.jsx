@@ -1,7 +1,9 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { colorFor, SLOT_COUNT } from "./format";
+import { statsAsOf, headToHeadAsOf, sessionBand } from "./asOf";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
 import Leaderboard from "./Leaderboard";
@@ -10,10 +12,34 @@ import HeadToHead from "./HeadToHead";
 
 export default function EloDashboard({ data }) {
   const tooltip = useTooltip();
-  const { corePlayers, players, series, events, sessions, games, headToHead } = data;
+  const { corePlayers, series, events, sessions, games } = data;
+
+  // the session picker is the page's as-of-date control: every section
+  // below reflects the state of the pod through the selected date
+  const [date, setDate] = useState(sessions[0]?.date ?? "");
+  const session = sessions.find((s) => s.date === date) ?? sessions[0];
+
+  const stats = useMemo(() => statsAsOf(data, date), [data, date]);
+  const records = useMemo(
+    () => headToHeadAsOf(events, corePlayers, date),
+    [events, corePlayers, date],
+  );
+  const band = useMemo(() => sessionBand(events, date), [events, date]);
+  const sessionGames = useMemo(
+    () => new Set(session?.games ?? []),
+    [session],
+  );
 
   return (
     <div className="elo">
+      <h2>session summary</h2>
+      <SessionSummary
+        sessions={sessions}
+        corePlayers={corePlayers}
+        date={date}
+        onDateChange={setDate}
+      />
+
       <h2>rating over pod playtime</h2>
       <p className="elo-sub">regulars (10+ plays) only.</p>
       <p className="elo-legend">
@@ -32,24 +58,32 @@ export default function EloDashboard({ data }) {
         events={events}
         corePlayers={corePlayers}
         tooltip={tooltip}
+        band={band}
       />
 
       <h2>game weight</h2>
-      <p className="elo-sub">bubble size = elo multiplier.</p>
-      <GameScatter games={games} events={events} tooltip={tooltip} />
-
-      <h2>session summary</h2>
-      <SessionSummary sessions={sessions} corePlayers={corePlayers} />
+      <p className="elo-sub">
+        bubble size = elo multiplier. highlighted = played that session.
+      </p>
+      <GameScatter
+        games={games}
+        events={events}
+        tooltip={tooltip}
+        highlight={sessionGames}
+      />
 
       <h2>leaderboard</h2>
-      <p className="elo-sub">pae = actual − expected win share.</p>
-      <Leaderboard players={players} corePlayers={corePlayers} />
+      <p className="elo-sub">
+        through {date} — pae = actual − expected win share. click a header to
+        sort.
+      </p>
+      <Leaderboard stats={stats} corePlayers={corePlayers} />
 
       <h2>head-to-head</h2>
       <p className="elo-sub">
-        row player&rsquo;s relative wins vs. column player.
+        through {date} — row player&rsquo;s relative wins vs. column player.
       </p>
-      <HeadToHead headToHead={headToHead} corePlayers={corePlayers} tooltip={tooltip} />
+      <HeadToHead records={records} corePlayers={corePlayers} tooltip={tooltip} />
 
       <Tooltip tip={tooltip.tip} />
     </div>
