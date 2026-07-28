@@ -4,7 +4,7 @@ date: "2026-07-10"
 description: "A small CLI that diffs your .cod decks against Moxfield, Archidekt, or ManaBox and applies only the changes you approve"
 slug: "cod-sync"
 time: 6
-active: 1
+active: 0
 ---
 
 I keep my Magic decklists on Moxfield and playtest them in Cockatrice. Those two things do not talk to each other, and the standard workaround is bad: export from Moxfield, reimport into Cockatrice, and watch every printing you carefully picked get wiped, banner card included. After doing that dance one too many times I built [cod-sync](https://github.com/k8rthik/cod-sync), a Python CLI that makes the *smallest possible edit* to your `.cod` files instead.
