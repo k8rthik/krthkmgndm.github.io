@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { colorFor, SLOT_COUNT } from "./format";
-import { statsAsOf, headToHeadAsOf, sessionBand } from "./asOf";
+import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
 import Leaderboard from "./Leaderboard";
 import GameScatter from "./GameScatter";
 import HeadToHead from "./HeadToHead";
+import Affinity from "./Affinity";
 
 export default function EloDashboard({ data }) {
   const tooltip = useTooltip();
@@ -22,6 +23,10 @@ export default function EloDashboard({ data }) {
   const stats = useMemo(() => statsAsOf(data, date), [data, date]);
   const records = useMemo(
     () => headToHeadAsOf(events, corePlayers, date),
+    [events, corePlayers, date],
+  );
+  const affinity = useMemo(
+    () => affinityAsOf(events, corePlayers, date),
     [events, corePlayers, date],
   );
   const band = useMemo(() => sessionBand(events, date), [events, date]);
@@ -72,8 +77,12 @@ export default function EloDashboard({ data }) {
         highlight={sessionGames}
       />
 
+      <h2>player–game affinity</h2>
+      <p className="elo-sub">through {date} — hover for the record.</p>
+      <Affinity affinity={affinity} corePlayers={corePlayers} tooltip={tooltip} />
+
       <h2>leaderboard</h2>
-      <p className="elo-sub">through {date}</p>
+      <p className="elo-sub">through {date} — click column to sort.</p>
       <Leaderboard stats={stats} corePlayers={corePlayers} />
 
       <h2>head-to-head</h2>

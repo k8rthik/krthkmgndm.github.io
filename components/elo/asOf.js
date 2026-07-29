@@ -75,6 +75,47 @@ export function statsAsOf(data, date) {
     });
 }
 
+// elo won or lost per player per game through the given date, plus the
+// games worth showing (most-played among the regulars) and the largest
+// swing for scaling cell tints — mirrors bgelo's affinity card, which
+// this reconciles with exactly at the latest date (seat deltas sum to
+// the career perGame totals)
+export function affinityAsOf(events, corePlayers, date, maxGames = 10) {
+  const core = new Set(corePlayers);
+  const perGame = {};
+  for (const n of corePlayers) perGame[n] = {};
+  const playCounts = {};
+
+  for (const e of events) {
+    if (e.date > date) continue;
+    for (const s of e.seats) {
+      if (!core.has(s.name)) continue;
+      const cell =
+        perGame[s.name][e.game] ??
+        (perGame[s.name][e.game] = { plays: 0, wins: 0, delta: 0 });
+      cell.plays += 1;
+      cell.wins += s.won ? 1 : 0;
+      cell.delta += s.delta;
+      playCounts[e.game] = (playCounts[e.game] ?? 0) + 1;
+    }
+  }
+
+  const games = Object.entries(playCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maxGames)
+    .map(([g]) => g);
+
+  let maxAbs = 1;
+  for (const n of corePlayers) {
+    for (const g of games) {
+      const cell = perGame[n][g];
+      if (cell) maxAbs = Math.max(maxAbs, Math.abs(cell.delta));
+    }
+  }
+
+  return { perGame, games, maxAbs };
+}
+
 // pairwise records among the regulars through the given date — the same
 // finishing-order aggregation bgelo uses for the career matrix
 export function headToHeadAsOf(events, corePlayers, date) {
