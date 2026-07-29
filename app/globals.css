@@ -552,6 +552,38 @@ table.elo-h2h td {
 
 table.elo-h2h td.elo-h2h__cell { cursor: pointer; }
 
+table.elo-aff {
+  border-collapse: collapse;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+}
+
+table.elo-aff th {
+  font-weight: bold;
+  color: var(--muted);
+  padding: 0.25em 0.4em;
+  text-align: center;
+}
+
+table.elo-aff th.elo-aff__colh {
+  /* wide enough that "King's Crown" never spills to a third line */
+  max-width: 9em;
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+table.elo-aff th.elo-aff__rowh {
+  text-align: right;
+  white-space: nowrap;
+}
+
+table.elo-aff td {
+  text-align: center;
+  padding: 0.4em 0.3em;
+  min-width: 3.6em;
+  border: 2px solid var(--bg);
+}
+
 .elo-tip {
   position: fixed;
   z-index: 10;
