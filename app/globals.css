@@ -184,9 +184,13 @@ h1, h2, h3 { margin-bottom: 0.25em; }
 
 /* helix — keep it as visible ascii decoration, low-key.
    overflow-y stays hidden: with only overflow-x set it computes to auto,
-   and fractional line heights in the 9px pre summon a vertical scrollbar. */
+   and fractional line heights in the 9px pre summon a vertical scrollbar.
+   the vertical padding matters: at line-height 1 the first/last rows' glyph
+   ink overflows the line boxes, and overflow clips at the padding edge —
+   without the padding the top and bottom of the art get shaved off. */
 .helix {
   margin: 1.5em 0;
+  padding: 4px 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -570,9 +574,11 @@ table.elo-h2h td.elo-h2h__cell { cursor: pointer; }
 .elo-tip td:first-child { padding-right: 0.8em; }
 .elo-tip td:last-child { text-align: right; }
 
-/* mobile — shrink the helix so it fits a 375px viewport */
+/* mobile — shrink the helix so it fits a 375px viewport.
+   at 5.5px the art fits without scrolling, so drop the scroll container
+   entirely (overflow-y: hidden would otherwise still clip the glyph ink). */
 @media (max-width: 720px) {
-  .helix { overflow-x: visible; }
+  .helix { overflow: visible; }
 
   .helix__pre {
     font-size: 5.5px;

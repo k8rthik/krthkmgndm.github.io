@@ -29,7 +29,12 @@ const RUNG_STEPS = 24;          // sample density along each rung
 const RUNG_R_MULT = 0.32;       // rung atoms — thin readable bars
 const RUNG_INTENSITY = 0.7;     // rungs render slightly dimmer than backbones
 const HELIX_X_AMP = 0.52;       // helix radius
-const HELIX_Y_AMP = 0.82;       // helix height span (kept under 1 so tilt fits)
+const HELIX_Y_AMP = 0.77;       // helix height span — sized so tilt AND the
+//                                 backbone sphere radius fit inside the canvas:
+//                                 X_AMP·sin(tilt) + Y_AMP·cos(tilt) + sphere px
+//                                 must stay < 1, else the top/bottom spheres
+//                                 get flat-sliced at the raster edge (the
+//                                 renderer silently drops out-of-canvas pixels)
 const DEPTH_FADE_MIN = 0.28;    // back-most multiplier (lower = stronger front↔back contrast)
 const TILT_RAD = (25 * Math.PI) / 180; // 25° in-plane tilt of the helix axis
 const VISUAL_X_OFFSET = 0;      // geometric center stays at world-x=0; visual nudge is in CSS (.helix__pre)
