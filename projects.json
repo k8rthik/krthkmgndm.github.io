@@ -1,5 +1,14 @@
 [
   {
+    "name": "bgelo",
+    "description": "Rating engine for board game night. Decomposes multiplayer results from BG Stats exports into pairwise Glicko matchups with confidence-weighted, complexity-scaled updates, and publishes a session-driven dashboard: rating trajectories, game weights, leaderboard, head-to-head records, and player–game affinity.",
+    "links": [
+      { "label": "stats", "href": "/bgelo" },
+      { "label": "blog", "href": "/post/bgelo" }
+    ],
+    "active": true
+  },
+  {
     "name": "dr.active",
     "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase arruracy by 15%. Used Gradio to deploy interactive demo to web.",
     "code": "https://github.com/krthkmgndm/dr.active",
