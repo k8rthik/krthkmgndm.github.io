@@ -4,12 +4,14 @@ import { useMemo, useState } from "react";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { colorFor, SLOT_COUNT } from "./format";
 import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
+import { recordsAsOf, profileExtrasAsOf } from "./insights";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
 import Leaderboard from "./Leaderboard";
 import GameScatter from "./GameScatter";
 import HeadToHead from "./HeadToHead";
 import Affinity from "./Affinity";
+import Records from "./Records";
 
 export default function EloDashboard({ data }) {
   const tooltip = useTooltip();
@@ -27,6 +29,14 @@ export default function EloDashboard({ data }) {
   );
   const affinity = useMemo(
     () => affinityAsOf(events, corePlayers, date),
+    [events, corePlayers, date],
+  );
+  const podRecords = useMemo(
+    () => recordsAsOf(events, series, corePlayers, date),
+    [events, series, corePlayers, date],
+  );
+  const extras = useMemo(
+    () => profileExtrasAsOf(events, corePlayers, date),
     [events, corePlayers, date],
   );
   const band = useMemo(() => sessionBand(events, date), [events, date]);
@@ -66,6 +76,12 @@ export default function EloDashboard({ data }) {
         band={band}
       />
 
+      {/* elo race shelved for now — component lives in ./EloRace.jsx:
+      <h2>elo race</h2>
+      <p className="elo-sub">the rating chart, replayed — press play.</p>
+      <EloRace series={series} events={events} corePlayers={corePlayers} date={date} />
+      */}
+
       <h2>game weight</h2>
       <p className="elo-sub">
         bubble size = elo multiplier. highlighted = played that session.
@@ -82,8 +98,20 @@ export default function EloDashboard({ data }) {
       <Affinity affinity={affinity} corePlayers={corePlayers} tooltip={tooltip} />
 
       <h2>leaderboard</h2>
-      <p className="elo-sub">through {date} — click column to sort.</p>
-      <Leaderboard stats={stats} corePlayers={corePlayers} />
+      <p className="elo-sub">
+        through {date} — click column to sort, a regular for their profile.
+      </p>
+      <Leaderboard
+        stats={stats}
+        corePlayers={corePlayers}
+        affinity={affinity}
+        h2h={records}
+        extras={extras}
+      />
+
+      <h2>hall of fame</h2>
+      <p className="elo-sub">pod superlatives through {date}.</p>
+      <Records records={podRecords} />
 
       <h2>head-to-head</h2>
       <p className="elo-sub">
