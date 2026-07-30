@@ -584,6 +584,25 @@ table.elo-aff td {
   border: 2px solid var(--bg);
 }
 
+/* inline player profile — a leaderboard row expands into this on click */
+.elo-rowclick { cursor: pointer; }
+
+.elo-rowclick--open td { background: var(--code-bg); }
+
+.elo-profile td {
+  background: var(--code-bg);
+  white-space: nowrap;
+}
+
+.elo-profile__grid {
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 0.2em 1.2em;
+  padding: 0.15em 0;
+}
+
+.elo-profile__k { color: var(--muted); }
+
 /* elo race — animated bar race over pod playtime */
 .elo-race {
   position: relative;

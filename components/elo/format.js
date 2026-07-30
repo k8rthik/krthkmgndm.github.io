@@ -30,3 +30,7 @@ export const fmt = (x, d = 0) =>
   });
 
 export const sign = (x, d = 0) => (x >= 0 ? "+" : "") + fmt(x, d);
+
+// drop edition-style subtitles ("Anomia: Party Edition" → "Anomia") but
+// keep true identities like "Brass: Birmingham"
+export const shortName = (g) => g.replace(/:\s*[^:]*edition$/i, "");

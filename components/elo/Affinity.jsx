@@ -1,11 +1,6 @@
 "use client";
 
-import { colorFor, sign } from "./format";
-
-// column headers drop edition-style subtitles ("Anomia: Party Edition" →
-// "Anomia") but keep true identities like "Brass: Birmingham"; the full
-// name stays in the header title attribute and the cell tooltips
-const shortName = (g) => g.replace(/:\s*[^:]*edition$/i, "");
+import { colorFor, sign, shortName } from "./format";
 
 // tint strength tracks |delta| against the biggest swing on the board;
 // near-zero cells stay close to the page background so the extremes pop
