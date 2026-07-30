@@ -584,6 +584,61 @@ table.elo-aff td {
   border: 2px solid var(--bg);
 }
 
+/* elo race — animated bar race over pod playtime */
+.elo-race {
+  position: relative;
+  margin: 0 0 0.4em;
+}
+
+.elo-race__row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 22px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  transition: transform 450ms ease;
+}
+
+.elo-race__name {
+  flex: none;
+  width: 6.5em;
+  text-align: right;
+}
+
+.elo-race__track { flex: 1; }
+
+.elo-race__bar {
+  display: block;
+  height: 12px;
+  min-width: 2px;
+}
+
+.elo-race__val {
+  flex: none;
+  width: 3.5em;
+  color: var(--muted);
+}
+
+.elo-race__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 0 0 0.4em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+}
+
+.elo-race__controls input[type="range"] {
+  flex: 1;
+  max-width: 18em;
+  accent-color: var(--muted);
+}
+
 .elo-tip {
   position: fixed;
   z-index: 10;
