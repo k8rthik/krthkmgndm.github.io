@@ -7,7 +7,6 @@
     "dev:fresh": "rm -rf .next && next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "helix": "node scripts/generate-helix-frames.mjs"
   },
   "dependencies": {
@@ -20,11 +19,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
-  "devDependencies": {
-    "eslint": "^9.39.1",
-    "eslint-config-next": "^15.5.18"
-  },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "sharp": "^0.35.0"
   }
 }
