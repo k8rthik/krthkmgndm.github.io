@@ -1,7 +1,9 @@
 // Derived "fun" views over the play-by-play history: the hall of fame
 // and per-player extras. All respect the as-of date.
-import { cutoffHours } from "./asOf";
-import { fmt, sign } from "./format";
+// explicit .js extensions so these pure modules load in raw Node for the
+// test suite (Next's bundler accepts either form)
+import { cutoffHours } from "./asOf.js";
+import { fmt, sign } from "./format.js";
 
 const START_ELO = 1000;
 
