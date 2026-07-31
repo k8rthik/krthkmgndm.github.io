@@ -58,17 +58,6 @@ function ProfileRow({ player, affinity, h2h, extra }) {
               </span>
             </>
           )}
-          {extra?.bestNight && (
-            <>
-              <span className="elo-profile__k">best night</span>
-              <span>
-                <span className="elo-pos">
-                  {sign(extra.bestNight.delta, 1)}
-                </span>{" "}
-                <span className="elo-dim">{extra.bestNight.date}</span>
-              </span>
-            </>
-          )}
         </div>
       </td>
     </tr>
