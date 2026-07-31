@@ -2,11 +2,13 @@
   "name": "krthkmgndm.github.io",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:fresh": "rm -rf .next && next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "test": "node --test \"tests/**/*.test.js\"",
     "helix": "node scripts/generate-helix-frames.mjs"
   },
   "dependencies": {
