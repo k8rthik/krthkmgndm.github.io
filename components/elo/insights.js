@@ -235,7 +235,7 @@ export function recordsAsOf(events, series, corePlayers, date) {
     rows.push({
       label: "studious",
       holder: student.name,
-      value: `${sign(student.trend * 100, 1)}%`,
+      value: `${sign(student.trend * 100)}%`,
       detail: "score gain per replay",
     });
 
@@ -292,32 +292,24 @@ export function nemesis(h2h) {
   });
 }
 
-// per-player extras the inline profiles need beyond the leaderboard stats:
-// recent form and their single best night
+// per-player extras the inline profiles need beyond the leaderboard
+// stats: recent form
 export function profileExtrasAsOf(events, corePlayers, date, formLen = 5) {
   const core = new Set(corePlayers);
   const results = {};
-  const nights = {};
 
   for (const e of events) {
     if (e.date > date) continue;
     for (const s of e.seats) {
       if (!core.has(s.name)) continue;
       (results[s.name] ?? (results[s.name] = [])).push(s.won);
-      const byNight = nights[s.name] ?? (nights[s.name] = {});
-      byNight[e.date] = (byNight[e.date] ?? 0) + s.delta;
     }
   }
 
   const extras = {};
   for (const n of corePlayers) {
     if (!results[n]) continue;
-    let bestNight = null;
-    for (const [night, delta] of Object.entries(nights[n])) {
-      if (!bestNight || delta > bestNight.delta)
-        bestNight = { date: night, delta };
-    }
-    extras[n] = { form: results[n].slice(-formLen), bestNight };
+    extras[n] = { form: results[n].slice(-formLen) };
   }
   return extras;
 }
