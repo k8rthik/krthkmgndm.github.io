@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTooltip, Tooltip } from "./Tooltip";
 import { colorFor, SLOT_COUNT } from "./format";
 import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
+import { preGameSeries } from "./series";
 import { recordsAsOf, profileExtrasAsOf } from "./insights";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
@@ -40,6 +41,7 @@ export default function EloDashboard({ data }) {
     [events, corePlayers, date],
   );
   const band = useMemo(() => sessionBand(events, date), [events, date]);
+  const chartSeries = useMemo(() => preGameSeries(series, events), [series, events]);
   const sessionGames = useMemo(
     () => new Set(session?.games ?? []),
     [session],
@@ -69,7 +71,7 @@ export default function EloDashboard({ data }) {
         ))}
       </p>
       <RatingChart
-        series={series}
+        series={chartSeries}
         events={events}
         corePlayers={corePlayers}
         tooltip={tooltip}
