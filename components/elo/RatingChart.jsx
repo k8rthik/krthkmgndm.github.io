@@ -100,6 +100,9 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
   };
 
   return (
+    // on narrow screens the wrapper scrolls, opening at the right edge
+    // (row-reverse) so the current standings show first
+    <div className="elo-chartwrap elo-chartwrap--end">
     <svg ref={svgRef} viewBox={`0 0 ${W} ${H}`} className="elo-chart">
       {band && (
         <rect
@@ -194,5 +197,6 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
         onMouseLeave={handleLeave}
       />
     </svg>
+    </div>
   );
 }
