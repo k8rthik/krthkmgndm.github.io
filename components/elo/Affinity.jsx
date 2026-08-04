@@ -1,6 +1,6 @@
 "use client";
 
-import { colorFor, sign, shortName } from "./format";
+import { colorFor, sign, tightName } from "./format";
 
 // tint strength tracks |delta| against the biggest swing on the board;
 // near-zero cells stay close to the page background so the extremes pop
@@ -24,7 +24,7 @@ export default function Affinity({ affinity, corePlayers, tooltip }) {
             <th />
             {games.map((g) => (
               <th key={g} className="elo-aff__colh" title={g}>
-                {shortName(g)}
+                {tightName(g)}
               </th>
             ))}
           </tr>

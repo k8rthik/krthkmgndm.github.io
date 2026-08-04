@@ -38,3 +38,8 @@ export const fmtDuration = (hours) =>
 // drop edition-style subtitles ("Anomia: Party Edition" → "Anomia") but
 // keep true identities like "Brass: Birmingham"
 export const shortName = (g) => g.replace(/:\s*[^:]*edition$/i, "");
+
+// hand-picked initialisms for names too long even shortened — used where
+// space is tightest (affinity column headers); full name stays in title=
+const ABBREV = { "The Old King's Crown": "TOKC" };
+export const tightName = (g) => ABBREV[g] ?? shortName(g);
