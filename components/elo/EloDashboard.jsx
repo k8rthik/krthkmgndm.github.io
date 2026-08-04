@@ -98,15 +98,25 @@ export default function EloDashboard({ data }) {
         highlight={sessionGames}
       />
 
-      <h2>games</h2>
-      <p className="elo-sub">
-        most-played through {date} — actual table time, not box estimates.
-      </p>
-      <GamesTable hIndex={gameTable.hIndex} rows={gameTable.rows} />
-
       <h2>player–game affinity</h2>
       <p className="elo-sub">through {date} — hover for the record.</p>
       <Affinity affinity={affinity} corePlayers={corePlayers} tooltip={tooltip} />
+
+      <h2>head-to-head</h2>
+      <p className="elo-sub">
+        through {date} — click a matchup for its play log.
+      </p>
+      <HeadToHead
+        records={records}
+        corePlayers={corePlayers}
+        tooltip={tooltip}
+        events={events}
+        date={date}
+      />
+
+      <h2>hall of fame</h2>
+      <p className="elo-sub">pod superlatives through {date}.</p>
+      <Records records={podRecords} />
 
       <h2>leaderboard</h2>
       <p className="elo-sub">
@@ -120,21 +130,12 @@ export default function EloDashboard({ data }) {
         extras={extras}
       />
 
-      <h2>hall of fame</h2>
-      <p className="elo-sub">pod superlatives through {date}.</p>
-      <Records records={podRecords} />
-
-      <h2>head-to-head</h2>
+      <h2>games</h2>
       <p className="elo-sub">
-        through {date} — click a matchup for its play log.
+        through {date} — group h-index: {gameTable.hIndex} ({gameTable.hIndex}{" "}
+        games played {gameTable.hIndex}+ times).
       </p>
-      <HeadToHead
-        records={records}
-        corePlayers={corePlayers}
-        tooltip={tooltip}
-        events={events}
-        date={date}
-      />
+      <GamesTable rows={gameTable.rows} />
 
       <Tooltip tip={tooltip.tip} />
     </div>
