@@ -6,6 +6,7 @@ import { colorFor, SLOT_COUNT } from "./format";
 import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
 import { preGameSeries } from "./series";
 import { recordsAsOf, profileExtrasAsOf } from "./insights";
+import { gamesAsOf } from "./games";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
 import Leaderboard from "./Leaderboard";
@@ -13,6 +14,7 @@ import GameScatter from "./GameScatter";
 import HeadToHead from "./HeadToHead";
 import Affinity from "./Affinity";
 import Records from "./Records";
+import GamesTable from "./GamesTable";
 
 export default function EloDashboard({ data }) {
   const tooltip = useTooltip();
@@ -40,6 +42,7 @@ export default function EloDashboard({ data }) {
     () => profileExtrasAsOf(events, corePlayers, date),
     [events, corePlayers, date],
   );
+  const gameTable = useMemo(() => gamesAsOf(events, date), [events, date]);
   const band = useMemo(() => sessionBand(events, date), [events, date]);
   const chartSeries = useMemo(() => preGameSeries(series, events), [series, events]);
   const sessionGames = useMemo(
@@ -94,6 +97,12 @@ export default function EloDashboard({ data }) {
         tooltip={tooltip}
         highlight={sessionGames}
       />
+
+      <h2>games</h2>
+      <p className="elo-sub">
+        most-played through {date} — actual table time, not box estimates.
+      </p>
+      <GamesTable hIndex={gameTable.hIndex} rows={gameTable.rows} />
 
       <h2>player–game affinity</h2>
       <p className="elo-sub">through {date} — hover for the record.</p>
