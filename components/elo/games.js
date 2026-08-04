@@ -1,8 +1,9 @@
 // Game-centric derivations for the games table: the group h-index and
 // per-game play/time/player totals through the selected date.
-// Events are chronological and h is cumulative pod hours, so an event's
-// duration is the gap from the previous event's h (first event: h itself),
-// and an as-of prefix preserves every gap exactly.
+// Input is the payload's playLog — EVERY logged play, rated or not, with
+// its own hours and full participant list (anonymous players included).
+// Unrated plays count toward plays/time/players by design; only the
+// rating math (events/series) ignores them.
 
 // top-N by play count; ties with the last row's count stay in so the
 // cutoff never splits a group of equally-played games
@@ -16,17 +17,15 @@ export function hIndexOf(counts) {
   return h;
 }
 
-export function gamesAsOf(events, date) {
+export function gamesAsOf(playLog, date) {
   const acc = {};
-  let prevH = 0;
-  for (const e of events) {
-    if (e.date > date) break;
+  for (const p of playLog) {
+    if (p.date > date) continue;
     const g =
-      acc[e.game] ?? (acc[e.game] = { plays: 0, hours: 0, players: new Set() });
+      acc[p.game] ?? (acc[p.game] = { plays: 0, hours: 0, players: new Set() });
     g.plays += 1;
-    g.hours += e.h - prevH;
-    for (const s of e.seats) g.players.add(s.name);
-    prevH = e.h;
+    g.hours += p.hours;
+    for (const name of p.players) g.players.add(name);
   }
 
   const rows = Object.entries(acc)

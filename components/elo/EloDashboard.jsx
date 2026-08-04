@@ -42,7 +42,10 @@ export default function EloDashboard({ data }) {
     () => profileExtrasAsOf(events, corePlayers, date),
     [events, corePlayers, date],
   );
-  const gameTable = useMemo(() => gamesAsOf(events, date), [events, date]);
+  const gameTable = useMemo(
+    () => gamesAsOf(data.playLog ?? [], date),
+    [data.playLog, date],
+  );
   const band = useMemo(() => sessionBand(events, date), [events, date]);
   const chartSeries = useMemo(() => preGameSeries(series, events), [series, events]);
   const sessionGames = useMemo(
@@ -132,8 +135,7 @@ export default function EloDashboard({ data }) {
 
       <h2>games</h2>
       <p className="elo-sub">
-        through {date} — group h-index: {gameTable.hIndex} ({gameTable.hIndex}{" "}
-        games played {gameTable.hIndex}+ times).
+        through {date} — h-index: {gameTable.hIndex}.
       </p>
       <GamesTable rows={gameTable.rows} />
 
