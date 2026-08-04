@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { colorFor, isCore, fmt, sign } from "./format";
+import { eventSpanAt } from "./series";
 
 const W = 1000;
 const H = 420;
@@ -57,16 +58,16 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
     const rect = svgRef.current.getBoundingClientRect();
     const hx = ((ev.clientX - rect.left) / rect.width) * W;
     const hours = ((hx - L) / (W - L - R)) * xMax;
-    const best = events.reduce((a, b) =>
-      Math.abs(b.h - hours) < Math.abs(a.h - hours) ? b : a,
-    );
-    setHovered(best);
+    const span = eventSpanAt(events, hours);
+    if (!span) return;
+    const best = span.event;
+    setHovered(span);
     tooltip.show(
       <>
         <div className="elo-tip__title">{best.game}</div>
         <div className="elo-tip__sub">
-          {best.date} · {fmt(best.h)}h in · confidence {best.confidence.toFixed(2)}
-          {best.estimated ? " · est. duration" : ""}
+          {best.date} · {best.estimated ? "~" : ""}
+          {fmt(span.end - span.start, 1)}h
         </div>
         <table>
           <tbody>
@@ -86,6 +87,10 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
       </>,
       ev.clientX,
       ev.clientY,
+      {
+        left: rect.left + (x(span.start) / W) * rect.width,
+        right: rect.left + (x(span.end) / W) * rect.width,
+      },
     );
   };
 
@@ -102,8 +107,10 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
           y={T}
           width={Math.max(x(band.end) - x(band.start), 2)}
           height={H - T - B}
-          style={{ fill: "var(--elo-pos)" }}
+          style={{ fill: "var(--elo-pos)", stroke: "var(--elo-pos)" }}
           fillOpacity="0.08"
+          strokeOpacity="0.35"
+          strokeWidth="1"
         />
       )}
       {yTicks.map((v) => (
@@ -123,7 +130,15 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
       <line x1={L} x2={W - R} y1={y(1000)} y2={y(1000)} className="elo-baseline" />
 
       {lines.map((line) => (
-        <g key={line.name}>
+        <g
+          key={line.name}
+          className="elo-fade"
+          opacity={
+            hovered && !hovered.event.seats.some((s) => s.name === line.name)
+              ? 0.15
+              : 1
+          }
+        >
           <path
             d={line.d}
             fill="none"
@@ -160,12 +175,13 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
       ))}
 
       {hovered && (
-        <line
-          x1={x(hovered.h)}
-          x2={x(hovered.h)}
-          y1={T}
-          y2={H - B}
-          className="elo-baseline"
+        <rect
+          x={x(hovered.start)}
+          y={T}
+          width={Math.max(x(hovered.end) - x(hovered.start), 2)}
+          height={H - T - B}
+          style={{ fill: "var(--fg)" }}
+          fillOpacity="0.06"
         />
       )}
       <rect

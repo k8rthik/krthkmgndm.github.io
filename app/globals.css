@@ -465,6 +465,7 @@ dl.entries dd .links {
 
 .elo-chart text.elo-lbl { fill: var(--fg); }
 
+.elo-fade { transition: opacity 120ms linear; }
 .elo-grid { stroke: var(--rule-soft); stroke-width: 1; }
 .elo-baseline { stroke: var(--rule); stroke-width: 1; }
 .elo-dot { stroke: var(--bg); stroke-width: 2; }
