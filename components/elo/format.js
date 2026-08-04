@@ -31,6 +31,10 @@ export const fmt = (x, d = 0) =>
 
 export const sign = (x, d = 0) => (x >= 0 ? "+" : "") + fmt(x, d);
 
+// hours with one decimal ("29.3h"); sub-hour spans as minutes ("51m")
+export const fmtDuration = (hours) =>
+  hours < 1 ? `${Math.round(hours * 60)}m` : `${fmt(hours, 1)}h`;
+
 // drop edition-style subtitles ("Anomia: Party Edition" → "Anomia") but
 // keep true identities like "Brass: Birmingham"
 export const shortName = (g) => g.replace(/:\s*[^:]*edition$/i, "");
