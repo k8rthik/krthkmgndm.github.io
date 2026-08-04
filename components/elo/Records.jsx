@@ -4,7 +4,7 @@ export default function Records({ records }) {
   if (records.length === 0) return null;
   return (
     <div className="elo-tablewrap">
-      <table className="elo-data">
+      <table className="elo-data elo-records">
         <thead>
           <tr>
             <th>record</th>

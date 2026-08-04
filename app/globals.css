@@ -476,9 +476,51 @@ dl.entries dd .links {
 
 .elo-tablewrap { overflow-x: auto; margin: 0 0 0.5em; }
 
-/* games table halves sit side by side, stacking when narrow */
-.elo-games-cols { display: flex; flex-wrap: wrap; gap: 0 2.5em; align-items: flex-start; }
+/* charts scroll inside their own wrapper when the screen is too narrow
+   to render their labels legibly (see the mobile block below) */
+.elo-chartwrap { overflow-x: auto; margin: 0 0 0.5em; }
+.elo-chartwrap .elo-chart { margin: 0; }
+
+/* games table: two side-by-side halves on wide screens, one plain
+   table (.elo-games-one) on narrow — toggled in the mobile block */
+.elo-games-cols { display: flex; gap: 0 2.5em; align-items: flex-start; }
 .elo-games-cols .elo-tablewrap { flex: 1 1 18em; }
+.elo-games-one { display: none; }
+
+/* Mobile: custom layouts instead of shrunken desktop ones.
+   One breakpoint for the whole dashboard. */
+@media (max-width: 40em) {
+  /* the games halves collapse into the single numbered table; long
+     game names wrap so all five columns fit on screen */
+  .elo-games-cols { display: none; }
+  .elo-games-one { display: block; }
+  .elo-games-one td:nth-child(2) { white-space: normal; }
+
+  /* hall of fame: let the context column wrap instead of truncating */
+  .elo-records td:last-child { white-space: normal; }
+
+  /* horizontally-scrolling tables keep their name column anchored */
+  .elo-lb th:first-child,
+  .elo-lb td:first-child:not([colspan]) {
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 1;
+  }
+  .elo-lb .elo-rowclick--open td:first-child { background: var(--code-bg); }
+  table.elo-aff th.elo-aff__rowh {
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 1;
+  }
+
+  /* charts render at a readable width and scroll; the rating chart
+     starts at its right edge, where the current standings are */
+  .elo-chartwrap { display: flex; }
+  .elo-chartwrap .elo-chart { min-width: 40em; flex: 0 0 auto; }
+  .elo-chartwrap--end { flex-direction: row-reverse; }
+}
 
 .elo-sortbtn {
   background: none;

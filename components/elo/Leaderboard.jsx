@@ -91,7 +91,7 @@ export default function Leaderboard({
 
   return (
     <div className="elo-tablewrap">
-      <table className="elo-data">
+      <table className="elo-data elo-lb">
         <thead>
           <tr>
             {COLUMNS.map((col) => (

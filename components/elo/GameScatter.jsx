@@ -95,6 +95,7 @@ export default function GameScatter({ games, events, tooltip, highlight }) {
     );
 
   return (
+    <div className="elo-chartwrap">
     <svg viewBox={`0 0 ${W} ${H}`} className="elo-chart">
       {[1, 2, 3, 4, 5].map((c) => (
         <g key={c}>
@@ -151,5 +152,6 @@ export default function GameScatter({ games, events, tooltip, highlight }) {
         </text>
       ))}
     </svg>
+    </div>
   );
 }

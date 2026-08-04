@@ -38,9 +38,16 @@ export default function GamesTable({ rows }) {
   const split = Math.ceil(rows.length / 2);
   const right = rows.slice(split);
   return (
-    <div className="elo-games-cols">
-      <Half rows={rows.slice(0, split)} offset={0} />
-      {right.length > 0 && <Half rows={right} offset={split} />}
-    </div>
+    <>
+      <div className="elo-games-cols">
+        <Half rows={rows.slice(0, split)} offset={0} />
+        {right.length > 0 && <Half rows={right} offset={split} />}
+      </div>
+      {/* narrow screens: the same rows as one table, no doubled header —
+          CSS shows exactly one of the two layouts */}
+      <div className="elo-games-one">
+        <Half rows={rows} offset={0} />
+      </div>
+    </>
   );
 }
