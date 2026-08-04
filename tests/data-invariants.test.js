@@ -9,11 +9,14 @@ import { readFileSync } from "node:fs";
 import { affinityAsOf } from "../components/elo/asOf.js";
 
 const data = JSON.parse(readFileSync(new URL("../data/elo.json", import.meta.url)));
-const { events, series, players, corePlayers } = data;
+const { events, series, players, corePlayers, playLog } = data;
 
 describe("payload shape", () => {
   test("required keys are present and non-empty", () => {
-    for (const key of ["meta", "corePlayers", "players", "series", "events", "sessions", "games", "headToHead"]) {
+    // playLog added 2026-08-03: every logged play (rated or not) for the
+    // games table — the two BG-Stats-ignored plays and anonymous seats
+    // count toward plays/time/players there, unlike events
+    for (const key of ["meta", "corePlayers", "players", "series", "events", "sessions", "games", "headToHead", "playLog"]) {
       assert.ok(key in data, `missing key: ${key}`);
     }
     assert.ok(events.length > 0);
@@ -67,6 +70,36 @@ describe("event stream", () => {
         assert.equal(typeof s.won, "boolean", `${e.date} ${e.game}: ${s.name} won flag not boolean`);
       }
     }
+  });
+});
+
+describe("play log", () => {
+  // Contract added 2026-08-03: the games table derives entirely from
+  // playLog, so its shape and its relationship to events are pinned here.
+  test("one entry per processed play, chronological, with the fields gamesAsOf reads", () => {
+    assert.equal(playLog.length, data.meta.playsProcessed);
+    for (let i = 0; i < playLog.length; i++) {
+      const p = playLog[i];
+      assert.match(p.date, /^\d{4}-\d{2}-\d{2}$/, `playLog[${i}]: bad date`);
+      if (i > 0) assert.ok(p.date >= playLog[i - 1].date, `playLog date regressed at ${i}`);
+      assert.ok(typeof p.hours === "number" && p.hours > 0, `playLog[${i}]: bad hours`);
+      assert.ok(typeof p.game === "string" && p.game.length > 0, `playLog[${i}]: bad game`);
+      assert.ok(Array.isArray(p.players) && p.players.length > 0, `playLog[${i}]: bad players`);
+      assert.equal(typeof p.rated, "boolean", `playLog[${i}]: bad rated flag`);
+    }
+  });
+
+  test("rated entries mirror events one-for-one; every event seat is a participant", () => {
+    const rated = playLog.filter((p) => p.rated);
+    assert.equal(rated.length, events.length);
+    rated.forEach((p, i) => {
+      assert.equal(p.game, events[i].game, `playLog/events game mismatch at rated play ${i}`);
+      assert.equal(p.date, events[i].date, `playLog/events date mismatch at rated play ${i}`);
+      const names = new Set(p.players);
+      for (const s of events[i].seats) {
+        assert.ok(names.has(s.name), `${p.date} ${p.game}: seat ${s.name} missing from playLog players`);
+      }
+    });
   });
 });
 

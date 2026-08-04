@@ -56,8 +56,7 @@ export default function Affinity({ affinity, corePlayers, tooltip }) {
                     onMouseMove={(ev) =>
                       tooltip.show(
                         <div>
-                          {n} at {g}: {cell.wins}W–{cell.plays - cell.wins}L,{" "}
-                          {sign(cell.delta, 1)} elo
+                          {n} at {g}: {cell.wins}W–{cell.plays - cell.wins}L
                         </div>,
                         ev.clientX,
                         ev.clientY,
