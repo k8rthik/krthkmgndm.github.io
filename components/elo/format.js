@@ -9,13 +9,16 @@ const SLOT_VARS = [
   "--elo-s4",
   "--elo-s5",
   "--elo-s6",
+  "--elo-s7",
+  "--elo-s8",
+  "--elo-s9",
+  "--elo-s10",
 ];
 
-export const SLOT_COUNT = SLOT_VARS.length;
-
+// Core = present in corePlayers (the engine's 10-play gate). Never capped by
+// the slot count: a new regular must upgrade even if we're out of pinned hues.
 export function isCore(corePlayers, name) {
-  const i = corePlayers.indexOf(name);
-  return i >= 0 && i < SLOT_VARS.length;
+  return corePlayers.indexOf(name) >= 0;
 }
 
 export function colorFor(corePlayers, name) {

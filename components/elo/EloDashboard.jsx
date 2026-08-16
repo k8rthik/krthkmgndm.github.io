@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTooltip, Tooltip } from "./Tooltip";
-import { colorFor, SLOT_COUNT } from "./format";
+import { colorFor } from "./format";
 import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
 import { preGameSeries } from "./series";
 import { recordsAsOf, profileExtrasAsOf } from "./insights";
@@ -66,7 +66,7 @@ export default function EloDashboard({ data }) {
       <h2>rating over pod playtime</h2>
       <p className="elo-sub">regulars (10+ plays) only.</p>
       <p className="elo-legend">
-        {corePlayers.slice(0, SLOT_COUNT).map((n) => (
+        {corePlayers.map((n) => (
           <span key={n} className="elo-key">
             <span
               className="elo-swatch elo-swatch--line"
