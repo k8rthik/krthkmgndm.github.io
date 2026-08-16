@@ -397,6 +397,10 @@ dl.entries dd .links {
   --elo-s4: #1a7a1a;
   --elo-s5: #6a35c8;
   --elo-s6: #b82a2a;
+  --elo-s7: #007a99;
+  --elo-s8: #877205;
+  --elo-s9: #b03aa0;
+  --elo-s10: #96491d;
   --elo-pos: #3333ee;
   --elo-neg: #b82a2a;
 }
@@ -408,6 +412,10 @@ dl.entries dd .links {
   --elo-s4: #3d8f3d;
   --elo-s5: #8a5fe0;
   --elo-s6: #d15252;
+  --elo-s7: #1099b5;
+  --elo-s8: #948718;
+  --elo-s9: #cc55bb;
+  --elo-s10: #c0763a;
   --elo-pos: #5588e8;
   --elo-neg: #d15252;
 }
