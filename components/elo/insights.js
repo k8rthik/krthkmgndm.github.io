@@ -3,7 +3,7 @@
 // explicit .js extensions so these pure modules load in raw Node for the
 // test suite (Next's bundler accepts either form)
 import { cutoffHours } from "./asOf.js";
-import { fmt, sign } from "./format.js";
+import { fmt, sign, scoreOf } from "./format.js";
 
 const START_ELO = 1000;
 
@@ -36,13 +36,6 @@ const UNDERDOG_GAP = 100;
 // trajectory in a single game isn't a record
 const STUDENT_MIN_PLAYS = 3;
 const STUDENT_MIN_GAMES = 3;
-
-// BG Stats exports scores as strings ("22", "" when unscored)
-const scoreOf = (v) => {
-  if (typeof v === "number" && Number.isFinite(v)) return v;
-  if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(+v)) return +v;
-  return null;
-};
 
 // hall-of-fame rows through the given date, regulars only
 export function recordsAsOf(events, series, corePlayers, date) {

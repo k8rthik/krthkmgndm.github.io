@@ -53,6 +53,24 @@ describe("event stream", () => {
     }
   });
 
+  test("seat roles are non-empty strings or null, and some exist", () => {
+    // Contract extended 2026-08-17: seats carry the BG Stats "role"
+    // (faction/side) when the play logged one — the stat sheet's faction
+    // performance derives from it. The pipeline normalizes "" to null.
+    let seen = 0;
+    for (const e of events) {
+      for (const s of e.seats) {
+        assert.ok(
+          s.role === null || (typeof s.role === "string" && s.role.length > 0),
+          `${e.date} ${e.game}: ${s.name} has bad role ${JSON.stringify(s.role)}`,
+        );
+        if (s.role !== null) seen += 1;
+      }
+    }
+    // the pod logs factions for Scythe, TI4, TOKC, Terra Mystica, …
+    assert.ok(seen > 0, "no seat anywhere carries a role — export contract regressed?");
+  });
+
   test("every event has ranks starting at 1 and boolean won flags", () => {
     // `won` is the official BG Stats winner flag, `rank` is the engine's
     // normalized finishing order — and they can disagree. Real cases:
