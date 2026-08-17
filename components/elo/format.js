@@ -34,6 +34,13 @@ export const fmt = (x, d = 0) =>
 
 export const sign = (x, d = 0) => (x >= 0 ? "+" : "") + fmt(x, d);
 
+// BG Stats exports scores as strings ("22", "" when unscored)
+export const scoreOf = (v) => {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.trim() !== "" && !Number.isNaN(+v)) return +v;
+  return null;
+};
+
 // hours with one decimal ("29.3h"); sub-hour spans as minutes ("51m")
 export const fmtDuration = (hours) =>
   hours < 1 ? `${Math.round(hours * 60)}m` : `${fmt(hours, 1)}h`;

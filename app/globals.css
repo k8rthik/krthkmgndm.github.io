@@ -658,6 +658,10 @@ table.elo-aff td {
 
 .elo-profile__k { color: var(--muted); }
 
+/* per-game stat sheet — a games-table row expands into this below the
+   table; reuses the profile k/v grid */
+.elo-gamedetail { margin: 0 0 0.75em; }
+
 /* elo race — animated bar race over pod playtime */
 .elo-race {
   position: relative;

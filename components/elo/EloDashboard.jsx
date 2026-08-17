@@ -135,9 +135,10 @@ export default function EloDashboard({ data }) {
 
       <h2>games</h2>
       <p className="elo-sub">
-        through {date} — h-index: {gameTable.hIndex}.
+        through {date} — h-index: {gameTable.hIndex}. click a game for its
+        stat sheet.
       </p>
-      <GamesTable rows={gameTable.rows} />
+      <GamesTable rows={gameTable.rows} events={events} date={date} />
 
       <Tooltip tip={tooltip.tip} />
     </div>
