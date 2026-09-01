@@ -76,14 +76,14 @@ export function statsAsOf(data, date) {
 }
 
 // elo won or lost per player per game through the given date, plus the
-// games worth showing (most-played among the regulars) and the largest
-// swing for scaling cell tints — mirrors bgelo's affinity card, which
-// this reconciles with exactly at the latest date (seat deltas sum to
-// the career perGame totals)
-export function affinityAsOf(events, corePlayers, date, maxGames = 10) {
-  const core = new Set(corePlayers);
+// games worth showing (most-played among the given players) and the
+// largest swing for scaling cell tints — mirrors bgelo's affinity card,
+// which this reconciles with exactly at the latest date (seat deltas sum
+// to the career perGame totals)
+export function affinityAsOf(events, players, date, maxGames = 10) {
+  const core = new Set(players);
   const perGame = {};
-  for (const n of corePlayers) perGame[n] = {};
+  for (const n of players) perGame[n] = {};
   const playCounts = {};
 
   for (const e of events) {
@@ -106,7 +106,7 @@ export function affinityAsOf(events, corePlayers, date, maxGames = 10) {
     .map(([g]) => g);
 
   let maxAbs = 1;
-  for (const n of corePlayers) {
+  for (const n of players) {
     for (const g of games) {
       const cell = perGame[n][g];
       if (cell) maxAbs = Math.max(maxAbs, Math.abs(cell.delta));
@@ -116,14 +116,14 @@ export function affinityAsOf(events, corePlayers, date, maxGames = 10) {
   return { perGame, games, maxAbs };
 }
 
-// pairwise records among the regulars through the given date — the same
-// finishing-order aggregation bgelo uses for the career matrix
-export function headToHeadAsOf(events, corePlayers, date) {
-  const core = new Set(corePlayers);
+// pairwise records among the given players through the given date — the
+// same finishing-order aggregation bgelo uses for the career matrix
+export function headToHeadAsOf(events, players, date) {
+  const core = new Set(players);
   const records = {};
-  for (const a of corePlayers) {
+  for (const a of players) {
     records[a] = {};
-    for (const b of corePlayers) {
+    for (const b of players) {
       if (b !== a) records[a][b] = { w: 0, l: 0, t: 0 };
     }
   }
