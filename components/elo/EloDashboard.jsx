@@ -137,7 +137,8 @@ export default function EloDashboard({ data }) {
 
       <h2>leaderboard</h2>
       <p className="elo-sub">
-        through {date} — click column to sort, a player for their profile.
+        through {date} — click column to sort, a player for their profile
+        and play log.
       </p>
       <Leaderboard
         stats={stats}
@@ -145,6 +146,8 @@ export default function EloDashboard({ data }) {
         affinity={profileAffinity}
         h2h={profileH2h}
         extras={extras}
+        events={events}
+        date={date}
       />
 
       <h2>games</h2>

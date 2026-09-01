@@ -41,6 +41,10 @@ export const scoreOf = (v) => {
   return null;
 };
 
+// finishing positions ("1st", "2nd", …)
+const ORDINALS = ["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+export const ord = (n) => ORDINALS[n] ?? `${n}th`;
+
 // hours with one decimal ("29.3h"); sub-hour spans as minutes ("51m")
 export const fmtDuration = (hours) =>
   hours < 1 ? `${Math.round(hours * 60)}m` : `${fmt(hours, 1)}h`;

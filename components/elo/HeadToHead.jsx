@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { fmt, sign } from "./format";
-
-const ORDINALS = ["", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
-const ord = (n) => ORDINALS[n] ?? `${n}th`;
+import { fmt, ord, sign } from "./format";
 
 // every rated play (through the as-of date) where both players sat, newest
 // first, scored from the row player's perspective

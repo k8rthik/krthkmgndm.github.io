@@ -8,6 +8,7 @@ import {
   signatureGame,
   nemesis,
   profileExtrasAsOf,
+  playerHistoryAsOf,
 } from "../components/elo/insights.js";
 
 // Build a payload from event definitions the way the real pipeline does:
@@ -226,6 +227,44 @@ describe("nemesis", () => {
   test("returns null with no opponents", () => {
     assert.equal(nemesis({}), null);
     assert.equal(nemesis(undefined), null);
+  });
+});
+
+describe("playerHistoryAsOf", () => {
+  const { events } = buildPayload([
+    { date: "2026-01-01", game: "G1", seats: [["Ann", 1, 80, true, "10"], ["Bob", 2, -30, false], ["Cat", 3, -50, false]] },
+    { date: "2026-01-01", game: "G2", seats: [["Ann", 1, 40, true], ["Bob", 2, -20, false]] },
+    { date: "2026-01-08", game: "G1", seats: [["Cat", 1, 70, true], ["Ann", 2, -40, false, "13"]] },
+    { date: "2026-01-15", game: "G3", seats: [["Bob", 1, 25, true], ["Cat", 2, -25, false]] },
+  ]);
+
+  test("newest first, with running elo from cumulative deltas", () => {
+    // Ann: 1000 +80 → 1080, +40 → 1120, -40 → 1080; string score "10"
+    // becomes 10, an unscored seat becomes null
+    assert.deepEqual(playerHistoryAsOf(events, "Ann", "2026-01-15"), [
+      { date: "2026-01-08", game: "G1", rank: 2, seats: 2, won: false, score: 13, delta: -40, elo: 1080 },
+      { date: "2026-01-01", game: "G2", rank: 1, seats: 2, won: true, score: null, delta: 40, elo: 1120 },
+      { date: "2026-01-01", game: "G1", rank: 1, seats: 3, won: true, score: 10, delta: 80, elo: 1080 },
+    ]);
+  });
+
+  test("skips events the player didn't sit in", () => {
+    // Bob missed the 01-08 game; his elo runs 970 → 950 → 975
+    assert.deepEqual(
+      playerHistoryAsOf(events, "Bob", "2026-01-15").map((p) => [p.date, p.elo]),
+      [["2026-01-15", 975], ["2026-01-01", 950], ["2026-01-01", 970]],
+    );
+  });
+
+  test("the as-of date excludes later events", () => {
+    assert.deepEqual(
+      playerHistoryAsOf(events, "Cat", "2026-01-08").map((p) => p.date),
+      ["2026-01-08", "2026-01-01"],
+    );
+  });
+
+  test("a player with no plays yields an empty history", () => {
+    assert.deepEqual(playerHistoryAsOf(events, "Zoe", "2026-01-15"), []);
   });
 });
 
