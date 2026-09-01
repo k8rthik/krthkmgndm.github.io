@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useState } from "react";
-import { colorFor, isCore, fmt, sign, shortName } from "./format";
-import { signatureGame, nemesis } from "./insights";
+import { Fragment, useMemo, useState } from "react";
+import { colorFor, isCore, fmt, ord, sign, shortName } from "./format";
+import { signatureGame, nemesis, playerHistoryAsOf } from "./insights";
 
 const COLUMNS = [
   { key: "name", label: "player", numeric: false },
@@ -70,10 +70,17 @@ export default function Leaderboard({
   affinity,
   h2h,
   extras,
+  events,
+  date,
 }) {
   // numeric columns start descending, player name ascending
   const [sort, setSort] = useState({ key: "elo", dir: -1 });
   const [open, setOpen] = useState(null); // player name whose profile is open
+
+  const history = useMemo(
+    () => (open ? playerHistoryAsOf(events, open, date) : []),
+    [events, open, date],
+  );
 
   const toggleSort = (col) =>
     setSort((prev) =>
@@ -90,81 +97,123 @@ export default function Leaderboard({
   });
 
   return (
-    <div className="elo-tablewrap">
-      <table className="elo-data elo-lb">
-        <thead>
-          <tr>
-            {COLUMNS.map((col) => (
-              <th
-                key={col.key}
-                aria-sort={
-                  sort.key === col.key
-                    ? sort.dir > 0
-                      ? "ascending"
-                      : "descending"
-                    : undefined
-                }
-              >
-                <button
-                  type="button"
-                  className="elo-sortbtn"
-                  onClick={() => toggleSort(col)}
-                >
-                  {col.label}
-                  {sort.key === col.key ? (sort.dir > 0 ? " ↑" : " ↓") : ""}
-                </button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {ordered.map((p) => {
-            const expanded = open === p.name;
-            return (
-              <Fragment key={p.name}>
-                <tr
-                  className={`elo-rowclick${expanded ? " elo-rowclick--open" : ""}`}
-                  onClick={() =>
-                    setOpen((prev) => (prev === p.name ? null : p.name))
+    <>
+      <div className="elo-tablewrap">
+        <table className="elo-data elo-lb">
+          <thead>
+            <tr>
+              {COLUMNS.map((col) => (
+                <th
+                  key={col.key}
+                  aria-sort={
+                    sort.key === col.key
+                      ? sort.dir > 0
+                        ? "ascending"
+                        : "descending"
+                      : undefined
                   }
                 >
-                  <td>
-                    <span className="elo-pname">
-                      <span
-                        className="elo-swatch"
-                        style={{
-                          background: colorFor(corePlayers, p.name),
-                          opacity: isCore(corePlayers, p.name) ? 1 : 0.5,
-                        }}
-                      />
-                      {p.name}
-                    </span>
-                  </td>
-                  <td>
-                    <strong>{fmt(p.elo)}</strong>{" "}
-                    <span className="elo-dim">±{fmt(p.ci90)}</span>
-                  </td>
-                  <td>{fmt(p.peak)}</td>
-                  <td>{p.plays}</td>
-                  <td>{p.wins}</td>
-                  <td>{fmt(p.winRate * 100)}%</td>
-                  <td className={p.pae >= 0 ? "elo-pos" : "elo-neg"}>
-                    {sign(p.pae, 2)}
-                  </td>
+                  <button
+                    type="button"
+                    className="elo-sortbtn"
+                    onClick={() => toggleSort(col)}
+                  >
+                    {col.label}
+                    {sort.key === col.key ? (sort.dir > 0 ? " ↑" : " ↓") : ""}
+                  </button>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {ordered.map((p) => {
+              const expanded = open === p.name;
+              return (
+                <Fragment key={p.name}>
+                  <tr
+                    className={`elo-rowclick${expanded ? " elo-rowclick--open" : ""}`}
+                    onClick={() =>
+                      setOpen((prev) => (prev === p.name ? null : p.name))
+                    }
+                  >
+                    <td>
+                      <span className="elo-pname">
+                        <span
+                          className="elo-swatch"
+                          style={{
+                            background: colorFor(corePlayers, p.name),
+                            opacity: isCore(corePlayers, p.name) ? 1 : 0.5,
+                          }}
+                        />
+                        {p.name}
+                      </span>
+                    </td>
+                    <td>
+                      <strong>{fmt(p.elo)}</strong>{" "}
+                      <span className="elo-dim">±{fmt(p.ci90)}</span>
+                    </td>
+                    <td>{fmt(p.peak)}</td>
+                    <td>{p.plays}</td>
+                    <td>{p.wins}</td>
+                    <td>{fmt(p.winRate * 100)}%</td>
+                    <td className={p.pae >= 0 ? "elo-pos" : "elo-neg"}>
+                      {sign(p.pae, 2)}
+                    </td>
+                  </tr>
+                  {expanded && (
+                    <ProfileRow
+                      player={p.name}
+                      affinity={affinity}
+                      h2h={h2h}
+                      extra={extras[p.name]}
+                    />
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {open && history.length > 0 && (
+        <>
+          <p className="elo-sub">
+            {open} — every rated play through {date}, newest first.
+          </p>
+          <div className="elo-tablewrap">
+            <table className="elo-data">
+              <thead>
+                <tr>
+                  <th>date</th>
+                  <th style={{ textAlign: "left" }}>game</th>
+                  <th>result</th>
+                  <th>score</th>
+                  <th>Δ elo</th>
+                  <th>elo</th>
                 </tr>
-                {expanded && (
-                  <ProfileRow
-                    player={p.name}
-                    affinity={affinity}
-                    h2h={h2h}
-                    extra={extras[p.name]}
-                  />
-                )}
-              </Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+              </thead>
+              <tbody>
+                {history.map((p, i) => (
+                  <tr key={`${p.date}-${i}`}>
+                    <td>{p.date}</td>
+                    <td style={{ textAlign: "left" }} title={p.game}>
+                      {shortName(p.game)}
+                    </td>
+                    <td className={p.won ? "elo-pos" : "elo-neg"}>
+                      {ord(p.rank)} of {p.seats}
+                    </td>
+                    <td>{p.score !== null ? p.score : "—"}</td>
+                    <td className={p.delta >= 0 ? "elo-pos" : "elo-neg"}>
+                      {sign(p.delta, 1)}
+                    </td>
+                    <td>{fmt(p.elo)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </>
   );
 }
