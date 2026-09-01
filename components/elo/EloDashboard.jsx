@@ -38,9 +38,23 @@ export default function EloDashboard({ data }) {
     () => recordsAsOf(events, series, corePlayers, date),
     [events, series, corePlayers, date],
   );
+  // leaderboard profiles cover everyone, so their inputs derive from the
+  // full roster — the affinity card and h2h matrix stay regulars-only
+  const allPlayers = useMemo(
+    () => data.players.map((p) => p.name),
+    [data.players],
+  );
+  const profileAffinity = useMemo(
+    () => affinityAsOf(events, allPlayers, date),
+    [events, allPlayers, date],
+  );
+  const profileH2h = useMemo(
+    () => headToHeadAsOf(events, allPlayers, date),
+    [events, allPlayers, date],
+  );
   const extras = useMemo(
-    () => profileExtrasAsOf(events, corePlayers, date),
-    [events, corePlayers, date],
+    () => profileExtrasAsOf(events, allPlayers, date),
+    [events, allPlayers, date],
   );
   const gameTable = useMemo(
     () => gamesAsOf(data.playLog ?? [], date),
@@ -123,13 +137,13 @@ export default function EloDashboard({ data }) {
 
       <h2>leaderboard</h2>
       <p className="elo-sub">
-        through {date} — click column to sort, a regular for their profile.
+        through {date} — click column to sort, a player for their profile.
       </p>
       <Leaderboard
         stats={stats}
         corePlayers={corePlayers}
-        affinity={affinity}
-        h2h={records}
+        affinity={profileAffinity}
+        h2h={profileH2h}
         extras={extras}
       />
 

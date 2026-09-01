@@ -289,8 +289,8 @@ export function nemesis(h2h) {
 
 // per-player extras the inline profiles need beyond the leaderboard
 // stats: recent form
-export function profileExtrasAsOf(events, corePlayers, date, formLen = 5) {
-  const core = new Set(corePlayers);
+export function profileExtrasAsOf(events, players, date, formLen = 5) {
+  const core = new Set(players);
   const results = {};
 
   for (const e of events) {
@@ -302,7 +302,7 @@ export function profileExtrasAsOf(events, corePlayers, date, formLen = 5) {
   }
 
   const extras = {};
-  for (const n of corePlayers) {
+  for (const n of players) {
     if (!results[n]) continue;
     extras[n] = { form: results[n].slice(-formLen) };
   }

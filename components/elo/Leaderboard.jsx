@@ -14,8 +14,8 @@ const COLUMNS = [
   { key: "pae", label: "pae", numeric: true },
 ];
 
-// the inline profile a regular's leaderboard row expands into — one
-// label/value line per field
+// the inline profile a leaderboard row expands into — one label/value
+// line per field
 function ProfileRow({ player, affinity, h2h, extra }) {
   const sig = signatureGame(affinity.perGame[player]);
   const nem = nemesis(h2h[player]);
@@ -119,20 +119,13 @@ export default function Leaderboard({
         </thead>
         <tbody>
           {ordered.map((p) => {
-            const expandable = isCore(corePlayers, p.name);
             const expanded = open === p.name;
             return (
               <Fragment key={p.name}>
                 <tr
-                  className={
-                    expandable
-                      ? `elo-rowclick${expanded ? " elo-rowclick--open" : ""}`
-                      : undefined
-                  }
-                  onClick={
-                    expandable
-                      ? () => setOpen((prev) => (prev === p.name ? null : p.name))
-                      : undefined
+                  className={`elo-rowclick${expanded ? " elo-rowclick--open" : ""}`}
+                  onClick={() =>
+                    setOpen((prev) => (prev === p.name ? null : p.name))
                   }
                 >
                   <td>
@@ -141,7 +134,7 @@ export default function Leaderboard({
                         className="elo-swatch"
                         style={{
                           background: colorFor(corePlayers, p.name),
-                          opacity: expandable ? 1 : 0.5,
+                          opacity: isCore(corePlayers, p.name) ? 1 : 0.5,
                         }}
                       />
                       {p.name}
