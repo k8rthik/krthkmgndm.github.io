@@ -287,10 +287,36 @@ export function nemesis(h2h) {
   });
 }
 
+// one player's rated plays through the given date, newest first, each
+// carrying the elo they left the table with (START_ELO plus cumulative
+// deltas — tests/data-invariants.test.js verifies deltas reconcile with
+// the series, so no series lookup is needed)
+export function playerHistoryAsOf(events, name, date) {
+  const rows = [];
+  let elo = START_ELO;
+  for (const e of events) {
+    if (e.date > date) continue;
+    const s = e.seats.find((x) => x.name === name);
+    if (!s) continue;
+    elo += s.delta;
+    rows.push({
+      date: e.date,
+      game: e.game,
+      rank: s.rank,
+      seats: e.seats.length,
+      won: s.won,
+      score: scoreOf(s.score),
+      delta: s.delta,
+      elo,
+    });
+  }
+  return rows.reverse();
+}
+
 // per-player extras the inline profiles need beyond the leaderboard
 // stats: recent form
-export function profileExtrasAsOf(events, corePlayers, date, formLen = 5) {
-  const core = new Set(corePlayers);
+export function profileExtrasAsOf(events, players, date, formLen = 5) {
+  const core = new Set(players);
   const results = {};
 
   for (const e of events) {
@@ -302,7 +328,7 @@ export function profileExtrasAsOf(events, corePlayers, date, formLen = 5) {
   }
 
   const extras = {};
-  for (const n of corePlayers) {
+  for (const n of players) {
     if (!results[n]) continue;
     extras[n] = { form: results[n].slice(-formLen) };
   }
