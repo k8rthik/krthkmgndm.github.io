@@ -17,7 +17,7 @@
   {
     "name": "dr.active",
     "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase accuracy by 15%.",
-    "code": "https://github.com/krthkmgndm/dr.active",
+    "code": "https://github.com/krthk/dr.active",
     "demo": "https://keerthik.dev/demos/dr-active",
     "active": true
   },
@@ -38,7 +38,7 @@
   {
     "name": "BioScrolls",
     "description": "Fine-tuned BioBERT and relation extraction techniques to mine multilingual biomedical literature for neurological gene-disease-drug associations, building a time-indexed knowledge graph with key metrics such as entity frequency, relationship confidence, and trend analysis over time.",
-    "code": "https://github.com/krthkmgndm/gd-lit-miner",
+    "code": "https://github.com/krthk/gd-lit-miner",
     "demo": "https://keerthik.dev/demos/bioscrolls",
     "active": true
   },
@@ -52,7 +52,7 @@
   {
     "name": "folduzz",
     "description": "Developed a deep convolutional generative adversarial neural network to predict protein folding.",
-    "code": "https://github.com/krthkmgndm/protein-gan",
+    "code": "https://github.com/krthk/protein-gan",
     "demo": "https://keerthik.dev/demos/folduzz",
     "active": true
   }
