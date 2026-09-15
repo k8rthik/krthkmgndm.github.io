@@ -1,7 +1,13 @@
 [
   {
+    "name": "TM-Env",
+    "description": "Oracle-verified Terra Mystica self-play environment for long-horizon multi-agent reinforcement learning. Used a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper with legal action masks, seeded determinism, serializable states, and optimized reward formulation on 29M logged transitions for offline RL. Built baseline score from random play through a max^n MCTS self-play agent over a shared policy/value network; 10^6+ parallelized self-play simulations of max^n search with human-regularized RL produced an agent that consistently beats scores from the top 1% of human players.",
+    "links": [],
+    "active": true
+  },
+  {
     "name": "bgelo",
-    "description": "Rating engine for board game night. Decomposes multiplayer results from BG Stats exports into pairwise Glicko matchups with confidence-weighted, complexity-scaled updates, and publishes a session-driven dashboard: rating trajectories, game weights, leaderboard, head-to-head records, and player–game affinity.",
+    "description": "Glicko-1 rating engine for multiplayer board games, decomposing n-player results into 1v1 matchups weighted by game complexity, relative familiarity, elo spread, and duration. Algorithm auto-tuned by backtester that scores pre-play forecasts to tune weighting mechanisms. Currently forecaster accurately calls 62.5% of decisive pairwise matchups against a 50% baseline. Accuracy should improve with data, currently very low sample-size (n<10 for most games).",
     "links": [
       { "label": "stats", "href": "/bgelo" },
       { "label": "blog", "href": "/post/bgelo" }
@@ -10,21 +16,21 @@
   },
   {
     "name": "dr.active",
-    "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase arruracy by 15%. Used Gradio to deploy interactive demo to web.",
+    "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase accuracy by 15%.",
     "code": "https://github.com/krthkmgndm/dr.active",
     "demo": "https://keerthik.dev/demos/dr-active",
     "active": true
   },
   {
     "name": "Ripple",
-    "description": "Users join a local community, complete skill-based challenges with proof verification, and pass them forward to climb local leaderboards. Built for Minnehack 2025, we ranked 4th",
+    "description": "Minnehack 2025 Finalist. Built for the theme “finding community,” users complete community-driven challenges with peer-based verification to climb local leaderboards.",
     "code": "https://github.com/k8rthik/socialchain",
     "demo": "https://socialchain-liart.vercel.app/",
     "active": true
   },
   {
     "name": "GopherGuessr",
-    "description": "Wrote frontend code for a UMN-based location guessing app using JSX, React, and Tailwind to implement leaderboards, user profiles, and gameplay loop UI.",
+    "description": "Developed the frontend for a UMN-based location guessing app using JSX, React, and Tailwind to implement leaderboards, user profiles, and gameplay loop UI. Peaked at over 2,000 weekly active users and 15,000+ total guesses.",
     "code": "https://github.com/Divyesh-Thirukonda/gopherguessr",
     "demo": "https://gopher.nimbus.page",
     "active": true
