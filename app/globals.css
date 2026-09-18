@@ -750,3 +750,77 @@ table.elo-aff td {
     line-height: 1;
   }
 }
+
+/* ---- /ercot — nodal price model ----
+   no new palette: the four load zones are a fixed-order categorical set
+   exactly like the player slots, and above/below lambda is the same
+   pos/neg pair. aliasing means the dark values above keep applying, since
+   var() resolves at use. */
+:root {
+  --erc-z1: var(--elo-s1);
+  --erc-z2: var(--elo-s2);
+  --erc-z3: var(--elo-s4);
+  --erc-z4: var(--elo-s5);
+  --erc-lo: var(--elo-pos);
+  --erc-hi: var(--elo-neg);
+}
+
+.erc-lo { color: var(--erc-lo); }
+.erc-hi { color: var(--erc-hi); }
+
+.elo-chart text.erc-bind { fill: var(--erc-hi); }
+
+.erc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.5em;
+  align-items: baseline;
+  margin: 0 0 0.6em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+}
+
+.erc-controls label { display: inline-block; }
+
+.erc-controls input[type="range"] {
+  display: block;
+  width: 100%;
+  max-width: 26em;
+  accent-color: var(--muted);
+}
+
+.erc-wide { flex: 1 1 22em; }
+
+.erc-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1em;
+  color: var(--muted);
+}
+
+.erc-hour {
+  display: block;
+  margin: 0 0 0.6em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+}
+
+.erc-hour input[type="range"] {
+  width: 18em;
+  max-width: 60%;
+  vertical-align: middle;
+  accent-color: var(--muted);
+}
+
+.erc-spark {
+  display: block;
+  width: 130px;
+  height: 26px;
+}
+
+@media (max-width: 40em) {
+  /* both charts need room for their labels; scroll them instead of
+     shrinking them, same as the elo charts */
+  .erc-controls input[type="range"] { max-width: 100%; }
+  .erc-spark { width: 90px; }
+}
