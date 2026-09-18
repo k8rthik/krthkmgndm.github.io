@@ -16,6 +16,7 @@
   },
   {
     "name": "ercot-nodal",
+    "added": "2026-09-18",
     "description": "Eight-bus security-constrained dispatch model of ERCOT, built to work out how locational prices actually form and where grid-scale or residential storage is worth siting. Each hour is a linear program over a DC network with two generic transmission constraints and reserves co-optimised against a demand curve; every bus price is read off the duals as the system lambda minus its shift-factor-weighted shadow prices. A home-battery fleet is layered on as a price taker, its schedule and the resulting price iterated to a fixed point by the method of successive averages. Verified rather than trusted: shift factors reproduce an independently coded DC power flow, and the price at every bus equals the finite-difference derivative of total dispatch cost with respect to load there. Finds that congestion lives in surplus hours rather than peak ones, and that the cheapest bus on the system is the worst place to put a battery — a binding export constraint moves the price level, not the time spread storage is paid for.",
     "links": [
       { "label": "model", "href": "/ercot" }
