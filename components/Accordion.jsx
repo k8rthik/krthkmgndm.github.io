@@ -5,7 +5,7 @@ import SectionBar from "./SectionBar";
 import AsciiBioArt from "./AsciiBioArt";
 import Colophon from "./Colophon";
 
-export default function Accordion({ projectsSlot, postsSlot }) {
+export default function Accordion({ recent = [], projectsSlot, postsSlot }) {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [postsOpen, setPostsOpen] = useState(false);
 
@@ -24,6 +24,18 @@ export default function Accordion({ projectsSlot, postsSlot }) {
         </div>
         <Colophon />
       </header>
+
+      {recent.length > 0 && (
+        <p className="home__recently">
+          recently:{" "}
+          {recent.map((item, i) => (
+            <span key={item.href}>
+              {i > 0 && " \u00b7 "}
+              <a href={item.href}>{item.label}</a>
+            </span>
+          ))}
+        </p>
+      )}
 
       <SectionBar
         label="projects"

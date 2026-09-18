@@ -824,3 +824,8 @@ table.elo-aff td {
   .erc-controls input[type="range"] { max-width: 100%; }
   .erc-spark { width: 90px; }
 }
+
+/* "recently:" — plain running text between the colophon and the bars */
+.home__recently {
+  margin: 0.6em 0 0.5em;
+}
