@@ -24,6 +24,17 @@
     "active": true
   },
   {
+    "name": "openbsl",
+    "added": "2026-09-29",
+    "description": "Reads Biopac Student Lab physiology recordings (ECG, pulse, heart sounds) without the proprietary BSL software. Exports them to CSV and builds a static browser viewer that reproduces BSL's measurement workflow: drag-select a region, read off Delta T, BPM and peak-to-peak amplitude, label it, and the lesson's data report tables fill themselves in. Beat detection is tested against synthetic ECG with known ground truth. Automatic P/T-wave delineation was benchmarked on real student leads and rejected: on a noisy lead its beat-to-beat jitter was as large as the effects the lab measures.",
+    "links": [
+      { "label": "demo", "href": "/openbsl" },
+      { "label": "code", "href": "https://github.com/k8rthik/openbsl" },
+      { "label": "blog", "href": "/post/openbsl" }
+    ],
+    "active": true
+  },
+  {
     "name": "dr.active",
     "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase accuracy by 15%.",
     "code": "https://github.com/krthk/dr.active",
