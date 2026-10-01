@@ -54,24 +54,24 @@ describe("recordsAsOf", () => {
   const core = ["Ann", "Bob", "Cat"];
   const rows = recordsAsOf(events, series, core, "2026-01-22");
 
-  test("apex: highest rating ever reached, with its date", () => {
-    // Ann's post-play ratings: 1080, 1120, 1150, 1110, 1135 — peak 1150 at h=3
+  test("apex: highest rating ever reached", () => {
+    // Ann's post-play ratings: 1080, 1120, 1150, 1110, 1135 — peak 1150
     assert.deepEqual(row(rows, "apex"), {
-      label: "apex", holder: "Ann", value: "1,150", detail: "2026-01-08",
+      label: "apex", holder: "Ann", value: "1,150", detail: "highest peak elo",
     });
   });
 
-  test("heater: longest win streak with start – end dates", () => {
-    // Ann wins events 1–3, loses 4: streak of 3 spanning the first two dates
+  test("heater: longest win streak", () => {
+    // Ann wins events 1–3, loses 4: streak of 3
     assert.deepEqual(row(rows, "heater"), {
-      label: "heater", holder: "Ann", value: "3 W", detail: "2026-01-01 – 2026-01-08",
+      label: "heater", holder: "Ann", value: "3 W", detail: "longest win streak",
     });
   });
 
-  test("cursed: longest loss streak with start – end dates", () => {
+  test("cursed: longest loss streak", () => {
     // Bob loses all five games
     assert.deepEqual(row(rows, "cursed"), {
-      label: "cursed", holder: "Bob", value: "5 L", detail: "2026-01-01 – 2026-01-22",
+      label: "cursed", holder: "Bob", value: "5 L", detail: "longest losing streak",
     });
   });
 
@@ -113,7 +113,7 @@ describe("recordsAsOf", () => {
     // reached the length first in seat order — Cat (rank 2 processes
     // before rank 3 in the final event)
     assert.deepEqual(row(early, "cursed"), {
-      label: "cursed", holder: "Cat", value: "3 L", detail: "2026-01-01 – 2026-01-08",
+      label: "cursed", holder: "Cat", value: "3 L", detail: "longest losing streak",
     });
   });
 });

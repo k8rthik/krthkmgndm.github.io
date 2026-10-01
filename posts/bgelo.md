@@ -7,9 +7,7 @@ time: 15
 active: 1
 ---
 
-My friends and I log every board game we play in [BG Stats](https://www.bgstatsapp.com/). Once you have a hundred plays on record, the obvious question is: who's actually good? Win counts don't answer it — beating four newbies at CATAN and beating four veterans at Brass are not the same achievement. So I built bgelo, a rating engine that turns the raw export into the [ratings dashboard](/bgelo) on this site.
-
-This post walks the whole machine, component by component: what each piece does, the methodology behind it, and the custom decisions baked into every layer. Nothing here is hand-waved — every constant mentioned is the one in the code.
+My friends and I log every board game we play in [BG Stats](https://www.bgstatsapp.com/). We're also a group of stats nerds who love to compete. The obvious result was going to be a totally-accurate, statistically-backed ranking system between us (with a much too small sample size). Naturally, I built bgelo, a rating engine that turns our raw logs into the ratings you can see [here](/bgelo).
 
 # The pipeline at a glance
 
@@ -43,26 +41,6 @@ viz.py ── dashboard payload (series, events, playLog, …)
 site_sync.py ──▶ data/elo.json ──▶ keerthik.dev/bgelo
 ```
 
-One command (`python3 -m bgelo.refresh`) runs the top two-thirds; `site_sync` ships the payload to this site as a single committed file. The engine is a pure chronological replay — no state survives outside the pass — which is what makes the calibration story later possible.
-
-# Normalizing a play
-
-Before anything can be rated, a play has to become a finishing order. BG Stats gives you three unreliable, overlapping signals — explicit ranks, numeric scores, and a winner flag — and real logs use every combination of them. The normalization cascade:
-
-1. **Explicit ranks**, if every seat has one. The winner flag is checked against them; if someone is flagged winner but not ranked best, the play is *flagged* for review (ranks drive the rating, flags drive win credit) rather than silently resolved.
-2. **Numeric scores** otherwise — highest wins, winner flag breaking exact ties. Scores people typed as arithmetic like `1914-100` are evaluated by an AST-whitelisted evaluator, never `eval`. If the flagged winner contradicts the scores, the play is rejected outright.
-3. **Winner flag alone** as the last resort: winner rank 1, everyone else tied at 2. Weak signal, but honest — a 5-player "I won, don't remember the scores" play still says one true thing.
-
-Anything that can't be normalized — no ranks, no scores, no winner — is rejected with a written reason, not guessed at. Ties are handled with standard competition ranking throughout, and a tie scores 0.5 in the pairwise decomposition below.
-
-# Who gets rated
-
-Two identity decisions took actual iteration to get right.
-
-**Ignored plays.** A play marked *ignored* in BG Stats (a botched teach, an abandoned game) is excluded from rating — but it still happened. The export ships a `playLog` of every logged play alongside the rated events, so the dashboard's games table counts all plays and hours while the ratings only trust clean ones. Play counts match the app; ratings don't get polluted.
-
-**Anonymous players.** The lazy approach — drop the anonymous seat and renormalize ranks — turns out to be a methodology error. In pairwise decomposition, dropping a seat deletes n−1 real comparisons, and worse, it rewrites your record: finish 3rd of 4 behind an anonymous player and the drop promotes you to 2nd of 3, with the loss to the guest erased. The engine now keeps anonymous seats in the decomposition as a **fresh unknown guest**: rating 1000, deviation at the full prior (σ = 180), every single appearance — because the catch-all identity is a different human each time. Losing to a guest costs you, beating one earns a little, and Glicko's g-factor automatically discounts how much a maximum-uncertainty opponent can prove. Nothing about the guest persists: no rating, no leaderboard row, no rating line, and they're barred from the swing records (a fresh 1000 with prior sigma moves fast, and a guest should not hold "biggest gain").
-
 # The rating core: pairwise Glicko-1
 
 Elo is defined for two players; board game night is four to six. The standard decomposition, which bgelo uses, treats every n-player play as all C(n,2) pairwise matchups: finish 2nd of 5 and you beat three people and lost to one, each pair scored like a tiny two-player game. Every pair carries a base weight of 1/(n−1) so a six-player game doesn't move your rating three times as much as a duel.
@@ -79,29 +57,31 @@ The per-pair update is textbook Glicko-1 with one addition — each pair's weigh
 w = W(game) · C(table) · G(margin) · D(duration) / (n − 1)
 ```
 
-Those four multipliers are the next four components.
+Let me explain how each component is calculated.
 
 # W — game weight
 
-Not all games are equal evidence. A round of Anomia should not move ratings like three hours of Indonesia. Each game gets a multiplier in 0.5–1.5 built from two deliberately separate axes:
+Not all games are equally skill-testing. The results from a casual game of Anomia should not move ratings like three hours of Indonesia. Therefore, each game gets a multiplier in 0.5–1.5 built from two axes:
 
-- **Complexity**: the BGG community weight (1–5), fetched once per game from the BGG API and cached. Measures rules overhead and strategic depth.
-- **Skill intensity**: 0–1, hand-curated per game — how much the *outcome* is decided by player decisions versus luck. Every entry carries a written rationale in the source ("Brass — near-deterministic economic engine; only card-draw variance: 0.88", "CATAN — dice-roll income dominates: 0.35", "Megaland — push-your-luck dice, mostly variance: 0.30").
+- **Complexity**: the BGG community weight (1–5) is a popular community method of measuring rules overhead and strategic depth.
+- **Skill intensity**: 0–1, this is a hand-curated rating that attempts to attribute the amount of variance codified by the game rules. For example, a game like Terra Mystica has zero variance after setup, while a streak of lucky rolls can make or break a game of Catan.
 
-The blend is 35% normalized complexity, 65% skill intensity, mapped onto 0.5 + blend. Keeping the axes separate is the point: Diplomacy is mid-weight on BGG but nearly pure skill (0.90); CATAN is as "heavy" as Dominion but dice-dominated. No API knows how lucky a game feels — that number has to be curated, and the backtest later gets to veto the curation.
+The weight is 35% normalized complexity, 65% skill intensity. This is primarily to correct for games with low rules overhead but high strategic depth. Diplomacy is mid-weight on BGG but nearly pure skill (both tactically and politically); CATAN is as "heavy" as Dominion but dice-dominated.
 
 # C — table confidence
 
-A result only reflects skill if the people at the table knew what they were doing. Familiarity is a saturating curve on prior plays of *that game*: f = n/(n+2), so 0 plays → 0, 2 plays → 0.5, 8 plays → 0.8. Two subtleties:
+We can only trust the game results to reflect skill level once players have a chance to familiarize themselves with the rules systems and create intentional strategy decisions. It is very difficult to compare two strategic decisions on the first few plays of a new board game, so I indexed familiarity as a saturating curve on prior plays of *that game*: f = n/(n+2). Two subtleties:
 
 - **Seeding.** BG Stats flags a player's first-ever play of a game. If someone's first *logged* play isn't flagged new, they had unlogged history, so they're seeded with 2 prior plays instead of 0.
-- **The table aggregate** starts from the mean familiarity (base 0.35 + 0.65·mean), then applies a *spread penalty* (−35% at maximal spread): an expert stomping a first-timer proves nearly as little as an all-newbie table, just for a different reason. The result clamps to 0.2–1.0.
+- **The table aggregate** starts from the mean familiarity (base 0.35 + 0.65·mean), then applies a *spread penalty* (−35% at maximal spread). A veteran pubstomping a first-timer proves nothing of their overall skill, just their familiarity with the rules system.
 
-An all-newbie table is rules-fumbling noise; an all-veteran table is where results mean something. Both the update *and* the σ shrink scale with C, so low-confidence games neither move you much nor make the system more sure of you.
+An all-newbie table is dominated by noise, while an all-veteran table is where results mean something. Both the update *and* the σ shrink scale with C, so low-confidence games neither move you much nor make the system more sure of you.
 
 # G — margin of victory
 
-A 20-point win is a rout in CATAN and a rounding error in Indonesia, so raw score gaps are meaningless across games. The scorebook keeps running per-game score statistics (Welford's algorithm), **strictly walk-forward** — a play is only ever judged against scores from *earlier* plays, and the distribution isn't trusted until 6 scores across 2 distinct plays exist. A pair's gap is normalized by that game's typical spread, with 3 game-SDs earning the full multiplier.
+A 6-point win is a brutal victory in Twilight Imperium and a rounding error in Indonesia, so raw score gaps are meaningless across games. The intuition would be that scores must be normalized per game.
+
+The scorebook keeps running walk-forward per-game score statistics (Welford's algorithm). This distribution isn't trusted until 6 scores across 2 distinct plays exist as a baseline and a pair's gap is normalized by that game's typical spread, with 3 game-SDs earning the full multiplier.
 
 The span is deliberately gentle: 0.8–1.2. The first version was 0.6–1.4 and the backtest said it made predictions *worse* — score gaps are noisier than they feel. The gentle version is prediction-neutral, and it stays for a non-statistical reason: it makes updates feel fairer at the table. That trade is allowed exactly because it's provably harmless.
 
