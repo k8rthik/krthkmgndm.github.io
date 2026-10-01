@@ -66,8 +66,11 @@
   },
   {
     "name": "BioScrolls",
-    "description": "Fine-tuned BioBERT and relation extraction techniques to mine multilingual biomedical literature for neurological gene-disease-drug associations, building a time-indexed knowledge graph with key metrics such as entity frequency, relationship confidence, and trend analysis over time.",
-    "links": [],
+    "added": "2026-10-01",
+    "description": "Mines PubMed abstracts on five neurological diseases for gene-disease, drug-disease and gene-drug associations. A BioBERT encoder fine-tuned on BioRED reaches 0.845 micro-F1 on entity recognition and 0.655 typed F1 on relation extraction on the held-out test split, against 0.452 for a co-occurrence baseline. Extractions over 3,033 abstracts become a time-indexed SQLite knowledge graph of 8,921 typed, dated edges, queryable by entity, year and per-year trend. 520 of those abstracts are non-English-language articles, mined through the English titles and abstracts PubMed supplies for them — the models themselves are English-only. End to end, from raw text to normalised entity ids, it scores 0.275 F1: dictionary normalisation, not extraction, is the bottleneck.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/gd-lit-miner" }
+    ],
     "active": true
   },
   {
