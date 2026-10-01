@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAllProjects } from "../../lib/projects";
-import { projectLinks } from "../../lib/projectLinks";
 import ProjectDemo from "../../components/ProjectDemo";
+import ProjectLinks from "../../components/ProjectLinks";
 
 export default function AllProjects() {
   const projects = getAllProjects();
@@ -22,13 +22,7 @@ export default function AllProjects() {
               </dt>
               <dd>
                 {project.description}
-                <span className="links">
-                  {projectLinks(project).map((link, i) => (
-                    <span key={link.label}>
-                      {i > 0 && " "}[<a href={link.href}>{link.label}</a>]
-                    </span>
-                  ))}
-                </span>
+                <ProjectLinks project={project} className="links" />
               </dd>
             </ProjectDemo>
           ))}

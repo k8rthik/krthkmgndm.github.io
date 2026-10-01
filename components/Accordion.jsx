@@ -4,8 +4,14 @@ import { useState } from "react";
 import SectionBar from "./SectionBar";
 import AsciiBioArt from "./AsciiBioArt";
 import Colophon from "./Colophon";
+import { BIO, EMAIL } from "../lib/bio";
 
-export default function Accordion({ recent = [], projectsSlot, postsSlot }) {
+export default function Accordion({
+  recent = [],
+  selectedSlot,
+  projectsSlot,
+  postsSlot,
+}) {
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [postsOpen, setPostsOpen] = useState(false);
 
@@ -15,8 +21,12 @@ export default function Accordion({ recent = [], projectsSlot, postsSlot }) {
         <div>
           <h1 className="home__name">keerthik muruganandam</h1>
 
+          <p className="home__bio">{BIO}</p>
+
           <p className="home__contact">
-            <span className="serif">murug030 [at] umn [dot] edu</span>
+            <a className="serif" href={`mailto:${EMAIL}`}>
+              {EMAIL}
+            </a>
             <br />
             <a href="https://github.com/k8rthik">gh/k8rthik</a> ·{" "}
             <a href="https://www.linkedin.com/in/k8rthik/">in/k8rthik</a>
@@ -37,8 +47,10 @@ export default function Accordion({ recent = [], projectsSlot, postsSlot }) {
         </p>
       )}
 
+      {selectedSlot}
+
       <SectionBar
-        label="projects"
+        label="more projects"
         variant="projects"
         open={projectsOpen}
         onClick={() => setProjectsOpen((v) => !v)}
@@ -48,7 +60,7 @@ export default function Accordion({ recent = [], projectsSlot, postsSlot }) {
         id="panel-projects"
         className="panel"
         role="region"
-        aria-label="projects"
+        aria-label="more projects"
         aria-hidden={!projectsOpen}
       >
         {projectsSlot}

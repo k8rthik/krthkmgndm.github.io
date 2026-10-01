@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ProjectDemo from "./ProjectDemo";
-import { projectLinks } from "../lib/projectLinks";
+import ProjectLinks from "./ProjectLinks";
 
 export default function ProjectsPanel({ projects }) {
   return (
@@ -16,22 +16,7 @@ export default function ProjectsPanel({ projects }) {
                 )}
               </p>
               <p className="entry__desc">{project.description}</p>
-              <span className="entry__links">
-                {projectLinks(project).map((link, i) => (
-                  <span key={link.label}>
-                    {i > 0 && " "}[
-                    <a
-                      href={link.href}
-                      {...(link.href.startsWith("/")
-                        ? {}
-                        : { target: "_blank", rel: "noreferrer" })}
-                    >
-                      {link.label}
-                    </a>
-                    ]
-                  </span>
-                ))}
-              </span>
+              <ProjectLinks project={project} className="entry__links" />
             </ProjectDemo>
           </li>
         ))}

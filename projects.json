@@ -1,7 +1,7 @@
 [
   {
     "name": "TM-Env",
-    "description": "Oracle-verified Terra Mystica self-play environment for long-horizon multi-agent reinforcement learning. Used a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper with legal action masks, seeded determinism, serializable states, and optimized reward formulation on 29M logged transitions for offline RL. Built baseline score from random play through a max^n MCTS self-play agent over a shared policy/value network; 10^6+ parallelized self-play simulations of max^n search with human-regularized RL produced an agent that consistently beats scores from the top 1% of human players.",
+    "description": "Oracle-verified Terra Mystica self-play environment for long-horizon multi-agent reinforcement learning: a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper with legal action masks, seeded determinism and serializable states, plus reward formulation over 29M logged transitions for offline RL. Agents run from a random-play baseline up to max^n MCTS self-play over a shared policy/value network. In progress; no public code or evaluation yet.",
     "links": [],
     "active": true
   },
@@ -26,9 +26,11 @@
   {
     "name": "openbsl",
     "added": "2026-09-29",
+    "featured": 1,
+    "teaser": "I built openbsl to read physiology recordings outside the lab's proprietary software, measure ECG and pulse traces in a browser, and fill report tables. I tested beat detection on synthetic ground truth and kept noisy wave boundaries human-reviewed.",
     "description": "Reads Biopac Student Lab physiology recordings (ECG, pulse, heart sounds) without the proprietary BSL software. Exports them to CSV and builds a static browser viewer that reproduces BSL's measurement workflow: drag-select a region, read off Delta T, BPM and peak-to-peak amplitude, label it, and the lesson's data report tables fill themselves in. Beat detection is tested against synthetic ECG with known ground truth. Automatic P/T-wave delineation was benchmarked on real student leads and rejected: on a noisy lead its beat-to-beat jitter was as large as the effects the lab measures.",
     "links": [
-      { "label": "demo", "href": "/openbsl" },
+      { "label": "case study", "href": "/openbsl" },
       { "label": "code", "href": "https://github.com/k8rthik/openbsl" },
       { "label": "blog", "href": "/post/openbsl" }
     ],
@@ -36,44 +38,50 @@
   },
   {
     "name": "dr.active",
-    "description": "Developed a regression model using RDKit and scikit-learn's random forest to predict binding affinity (MAE) from SMILES string and target name with 70% accuracy. Subsequently implemented a Graph Neural Network to increase accuracy by 15%.",
-    "code": "https://github.com/krthk/dr.active",
-    "demo": "https://keerthik.dev/demos/dr-active",
+    "description": "Prototype: a random-forest regression model (RDKit descriptors, scikit-learn) that predicts protein-ligand binding affinity from a SMILES string and target name, followed by an experimental graph neural network version. No public code or evaluation write-up.",
+    "links": [],
     "active": true
   },
   {
     "name": "Ripple",
+    "featured": 3,
+    "teaser": "A MinneHack 2025 app where people take on community challenges, verify each other's proof and climb local leaderboards. I set up the Next.js app, built the landing page and Google sign-in on Supabase, and deployed it on Vercel.",
     "description": "Minnehack 2025 Finalist. Built for the theme “finding community,” users complete community-driven challenges with peer-based verification to climb local leaderboards.",
-    "code": "https://github.com/k8rthik/socialchain",
-    "demo": "https://socialchain-liart.vercel.app/",
+    "links": [
+      { "label": "demo", "href": "https://socialchain-liart.vercel.app/" },
+      { "label": "code", "href": "https://github.com/k8rthik/socialchain" }
+    ],
     "active": true
   },
   {
     "name": "GopherGuessr",
-    "description": "Developed the frontend for a UMN-based location guessing app using JSX, React, and Tailwind to implement leaderboards, user profiles, and gameplay loop UI. Peaked at over 2,000 weekly active users and 15,000+ total guesses.",
-    "code": "https://github.com/Divyesh-Thirukonda/gopherguessr",
-    "demo": "https://gopher.nimbus.page",
+    "featured": 2,
+    "teaser": "A GeoGuessr-style game for the UMN campus, built by a student team. I worked on the React frontend of the gameplay loop: the guess map, the results and end-of-game dialogs, and the home page's stats carousel.",
+    "description": "GeoGuessr for the UMN Twin Cities campus, built by a student team. I contributed to the React frontend: the play screen's guess map, the results and end-of-game dialogs, and the home page's stats carousel.",
+    "links": [
+      { "label": "play", "href": "https://gopher.nimbus.page" },
+      { "label": "code", "href": "https://github.com/Divyesh-Thirukonda/gopherguessr" }
+    ],
     "active": true
   },
   {
     "name": "BioScrolls",
     "description": "Fine-tuned BioBERT and relation extraction techniques to mine multilingual biomedical literature for neurological gene-disease-drug associations, building a time-indexed knowledge graph with key metrics such as entity frequency, relationship confidence, and trend analysis over time.",
-    "code": "https://github.com/krthk/gd-lit-miner",
-    "demo": "https://keerthik.dev/demos/bioscrolls",
+    "links": [],
     "active": true
   },
   {
     "name": "dr.optimus",
     "description": "Developed a drug optimization pipeline using Deep Q-Networks (DQN), where the agent modifies molecular structures represented as graphs using a Graph Neural Network (GNN)-based environment; evaluated optimization success using QED (Quantitative Estimate of Drug-likeness), binding affinity scores from docking simulations (e.g., AutoDock), and toxicity predictions generated by pre-trained classification models.",
-    "code": "#",
-    "demo": "https://keerthik.dev/demos/dr-optimus",
+    "links": [],
     "active": true
   },
   {
     "name": "folduzz",
-    "description": "Developed a deep convolutional generative adversarial neural network to predict protein folding.",
-    "code": "https://github.com/krthk/protein-gan",
-    "demo": "https://keerthik.dev/demos/folduzz",
+    "description": "Experimental deep convolutional GAN (DCGAN) for generating protein structures.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/protein-gan" }
+    ],
     "active": true
   }
 ]

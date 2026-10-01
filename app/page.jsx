@@ -1,20 +1,24 @@
 import { getAllPosts } from "../lib/posts";
 import { getAllProjects } from "../lib/projects";
 import { recentItems } from "../lib/recent";
+import { selectedWork, archiveProjects } from "../lib/selectedWork";
 import Accordion from "../components/Accordion";
+import SelectedWork from "../components/SelectedWork";
 import ProjectsPanel from "../components/ProjectsPanel";
 import PostsPanel from "../components/PostsPanel";
 
 export default function Home() {
   const posts = getAllPosts().filter((post) => post.active !== 0);
-  const projects = getAllProjects().filter((project) => project.active);
+  const projects = getAllProjects();
+  const active = projects.filter((project) => project.active);
 
-  const recent = recentItems(projects, posts);
+  const recent = recentItems(active, posts);
 
   return (
     <Accordion
       recent={recent}
-      projectsSlot={<ProjectsPanel projects={projects} />}
+      selectedSlot={<SelectedWork projects={selectedWork(projects)} />}
+      projectsSlot={<ProjectsPanel projects={archiveProjects(projects)} />}
       postsSlot={<PostsPanel posts={posts} />}
     />
   );
