@@ -84,27 +84,18 @@ export function recordsAsOf(events, series, corePlayers, date) {
         (winsByGame[s.name] ?? (winsByGame[s.name] = new Set())).add(e.game);
       if (s.rank === 2) seconds[s.name] = (seconds[s.name] ?? 0) + 1;
 
-      const st =
-        streaks[s.name] ??
-        (streaks[s.name] = { win: 0, loss: 0, winStart: null, lossStart: null });
+      const st = streaks[s.name] ?? (streaks[s.name] = { win: 0, loss: 0 });
       if (s.won) {
         st.win += 1;
         st.loss = 0;
-        if (st.win === 1) st.winStart = e.date;
       } else {
         st.loss += 1;
         st.win = 0;
-        if (st.loss === 1) st.lossStart = e.date;
       }
       if (!winStreak || st.win > winStreak.len)
-        winStreak = { name: s.name, len: st.win, start: st.winStart, end: e.date };
+        winStreak = { name: s.name, len: st.win };
       if (!lossStreak || st.loss > lossStreak.len)
-        lossStreak = {
-          name: s.name,
-          len: st.loss,
-          start: st.lossStart,
-          end: e.date,
-        };
+        lossStreak = { name: s.name, len: st.loss };
 
       const gk = `${s.name}|${e.game}`;
       const gr = gameRecords[gk] ?? (gameRecords[gk] = { plays: 0, wins: 0 });
@@ -171,7 +162,6 @@ export function recordsAsOf(events, series, corePlayers, date) {
       const sep = k.indexOf("|"); // game names are freeform, split once
       dominant = {
         name: k.slice(0, sep),
-        game: k.slice(sep + 1),
         rate,
         wins: gr.wins,
         plays: gr.plays,
@@ -180,12 +170,11 @@ export function recordsAsOf(events, series, corePlayers, date) {
   }
 
   const cutoff = cutoffHours(events, date);
-  const hToDate = new Map(events.map((e) => [e.h, e.date]));
   let peak = null;
   for (const n of corePlayers) {
     for (const [h, elo] of series[n] ?? []) {
       if (h > cutoff) break;
-      if (h > 0 && (!peak || elo > peak.elo)) peak = { name: n, elo, h };
+      if (h > 0 && (!peak || elo > peak.elo)) peak = { name: n, elo };
     }
   }
 
@@ -195,28 +184,28 @@ export function recordsAsOf(events, series, corePlayers, date) {
       label: "apex",
       holder: peak.name,
       value: fmt(peak.elo),
-      detail: hToDate.get(peak.h) ?? "",
+      detail: "highest peak elo",
     });
   if (winStreak && winStreak.len > 1)
     rows.push({
       label: "heater",
       holder: winStreak.name,
       value: `${winStreak.len} W`,
-      detail: `${winStreak.start} – ${winStreak.end}`,
+      detail: "longest win streak",
     });
   if (lossStreak && lossStreak.len > 1)
     rows.push({
       label: "cursed",
       holder: lossStreak.name,
       value: `${lossStreak.len} L`,
-      detail: `${lossStreak.start} – ${lossStreak.end}`,
+      detail: "longest losing streak",
     });
   if (dominant)
     rows.push({
       label: "kingpin",
       holder: dominant.name,
       value: `${dominant.wins}–${dominant.plays - dominant.wins}`,
-      detail: dominant.game,
+      detail: "best win rate in one game",
     });
   if (versatile)
     rows.push({
