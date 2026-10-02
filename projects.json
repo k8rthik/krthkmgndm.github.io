@@ -41,8 +41,11 @@
   },
   {
     "name": "dr.active",
-    "description": "Prototype: a random-forest regression model (RDKit descriptors, scikit-learn) that predicts protein-ligand binding affinity from a SMILES string and target name, followed by an experimental graph neural network version. No public code or evaluation write-up.",
-    "links": [],
+    "added": "2026-10-01",
+    "description": "Predicts protein-ligand binding affinity (pChEMBL) from a SMILES string and a target name, over 55,176 ChEMBL activity records across six well-populated, mechanistically different targets. A random forest on RDKit descriptors and Morgan fingerprints reaches RMSE 0.648 log units on a random split and 0.761 on a scaffold-disjoint one, against 1.18 for a per-target-mean baseline. The experimental message-passing GNN loses on every split, and the frequency-weighted scaffold split refutes the one thing it looked good at: its apparent robustness to held-out chemotypes was a property of the split, not the model. Two independent scaffold splits agree to 0.02 log units, so the honest reading is that an unseen scaffold costs about 0.12 log units — and that 0.76 is still a factor of six in concentration, good for ranking rather than for predicting a number. The forest's single most important feature is a target indicator, which is most of what the baseline already captures.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/dr.active" }
+    ],
     "active": true
   },
   {
