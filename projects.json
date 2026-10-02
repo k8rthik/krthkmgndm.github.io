@@ -1,8 +1,11 @@
 [
   {
     "name": "TM-Env",
-    "description": "Oracle-verified Terra Mystica self-play environment for long-horizon multi-agent reinforcement learning: a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper with legal action masks, seeded determinism and serializable states, plus reward formulation over 29M logged transitions for offline RL. Agents run from a random-play baseline up to max^n MCTS self-play over a shared policy/value network. In progress; no public code or evaluation yet.",
-    "links": [],
+    "added": "2026-10-01",
+    "description": "Oracle-verified Terra Mystica environment for long-horizon multi-agent reinforcement learning: a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper over a rules engine that replays 3,552/3,553 tournament games with zero per-move mismatches. Legal action masks are read from the engine's own move generation rather than restated, so a divergent second rulebook is structurally impossible; observations and full game state round-trip to bytes without pickle; rewards are terminal-VP-based with a documented dense variant, plus an offline-RL export over the 20.5M logged human decisions in the corpus (1.20M of them tmtour Div 1-3). Masked random play measures 59.1 VP per player at four seats against 119.0 for the imitation net and 105.2 for max^n MCTS at the champion search config. PettingZoo's api_test, its seed test and Gymnasium's check_env pass at 2-5 players. Building it surfaced a cross-process determinism bug in the engine: bridge spans were unpacked from a frozenset, so hash randomisation flipped their orientation between processes and shifted every later action index.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/bgai" }
+    ],
     "active": true
   },
   {
