@@ -81,7 +81,8 @@
   },
   {
     "name": "folduzz",
-    "description": "Experimental deep convolutional GAN (DCGAN) for generating protein structures.",
+    "added": "2026-10-01",
+    "description": "A DCGAN over 64x64 CA-CA distance matrices cut from 735 PDB structures, kept because of what measuring it carefully showed. It learns real geometry: neighbouring residues land 4.24 A apart against a true 3.81, triangle violations fall to 2.54% where a matrix with the identical distance histogram breaks them on 9.57%, and contact density, contact order and radius of gyration all sit within 10% of the real distributions. It is not memorising either — samples are further from the training set than real held-out windows are. But the output is not a valid distance matrix: symmetry is never learned, 19.5% of the eigenvalue mass is negative, and after MDS embedding only 30.1% of consecutive residues sit at a plausible bond length against 97.6% for real windows. Scoring every checkpoint shows everything geometric plateaus by epoch 60 while only the distance histogram keeps improving — the adversarial objective never asks for geometric consistency, so training longer cannot fix it.",
     "links": [
       { "label": "code", "href": "https://github.com/k8rthik/protein-gan" }
     ],
