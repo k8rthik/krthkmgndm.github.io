@@ -7,9 +7,15 @@ time: 9
 active: 1
 ---
 
-Every Magic booster poses the same choice: open it, or sell it sealed. Opening gets you cards to sell one by one; keeping it gets you whatever the next buyer pays for an unopened pack. A pack's *expected value* (EV) says which is worth more. Sum, over every card the pack could contain, the chance of pulling that card times its price, then compare the total to the sealed price.
+> "Just Buy Singles"
+>
+> — The Professor, Tolarian Community College
 
-I built [pack-ev](https://github.com/k8rthik/pack-ev) to compute that for every booster sold since mid-2021: 39 sets and 94 booster products, priced weekly from a week after release to today. The [dashboard](/packev) has the numbers; this post covers how they're made and what they show.
+Every Magic player has heard some version of that advice, and most learned it the expensive way. A booster costs more than the cards inside are worth, so if you want a specific card, buying it outright beats chasing it through packs. The advice is right often enough that nobody questions it. I wanted to know how right: how much packs lose, whether every kind of booster loses equally, and whether a pack is ever worth opening.
+
+The measure is a pack's *expected value* (EV). Sum, over every card the pack could contain, the chance of pulling that card times its price, then compare the total to what the pack sells for sealed. When EV is below the sealed price, the pack is worth more unopened, and buying it to open loses money on average.
+
+I built [pack-ev](https://github.com/k8rthik/pack-ev) to compute that for every booster sold since mid-2021: 39 sets and 94 booster products, priced weekly from a week after release to today. The short answer is that the slogan holds for Collector Boosters, holds for Play Boosters only if you can't sell bulk, and was wrong about Set Boosters. The [dashboard](/packev) has the numbers; this post covers how they're made and what they show.
 
 # What's in a pack
 
