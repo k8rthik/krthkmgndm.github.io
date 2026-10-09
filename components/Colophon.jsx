@@ -7,13 +7,6 @@ const COMMIT_CACHE_KEY = "colophon-commit-ts";
 const COMMIT_CACHE_AGE_KEY = "colophon-commit-at";
 const COMMIT_CACHE_MS = 60 * 60 * 1000;
 
-function formatTime(date) {
-  return date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function formatRelative(iso) {
   const then = new Date(iso).getTime();
   const now = Date.now();
@@ -34,14 +27,7 @@ function formatRelative(iso) {
 }
 
 export default function Colophon() {
-  const [now, setNow] = useState(null);
   const [commit, setCommit] = useState(null);
-
-  useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 60_000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,7 +45,9 @@ export default function Colophon() {
         );
         if (!res.ok) return;
         const json = await res.json();
-        const iso = json?.[0]?.commit?.author?.date;
+        // committer date, not author date: a rebased commit keeps its original
+        // author date, which made a fresh push read as months old
+        const iso = json?.[0]?.commit?.committer?.date;
         if (!iso) return;
         sessionStorage.setItem(COMMIT_CACHE_KEY, iso);
         sessionStorage.setItem(COMMIT_CACHE_AGE_KEY, String(Date.now()));
@@ -77,7 +65,7 @@ export default function Colophon() {
   return (
     <p className="home__colophon">
       <span className="home__colophon-time">
-        {now ? `${NOW_CITY.toLowerCase()} · ${formatTime(now)}` : NOW_CITY.toLowerCase()}
+        {NOW_CITY.toLowerCase()}
       </span>
       {commit && (
         <span className="home__colophon-commit">
