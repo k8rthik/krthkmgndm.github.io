@@ -14,6 +14,8 @@
   {
     "name": "TM-Env",
     "added": "2026-10-01",
+    "featured": 1,
+    "teaser": "I built TM-Env, a Terra Mystica environment for multi-agent reinforcement learning, on a rules engine that replays 3,552 of 3,553 tournament games move for move. Legal-action masks come from the engine itself, and PettingZoo and Gymnasium API checks pass at 2–5 players.",
     "description": "Oracle-verified Terra Mystica environment for long-horizon multi-agent reinforcement learning: a PettingZoo AEC wrapper and a Gymnasium single-agent wrapper over a rules engine that replays 3,552/3,553 tournament games with zero per-move mismatches. Legal action masks are read from the engine's own move generation rather than restated, so a divergent second rulebook is structurally impossible; observations and full game state round-trip to bytes without pickle; rewards are terminal-VP-based with a documented dense variant, plus an offline-RL export over the 20.5M logged human decisions in the corpus (1.20M of them tmtour Div 1-3). Masked random play measures 59.1 VP per player at four seats against 119.0 for the imitation net and 105.2 for max^n MCTS at the champion search config. PettingZoo's api_test, its seed test and Gymnasium's check_env pass at 2-5 players. Building it surfaced a cross-process determinism bug in the engine: bridge spans were unpacked from a frozenset, so hash randomisation flipped their orientation between processes and shifted every later action index.",
     "links": [
       { "label": "code", "href": "https://github.com/k8rthik/bgai" }
@@ -32,6 +34,8 @@
   {
     "name": "ercot-nodal",
     "added": "2026-09-18",
+    "featured": 2,
+    "teaser": "An eight-bus model of ERCOT dispatch, built to see how locational prices form and where batteries are worth siting. I checked every bus price against the finite-difference cost of serving more load there, and found the cheapest bus is the worst place for storage.",
     "description": "Eight-bus security-constrained dispatch model of ERCOT, built to work out how locational prices actually form and where grid-scale or residential storage is worth siting. Each hour is a linear program over a DC network with two generic transmission constraints and reserves co-optimised against a demand curve; every bus price is read off the duals as the system lambda minus its shift-factor-weighted shadow prices. A home-battery fleet is layered on as a price taker, its schedule and the resulting price iterated to a fixed point by the method of successive averages. Verified rather than trusted: shift factors reproduce an independently coded DC power flow, and the price at every bus equals the finite-difference derivative of total dispatch cost with respect to load there. Finds that congestion lives in surplus hours rather than peak ones, and that the cheapest bus on the system is the worst place to put a battery — a binding export constraint moves the price level, not the time spread storage is paid for.",
     "links": [
       { "label": "model", "href": "/ercot" }
@@ -41,8 +45,6 @@
   {
     "name": "openbsl",
     "added": "2026-09-29",
-    "featured": 1,
-    "teaser": "I built openbsl to read physiology recordings outside the lab's proprietary software, measure ECG and pulse traces in a browser, and fill report tables. I tested beat detection on synthetic ground truth and kept noisy wave boundaries human-reviewed.",
     "description": "Reads Biopac Student Lab physiology recordings (ECG, pulse, heart sounds) without the proprietary BSL software. Exports them to CSV and builds a static browser viewer that reproduces BSL's measurement workflow: drag-select a region, read off Delta T, BPM and peak-to-peak amplitude, label it, and the lesson's data report tables fill themselves in. Beat detection is tested against synthetic ECG with known ground truth. Automatic P/T-wave delineation was benchmarked on real student leads and rejected: on a noisy lead its beat-to-beat jitter was as large as the effects the lab measures.",
     "links": [
       { "label": "case study", "href": "/openbsl" },
@@ -62,8 +64,6 @@
   },
   {
     "name": "Ripple",
-    "featured": 3,
-    "teaser": "A MinneHack 2025 app where people take on community challenges, verify each other's proof and climb local leaderboards. I set up the Next.js app, built the landing page and Google sign-in on Supabase, and deployed it on Vercel.",
     "description": "Minnehack 2025 Finalist. Built for the theme “finding community,” users complete community-driven challenges with peer-based verification to climb local leaderboards.",
     "links": [
       { "label": "demo", "href": "https://socialchain-liart.vercel.app/" },
@@ -73,7 +73,7 @@
   },
   {
     "name": "GopherGuessr",
-    "featured": 2,
+    "featured": 3,
     "teaser": "A GeoGuessr-style game for the UMN campus, built by a student team. I worked on the React frontend of the gameplay loop: the guess map, the results and end-of-game dialogs, and the home page's stats carousel.",
     "description": "GeoGuessr for the UMN Twin Cities campus, built by a student team. I contributed to the React frontend: the play screen's guess map, the results and end-of-game dialogs, and the home page's stats carousel.",
     "links": [
