@@ -28,8 +28,8 @@ export default function Accordion({
           <p className="home__contact">
             <a className="serif" href={`mailto:${EMAIL}`}>
               {EMAIL}
-            </a>
-            <br />
+            </a>{" "}
+            ·{" "}
             <a href="https://github.com/k8rthik">gh/k8rthik</a> ·{" "}
             <a href="https://www.linkedin.com/in/k8rthik/">in/k8rthik</a>
           </p>
