@@ -1050,3 +1050,71 @@ table.elo-aff td {
 .home__recently {
   margin: 0.6em 0 0.5em;
 }
+
+/* ---- /packev — booster pack EV ----
+   the three booster roles are a fixed categorical set, so they alias the
+   elo slots like the ercot zones do; above/below the sealed price reuses
+   the pos/neg pair. */
+:root {
+  --pev-main: var(--elo-s1);
+  --pev-set: var(--elo-s4);
+  --pev-coll: var(--elo-s2);
+}
+
+.pev-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 0.6em;
+  align-items: baseline;
+  margin: 0 0 0.8em;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+}
+
+.pev-controls button[aria-pressed="true"] { font-weight: bold; }
+
+.pev-panels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.2em;
+}
+
+.pev-panel {
+  flex: 1 1 16em;
+  min-width: 0;
+  margin: 0;
+}
+
+.pev-panel figcaption,
+.pev-stats {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+.pev-key {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  margin-right: 0.45em;
+}
+
+.pev-dim { color: var(--dim); }
+
+/* row picker: a button that reads as a link */
+.pev-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+table.elo-data.pev-list td:nth-child(2) { text-align: left; }
+.pev-list tr[aria-selected="true"] td { background: var(--code-bg); }
+
+/* the full list is long; it scrolls inside its own box */
+.pev-scroll { max-height: 30em; overflow-y: auto; }
