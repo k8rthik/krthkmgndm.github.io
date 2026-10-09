@@ -113,10 +113,12 @@ describe("projects.json", () => {
     }
   });
 
-  test("selected work leads with openbsl and has two or three entries", () => {
-    const selected = selectedWork(projects);
-    assert.equal(selected[0]?.name, "openbsl");
-    assert.ok(selected.length >= 2 && selected.length <= 3, `got ${selected.length}`);
+  test("selected work is TM-Env, ercot-nodal, GopherGuessr in that order", () => {
+    // a dropped teaser or dead link silently demotes a project to the archive
+    assert.deepEqual(
+      selectedWork(projects).map((p) => p.name),
+      ["TM-Env", "ercot-nodal", "GopherGuessr"]
+    );
   });
 
   test("featured ranks are unique", () => {
