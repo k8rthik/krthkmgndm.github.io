@@ -2,7 +2,7 @@
   {
     "name": "pack-ev",
     "added": "2026-10-09",
-    "teaser": "Expected value of every Magic: The Gathering booster sold since 2021, priced weekly against its sealed price. Collector Boosters beat sealed about half the time at launch and one time in nine three months later.",
+    "teaser": "Expected value of every Magic: The Gathering booster sold since 2021, priced weekly against its sealed price. Collector Boosters beat sealed about half the time at launch and about one time in ten three months later.",
     "description": "Prices every card a Magic: The Gathering booster can contain, weighted by Wizards of the Coast's published slot odds, and compares the result with the sealed pack's price for 39 sets and 94 booster products, week by week since June 2021. The full value distribution of a pack comes from convolving per-slot distributions on a one-cent grid. Weekly TCGplayer history lives in a Parquet store that is backfilled once per product and then updated incrementally, so refreshing every set takes about five minutes. Finds that Collector Boosters are a coin flip at launch and worth a median 76% of their sealed price by year two, while Play Boosters sit at break-even only if bulk commons can actually be sold.",
     "links": [
       { "label": "dashboard", "href": "/packev" },
