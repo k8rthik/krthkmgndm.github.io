@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
-import { BIO } from "../lib/bio";
+import { BIO, DOMAIN, NAME } from "../lib/config";
 
-// plain text on white, same as the site: name, the visible bio, the domain
-export const alt = "Keerthik Muruganandam: software for biological data and real-world workflows";
+// plain text on white, same as the site: name, the visible bio, the domain.
+// Colors are literal because the image renderer can't read CSS variables.
+export const alt = `${NAME}: ${BIO}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -22,10 +23,10 @@ export default function OpengraphImage() {
         }}
       >
         <div style={{ fontSize: 64, fontWeight: 700, marginBottom: 36 }}>
-          keerthik muruganandam
+          {NAME}
         </div>
         <div style={{ fontSize: 40, lineHeight: 1.4, maxWidth: 1000 }}>{BIO}</div>
-        <div style={{ fontSize: 30, color: "#0000ee", marginTop: 56 }}>keerthik.dev</div>
+        <div style={{ fontSize: 30, color: "#0000ee", marginTop: 56 }}>{DOMAIN}</div>
       </div>
     ),
     size

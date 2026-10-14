@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { getEloData } from "../../lib/elo";
 import EloDashboard from "../../components/elo/EloDashboard";
+import BackLink from "../../components/BackLink";
 
 export const metadata = {
-  title: "bgelo · keerthik.dev",
+  title: "bgelo",
   description: "board-game elo ratings for the pod, from BG Stats plays",
 };
 
-export default function Playing() {
+export default function Bgelo() {
   const data = getEloData();
 
   return (
@@ -23,9 +24,7 @@ export default function Playing() {
         <Link href="/post/bgelo">the write-up</Link>.
       </p>
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }

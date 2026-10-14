@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import DOMPurify from "isomorphic-dompurify";
 import { getPostBySlug, getPostSlugs } from "../../../lib/posts";
-import { parseLocalDate } from "../../../lib/dates";
+import { formatPostDate } from "../../../lib/dates";
+import BackLink from "../../../components/BackLink";
 
 export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
@@ -23,7 +23,7 @@ export default async function Post({ params }) {
       <header>
         <h1>{post.title}</h1>
         <p className="dateline">
-          {parseLocalDate(post.date).toLocaleDateString()} · {post.time} minute read
+          {formatPostDate(post.date)} · {post.time} minute read
         </p>
       </header>
 
@@ -33,9 +33,7 @@ export default async function Post({ params }) {
 
       <hr />
 
-      <Link href="/all-posts" className="back">
-        ← all writing
-      </Link>
+      <BackLink href="/all-posts">all writing</BackLink>
     </main>
   );
 }

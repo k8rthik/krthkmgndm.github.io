@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { normalizeEntry } from "../../../lib/devlogSchema";
 import { readStore, writeStore } from "../../../lib/devlogStore";
+import { serverEnv } from "../../../lib/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,11 +25,13 @@ function json(body, status = 200) {
 }
 
 function config() {
-  const password = process.env.DEVLOG_PASSWORD;
-  const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPO || "k8rthik/krthkmgndm.github.io";
-  const branch = process.env.GITHUB_BRANCH || "main";
-  return { password, token, repo, branch };
+  const env = serverEnv();
+  return {
+    password: env.devlogPassword,
+    token: env.githubToken,
+    repo: env.githubRepo,
+    branch: env.githubBranch,
+  };
 }
 
 function newId(date) {

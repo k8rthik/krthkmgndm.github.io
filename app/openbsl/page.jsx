@@ -1,10 +1,11 @@
 import Link from "next/link";
+import BackLink from "../../components/BackLink";
 
 const DEMO_URL = "https://k8rthik.github.io/openbsl/";
 const REPO_URL = "https://github.com/k8rthik/openbsl";
 
 export const metadata = {
-  title: "openbsl · keerthik.dev",
+  title: "openbsl",
   description:
     "Open Biopac Student Lab recordings without the proprietary software: CSV export and a browser viewer that fills in the lab's data report as you measure.",
 };
@@ -75,9 +76,7 @@ export default function OpenBsl() {
         <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub</a>.
       </p>
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }

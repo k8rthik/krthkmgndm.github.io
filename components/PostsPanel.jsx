@@ -1,14 +1,5 @@
 import Link from "next/link";
-import { parseLocalDate } from "../lib/dates";
-
-function formatDate(iso) {
-  const d = parseLocalDate(iso);
-  return d.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+import { formatPostDate } from "../lib/dates";
 
 export default function PostsPanel({ posts }) {
   if (posts.length === 0) {
@@ -27,7 +18,7 @@ export default function PostsPanel({ posts }) {
             <p className="entry__title">
               <Link href={`/post/${post.slug}`}>{post.title}</Link>
               <span className="entry__meta">
-                {formatDate(post.date)} · {post.time} min
+                {formatPostDate(post.date)} · {post.time} min
               </span>
             </p>
             {post.description && (

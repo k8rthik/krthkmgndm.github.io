@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { getAllPosts } from "../../lib/posts";
-import { parseLocalDate } from "../../lib/dates";
+import { getPublishedPosts } from "../../lib/posts";
+import { formatPostDate } from "../../lib/dates";
+import BackLink from "../../components/BackLink";
 
 export default function AllPosts() {
-  const posts = getAllPosts().filter((post) => post.active !== 0);
+  const posts = getPublishedPosts();
 
   return (
     <main className="page">
@@ -21,7 +22,7 @@ export default function AllPosts() {
               <dt>
                 <Link href={`/post/${post.slug}`}>{post.title}</Link>
                 <span className="meta">
-                  {parseLocalDate(post.date).toLocaleDateString()} · {post.time} min
+                  {formatPostDate(post.date)} · {post.time} min
                 </span>
               </dt>
               <dd>{post.description}</dd>
@@ -32,9 +33,7 @@ export default function AllPosts() {
 
       <hr />
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }

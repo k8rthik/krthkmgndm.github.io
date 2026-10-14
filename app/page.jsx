@@ -1,23 +1,23 @@
-import { getAllPosts } from "../lib/posts";
+import { getPublishedPosts } from "../lib/posts";
 import { getAllProjects } from "../lib/projects";
 import { recentItems } from "../lib/recent";
 import { selectedWork, archiveProjects } from "../lib/selectedWork";
 import { getDevlog } from "../lib/devlog";
-import Accordion from "../components/Accordion";
+import HomeLayout from "../components/HomeLayout";
 import SelectedWork from "../components/SelectedWork";
 import ProjectsPanel from "../components/ProjectsPanel";
 import PostsPanel from "../components/PostsPanel";
 import DevlogPanel from "../components/DevlogPanel";
 
 export default function Home() {
-  const posts = getAllPosts().filter((post) => post.active !== 0);
+  const posts = getPublishedPosts();
   const projects = getAllProjects();
   const devlog = getDevlog();
 
   const recent = recentItems(projects, posts);
 
   return (
-    <Accordion
+    <HomeLayout
       recent={recent}
       selectedSlot={<SelectedWork projects={selectedWork(projects)} />}
       projectsSlot={<ProjectsPanel projects={archiveProjects(projects)} />}

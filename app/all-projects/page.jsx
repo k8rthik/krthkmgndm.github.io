@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { getAllProjects } from "../../lib/projects";
 import ProjectLinks from "../../components/ProjectLinks";
+import BackLink from "../../components/BackLink";
 
 export default function AllProjects() {
   const projects = getAllProjects();
@@ -30,9 +30,7 @@ export default function AllProjects() {
 
       <hr />
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }

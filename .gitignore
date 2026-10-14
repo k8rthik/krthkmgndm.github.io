@@ -64,3 +64,7 @@ next-env.d.ts
 *.njsproj
 *.sln
 *.sw?
+
+# env files (the documented template is committed)
+.env*
+!.env.example

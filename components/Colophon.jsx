@@ -1,30 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { NOW_CITY, GITHUB_REPO } from "../lib/now";
+import { CITY, GITHUB_REPO } from "../lib/config";
+import { formatRelative } from "../lib/dates";
 
 const COMMIT_CACHE_KEY = "colophon-commit-ts";
 const COMMIT_CACHE_AGE_KEY = "colophon-commit-at";
 const COMMIT_CACHE_MS = 60 * 60 * 1000;
-
-function formatRelative(iso) {
-  const then = new Date(iso).getTime();
-  const now = Date.now();
-  const diff = Math.max(0, now - then);
-  const minute = 60_000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  if (diff < hour) {
-    const m = Math.max(1, Math.floor(diff / minute));
-    return `${m}m ago`;
-  }
-  if (diff < day) {
-    const h = Math.floor(diff / hour);
-    return `${h}h ago`;
-  }
-  const d = Math.floor(diff / day);
-  return `${d}d ago`;
-}
 
 export default function Colophon() {
   const [commit, setCommit] = useState(null);
@@ -65,7 +47,7 @@ export default function Colophon() {
   return (
     <p className="home__colophon">
       <span className="home__colophon-time">
-        {NOW_CITY.toLowerCase()}
+        {CITY.toLowerCase()}
       </span>
       {commit && (
         <span className="home__colophon-commit">

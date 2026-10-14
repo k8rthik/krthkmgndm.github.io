@@ -57,7 +57,7 @@ export default function EloDashboard({ data }) {
     [events, allPlayers, date],
   );
   const gameTable = useMemo(
-    () => gamesAsOf(data.playLog ?? [], date),
+    () => gamesAsOf(data.playLog, date),
     [data.playLog, date],
   );
   const band = useMemo(() => sessionBand(events, date), [events, date]);

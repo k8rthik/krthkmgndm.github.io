@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { getPackEvData } from "../../lib/packev";
 import PackEvDashboard from "../../components/packev/PackEvDashboard";
+import BackLink from "../../components/BackLink";
 
 export const metadata = {
-  title: "pack ev · keerthik.dev",
+  title: "pack ev",
   description:
     "Expected value of Magic: The Gathering booster packs against their sealed price, for 39 sets since 2021.",
 };
@@ -27,9 +28,7 @@ export default function PackEv() {
         <Link href="/post/pack-ev">the write-up</Link>.
       </p>
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }

@@ -1,102 +1,53 @@
 "use client";
 
 import { useState } from "react";
-import { normalizeEntry } from "../lib/devlogSchema";
-
-function todayISO() {
-  const d = new Date();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${m}-${day}`;
-}
-
-function shortDate(iso) {
-  // 2026-07-16 -> 2026.07.16 (commit-log feel, no locale surprises)
-  return typeof iso === "string" ? iso.replace(/-/g, ".") : iso;
-}
-
-async function callApi(body) {
-  const res = await fetch("/api/devlog", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  let data = {};
-  try {
-    data = await res.json();
-  } catch {
-    /* ignore */
-  }
-  if (!res.ok) throw new Error(data.error || `request failed (${res.status})`);
-  return data;
-}
+import DevlogEditor from "./DevlogEditor";
+import { devlogApi } from "../lib/devlogClient";
+import { compareEntries } from "../lib/devlogSchema";
+import { dottedDate } from "../lib/dates";
 
 export default function DevlogPanel({ entries: initial }) {
   const [entries, setEntries] = useState(initial || []);
   const [open, setOpen] = useState(false); // editor drawer open
-  const [authed, setAuthed] = useState(false);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(null); // set once verified
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const authed = password !== null;
 
-  const [date, setDate] = useState(todayISO());
-  const [bodyText, setBodyText] = useState("");
-  const [image, setImage] = useState("");
-
-  async function unlock(e) {
-    e.preventDefault();
+  // Run an API call with the busy flag and message line handled; resolves
+  // true on success so the editor knows whether to clear its fields.
+  async function run(call, successMsg) {
     setBusy(true);
     setMsg("");
     try {
-      await callApi({ action: "verify", password });
-      setAuthed(true);
-      setMsg("");
+      await call();
+      setMsg(successMsg);
+      return true;
     } catch (err) {
       setMsg(err.message);
+      return false;
     } finally {
       setBusy(false);
     }
   }
 
-  async function addEntry(e) {
-    e.preventDefault();
-    const check = normalizeEntry({ date, body: bodyText, image });
-    if (!check.ok) {
-      setMsg(check.error);
-      return;
-    }
-    setBusy(true);
-    setMsg("");
-    try {
-      const { entry } = await callApi({ action: "add", password, entry: check.entry });
-      setEntries((prev) =>
-        [entry, ...prev].sort((a, b) => new Date(b.date) - new Date(a.date))
-      );
-      setBodyText("");
-      setImage("");
-      setDate(todayISO());
-      setMsg("committed — live on the site after the next rebuild (~30s).");
-    } catch (err) {
-      setMsg(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
+  const unlock = (pw) =>
+    run(async () => {
+      await devlogApi.verify(pw);
+      setPassword(pw);
+    }, "");
 
-  async function removeEntry(id) {
-    if (!authed) return;
-    setBusy(true);
-    setMsg("");
-    try {
-      await callApi({ action: "delete", password, id });
+  const add = (draft) =>
+    run(async () => {
+      const entry = await devlogApi.add(password, draft);
+      setEntries((prev) => [entry, ...prev].toSorted(compareEntries));
+    }, "committed — live on the site after the next rebuild (~30s).");
+
+  const remove = (id) =>
+    run(async () => {
+      await devlogApi.remove(password, id);
       setEntries((prev) => prev.filter((x) => x.id !== id));
-      setMsg("removed — live after the next rebuild.");
-    } catch (err) {
-      setMsg(err.message);
-    } finally {
-      setBusy(false);
-    }
-  }
+    }, "removed — live after the next rebuild.");
 
   return (
     <aside className="devlog" aria-label="devlog">
@@ -116,50 +67,14 @@ export default function DevlogPanel({ entries: initial }) {
       </div>
 
       {open && (
-        <div className="devlog__editor">
-          {!authed ? (
-            <form onSubmit={unlock} className="devlog__form">
-              <input
-                type="password"
-                className="devlog__input"
-                placeholder="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-              />
-              <button type="submit" className="devlog__btn" disabled={busy}>
-                unlock
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={addEntry} className="devlog__form">
-              <input
-                type="date"
-                className="devlog__input"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <textarea
-                className="devlog__input devlog__textarea"
-                placeholder="what happened…"
-                value={bodyText}
-                onChange={(e) => setBodyText(e.target.value)}
-                rows={3}
-              />
-              <input
-                type="url"
-                className="devlog__input"
-                placeholder="image url (optional)"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-              />
-              <button type="submit" className="devlog__btn" disabled={busy}>
-                {busy ? "committing…" : "commit entry"}
-              </button>
-            </form>
-          )}
-          {msg && <p className="devlog__msg">{msg}</p>}
-        </div>
+        <DevlogEditor
+          authed={authed}
+          busy={busy}
+          msg={msg}
+          onUnlock={unlock}
+          onAdd={add}
+          onInvalid={setMsg}
+        />
       )}
 
       {entries.length === 0 ? (
@@ -172,7 +87,7 @@ export default function DevlogPanel({ entries: initial }) {
                 •
               </span>
               <div className="devlog__body">
-                <span className="devlog__date">{shortDate(entry.date)}</span>
+                <span className="devlog__date">{dottedDate(entry.date)}</span>
                 <p className="devlog__text">{entry.body}</p>
                 {entry.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -187,7 +102,7 @@ export default function DevlogPanel({ entries: initial }) {
                   <button
                     type="button"
                     className="devlog__del"
-                    onClick={() => removeEntry(entry.id)}
+                    onClick={() => remove(entry.id)}
                     disabled={busy}
                   >
                     [rm]

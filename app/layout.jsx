@@ -1,17 +1,17 @@
 import { Analytics } from "@vercel/analytics/react";
 import ThemeToggle from "../components/ThemeToggle";
 import HomeLink from "../components/HomeLink";
-import { BIO, SITE_TITLE, SITE_URL } from "../lib/bio";
+import { BIO, DOMAIN, SITE_TITLE, SITE_URL, TITLE_TEMPLATE } from "../lib/config";
 import "./globals.css";
 
 // share previews use app/opengraph-image.jsx; X falls back to og:image
 export const metadata = {
   metadataBase: new URL(SITE_URL),
-  title: SITE_TITLE,
+  title: { default: SITE_TITLE, template: TITLE_TEMPLATE },
   description: BIO,
   openGraph: {
     type: "website",
-    siteName: "keerthik.dev",
+    siteName: DOMAIN,
     title: SITE_TITLE,
     description: BIO,
   },

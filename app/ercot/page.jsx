@@ -1,8 +1,8 @@
-import Link from "next/link";
 import ErcotModel from "../../components/ercot/ErcotModel";
+import BackLink from "../../components/BackLink";
 
 export const metadata = {
-  title: "ercot nodal prices · keerthik.dev",
+  title: "ercot nodal prices",
   description:
     "An eight-bus ERCOT dispatch model: how locational prices, congestion and the best place to site storage move as a home-battery fleet scales.",
 };
@@ -202,9 +202,7 @@ export default function Ercot() {
         pricing, not an artefact.
       </p>
 
-      <Link href="/" className="back">
-        ← back home
-      </Link>
+      <BackLink />
     </main>
   );
 }
