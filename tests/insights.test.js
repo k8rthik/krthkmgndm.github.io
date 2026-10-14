@@ -20,10 +20,10 @@ const row = (rows, label) => rows.find((r) => r.label === label);
 describe("recordsAsOf", () => {
   // Ann: W W W L W · Bob: L L L L L (three 2nds) · Cat: L L L W
   const { events, series } = buildPayload([
-    { date: "2026-01-01", game: "G1", seats: [["Ann", 1, 80, true, "10"], ["Bob", 2, -30, false, "8"], ["Cat", 3, -50, false, "6"]] },
+    { date: "2026-01-01", game: "G1", seats: [["Ann", 1, 80, true, 10], ["Bob", 2, -30, false, 8], ["Cat", 3, -50, false, 6]] },
     { date: "2026-01-01", game: "G2", seats: [["Ann", 1, 40, true], ["Bob", 2, -20, false], ["Cat", 3, -20, false]] },
-    { date: "2026-01-08", game: "G1", seats: [["Ann", 1, 30, true, "12"], ["Cat", 2, -10, false, "9"], ["Bob", 3, -20, false, "5"]] },
-    { date: "2026-01-15", game: "G1", seats: [["Cat", 1, 70, true, "14"], ["Ann", 2, -40, false, "13"], ["Bob", 3, -30, false, "4"]] },
+    { date: "2026-01-08", game: "G1", seats: [["Ann", 1, 30, true, 12], ["Cat", 2, -10, false, 9], ["Bob", 3, -20, false, 5]] },
+    { date: "2026-01-15", game: "G1", seats: [["Cat", 1, 70, true, 14], ["Ann", 2, -40, false, 13], ["Bob", 3, -30, false, 4]] },
     { date: "2026-01-22", game: "G2", seats: [["Ann", 1, 25, true], ["Bob", 2, -25, false]] },
   ]);
   const core = ["Ann", "Bob", "Cat"];
@@ -133,8 +133,7 @@ describe("recordsAsOf: studious", () => {
 
   test("pools hand-computable trends across games", () => {
     const { events, series } = buildPayload(
-      // string and numeric scores both work — the pipeline shipped both
-      sessions([["8", 8, "8"], ["10", 10, "10"], ["12", 12, "12"]]),
+      sessions([[8, 8, 8], [10, 10, 10], [12, 12, 12]]),
     );
     const rows = recordsAsOf(events, series, ["Stu", "Oz"], "2026-01-15");
     assert.deepEqual(row(rows, "studious"), {
@@ -223,15 +222,15 @@ test("START_ELO is the series anchor", () => {
 
 describe("playerHistoryAsOf", () => {
   const { events } = buildPayload([
-    { date: "2026-01-01", game: "G1", seats: [["Ann", 1, 80, true, "10"], ["Bob", 2, -30, false], ["Cat", 3, -50, false]] },
+    { date: "2026-01-01", game: "G1", seats: [["Ann", 1, 80, true, 10], ["Bob", 2, -30, false], ["Cat", 3, -50, false]] },
     { date: "2026-01-01", game: "G2", seats: [["Ann", 1, 40, true], ["Bob", 2, -20, false]] },
-    { date: "2026-01-08", game: "G1", seats: [["Cat", 1, 70, true], ["Ann", 2, -40, false, "13"]] },
+    { date: "2026-01-08", game: "G1", seats: [["Cat", 1, 70, true], ["Ann", 2, -40, false, 13]] },
     { date: "2026-01-15", game: "G3", seats: [["Bob", 1, 25, true], ["Cat", 2, -25, false]] },
   ]);
 
   test("newest first, with running elo from cumulative deltas", () => {
-    // Ann: 1000 +80 → 1080, +40 → 1120, -40 → 1080; string score "10"
-    // becomes 10, an unscored seat becomes null
+    // Ann: 1000 +80 → 1080, +40 → 1120, -40 → 1080; an unscored seat
+    // stays null
     assert.deepEqual(playerHistoryAsOf(events, "Ann", "2026-01-15"), [
       { date: "2026-01-08", game: "G1", rank: 2, seats: 2, won: false, score: 13, delta: -40, elo: 1080 },
       { date: "2026-01-01", game: "G2", rank: 1, seats: 2, won: true, score: null, delta: 40, elo: 1120 },

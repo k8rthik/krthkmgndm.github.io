@@ -11,6 +11,7 @@ import {
   gamesAsOf,
   hIndexOf,
   GAMES_TABLE_CAP,
+  gamePlayCountsAsOf,
 } from "../components/elo/games.js";
 import { fmtDuration } from "../components/elo/format.js";
 
@@ -157,5 +158,29 @@ describe("fmtDuration", () => {
   test("sub-hour durations show whole minutes", () => {
     // 0.85h × 60 = 51 minutes
     assert.equal(fmtDuration(0.85), "51m");
+  });
+});
+
+describe("gamePlayCountsAsOf", () => {
+  // rated events only need date and game here
+  const events = [
+    { date: "2026-01-01", game: "G1" },
+    { date: "2026-01-01", game: "G2" },
+    { date: "2026-01-08", game: "G1" },
+    { date: "2026-01-15", game: "G3" },
+  ];
+
+  test("rated plays per game through the date, the date itself included", () => {
+    // through 01-08: G1 on 01-01 and 01-08, G2 once; G3 (01-15) not yet
+    assert.deepEqual(gamePlayCountsAsOf(events, "2026-01-08"), { G1: 2, G2: 1 });
+  });
+
+  test("the day before a play excludes it", () => {
+    assert.deepEqual(gamePlayCountsAsOf(events, "2026-01-07"), { G1: 1, G2: 1 });
+    assert.deepEqual(gamePlayCountsAsOf(events, "2026-01-15"), { G1: 2, G2: 1, G3: 1 });
+  });
+
+  test("before any play there are no counts", () => {
+    assert.deepEqual(gamePlayCountsAsOf(events, "2025-12-31"), {});
   });
 });

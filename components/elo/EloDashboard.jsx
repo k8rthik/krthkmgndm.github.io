@@ -6,7 +6,7 @@ import { colorFor } from "./format";
 import { statsAsOf, headToHeadAsOf, affinityAsOf, sessionBand } from "./asOf";
 import { preGameSeries } from "./series";
 import { recordsAsOf, profileExtrasAsOf } from "./insights";
-import { gamesAsOf } from "./games";
+import { gamesAsOf, gamePlayCountsAsOf } from "./games";
 import SessionSummary from "./SessionSummary";
 import RatingChart from "./RatingChart";
 import Leaderboard from "./Leaderboard";
@@ -60,6 +60,10 @@ export default function EloDashboard({ data }) {
     () => gamesAsOf(data.playLog, date),
     [data.playLog, date],
   );
+  const gameCounts = useMemo(
+    () => gamePlayCountsAsOf(events, date),
+    [events, date],
+  );
   const band = useMemo(() => sessionBand(events, date), [events, date]);
   const chartSeries = useMemo(() => preGameSeries(series, events), [series, events]);
   const sessionGames = useMemo(
@@ -111,7 +115,7 @@ export default function EloDashboard({ data }) {
       </p>
       <GameScatter
         games={games}
-        events={events}
+        counts={gameCounts}
         tooltip={tooltip}
         highlight={sessionGames}
       />

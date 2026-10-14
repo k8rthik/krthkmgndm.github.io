@@ -17,6 +17,17 @@ export function hIndexOf(counts) {
   return h;
 }
 
+// rated plays per game through the given date — from events, not the
+// playLog, since the scatter sizes and labels rated games only
+export function gamePlayCountsAsOf(events, date) {
+  const counts = {};
+  for (const e of events) {
+    if (e.date > date) continue;
+    counts[e.game] = (counts[e.game] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export function gamesAsOf(playLog, date) {
   const acc = {};
   for (const p of playLog) {

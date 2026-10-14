@@ -52,4 +52,11 @@ describe("scoreOf", () => {
     assert.equal(scoreOf(undefined), null);
     assert.equal(scoreOf(NaN), null);
   });
+
+  test("strings are not scores — the export contract is numeric or null", () => {
+    // tests/data-invariants.test.js pins "never strings"; a string here
+    // means the export regressed, and coercing it would hide that
+    assert.equal(scoreOf("22"), null);
+    assert.equal(scoreOf(""), null);
+  });
 });

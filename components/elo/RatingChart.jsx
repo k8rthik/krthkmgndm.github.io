@@ -76,7 +76,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
               <tr key={s.name}>
                 <td>
                   {s.rank}. {s.name}
-                  {s.score ? ` · ${s.score}` : ""}
+                  {s.score != null ? ` · ${s.score}` : ""}
                 </td>
                 <td className={s.delta >= 0 ? "elo-pos" : "elo-neg"}>
                   {sign(s.delta, 1)}

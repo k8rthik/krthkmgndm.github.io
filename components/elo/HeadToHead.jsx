@@ -125,14 +125,14 @@ export default function HeadToHead({ records, corePlayers, tooltip, events, date
                     </td>
                     <td>
                       {ord(p.a.rank)}
-                      {p.a.score ? ` · ${p.a.score}` : ""}{" "}
+                      {p.a.score != null ? ` · ${p.a.score}` : ""}{" "}
                       <span className={p.a.delta >= 0 ? "elo-pos" : "elo-neg"}>
                         {sign(p.a.delta, 1)}
                       </span>
                     </td>
                     <td>
                       {ord(p.b.rank)}
-                      {p.b.score ? ` · ${p.b.score}` : ""}{" "}
+                      {p.b.score != null ? ` · ${p.b.score}` : ""}{" "}
                       <span className={p.b.delta >= 0 ? "elo-pos" : "elo-neg"}>
                         {sign(p.b.delta, 1)}
                       </span>

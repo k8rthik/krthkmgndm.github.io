@@ -67,15 +67,13 @@ function placeLabels(games, counts) {
   return placed;
 }
 
-export default function GameScatter({ games, events, tooltip, highlight }) {
-  const { played, counts, labels } = useMemo(() => {
-    const tally = events.reduce(
-      (acc, e) => ({ ...acc, [e.game]: (acc[e.game] || 0) + 1 }),
-      {},
-    );
-    const active = games.filter((g) => tally[g.name]);
-    return { played: active, counts: tally, labels: placeLabels(active, tally) };
-  }, [games, events]);
+// counts: rated plays per game through the selected date
+// (gamePlayCountsAsOf) — games not yet played by then aren't drawn
+export default function GameScatter({ games, counts, tooltip, highlight }) {
+  const { played, labels } = useMemo(() => {
+    const active = games.filter((g) => counts[g.name]);
+    return { played: active, labels: placeLabels(active, counts) };
+  }, [games, counts]);
 
   const showTip = (g) => (ev) =>
     tooltip.show(

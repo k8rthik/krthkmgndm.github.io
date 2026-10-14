@@ -259,14 +259,15 @@ describe("gameDetailAsOf data quirks", () => {
     assert.equal(d.rolePlays, 0);
   });
 
-  test("string scores (BG Stats export quirk) coerce like numbers", () => {
+  test("a zero score is a score; null is unscored", () => {
     const events = [
-      ev("2026-01-01", "G", [["Ann", 1, "22"], ["Bob", 2, ""], ["Cat", 3, 4]]),
+      ev("2026-01-01", "G", [["Ann", 1, 22], ["Bob", 2, null], ["Cat", 3, 0]]),
     ];
     const d = gameDetailAsOf(events, "G", "2026-01-01");
-    // "" is unscored, so the mean is (22 + 4) / 2 = 13
-    assert.equal(d.avgScore, 13);
-    assert.deepEqual(d.highWin, { score: 22, name: "Ann", date: "2026-01-01" });
+    // Bob is unscored, so the mean is (22 + 0) / 2 = 11
+    assert.equal(d.avgScore, 11);
+    assert.deepEqual(d.highLoss, { score: 0, name: "Cat", date: "2026-01-01" });
+    assert.equal(d.playerRows.find((r) => r.name === "Cat").avgScore, 0);
     assert.equal(d.playerRows.find((r) => r.name === "Bob").avgScore, null);
   });
 });
