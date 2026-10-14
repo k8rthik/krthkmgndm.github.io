@@ -1,6 +1,6 @@
 "use client";
 
-import { niceTicks, pct } from "./derive";
+import { BREAK_EVEN, WEEKS_PER_YEAR, niceTicks, pct, yearLabel, yearTicks } from "./derive";
 
 const W = 420;
 const H = 220;
@@ -15,7 +15,7 @@ export default function AgingChart({ points, color, yMax, xMax, tooltip, label }
   const x = (age) => L + (age / xMax) * (W - L - R);
   const y = (v) => T + (1 - v / yMax) * (H - T - B);
   const ticks = niceTicks(0, yMax, 4).filter((t) => t <= yMax + 1e-9);
-  const years = [0, 1, 2, 3, 4, 5].filter((yr) => yr * 52 <= xMax);
+  const years = yearTicks(xMax);
 
   const line = points.map((p, i) => `${i ? "L" : "M"}${x(p.age).toFixed(1)},${y(p.median).toFixed(1)}`).join("");
   const band =
@@ -44,12 +44,12 @@ export default function AgingChart({ points, color, yMax, xMax, tooltip, label }
       onPointerMove={points.length ? hover : undefined} onPointerLeave={tooltip.hide}>
       {ticks.map((t) => (
         <g key={t}>
-          <line className={t === 1 ? "elo-baseline" : "elo-grid"} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
+          <line className={t === BREAK_EVEN ? "elo-baseline" : "elo-grid"} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
           <text x={L - 6} y={y(t) + 4} textAnchor="end">{pct(t)}</text>
         </g>
       ))}
       {years.map((yr) => (
-        <text key={yr} x={x(yr * 52)} y={H - 7} textAnchor={yr ? "middle" : "start"}>{yr ? `${yr}y` : "launch"}</text>
+        <text key={yr} x={x(yr * WEEKS_PER_YEAR)} y={H - 7} textAnchor={yr ? "middle" : "start"}>{yearLabel(yr)}</text>
       ))}
       <path d={band} fill={color} opacity="0.15" />
       <path d={line} fill="none" stroke={color} strokeWidth="2" />

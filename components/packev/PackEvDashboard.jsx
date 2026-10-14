@@ -7,12 +7,20 @@ import SeriesChart from "./SeriesChart";
 import {
   ROLE_VAR,
   agingPoints,
+  agingScale,
   boosterKey,
+  boosterShortName,
+  boosterSummary,
+  boosterTitle,
+  defaultBooster,
   milestoneGrid,
   pct,
+  ratioTone,
+  releaseYear,
   seriesPoints,
   tableRows,
   usd,
+  weeksAboveLabel,
 } from "./derive";
 
 const PRICING = [
@@ -31,7 +39,7 @@ export default function PackEvDashboard({ data }) {
   const [role, setRole] = useState(null);
   const [sort, setSort] = useState(null);
   const [selected, setSelected] = useState(
-    () => boosterKey(data.boosters.find((b) => b.series.length >= 12) ?? data.boosters[0]),
+    () => boosterKey(defaultBooster(data.boosters)),
   );
 
   const { meta, roles, cross } = data;
@@ -39,13 +47,11 @@ export default function PackEvDashboard({ data }) {
     () => Object.fromEntries(roles.map((r) => [r, agingPoints(cross, pricing, r, meta.minSeries)])),
     [cross, pricing, roles, meta.minSeries],
   );
-  const all = Object.values(aging).flat();
-  const yMax = Math.max(1.5, ...all.map((p) => p.p75));
-  const xMax = Math.max(...all.map((p) => p.age));
+  const { yMax, xMax } = agingScale(aging);
   const grid = milestoneGrid(cross[pricing].milestones, roles);
   const rows = tableRows(data.boosters, { pricing, role, sort });
   const current = data.boosters.find((b) => boosterKey(b) === selected) ?? data.boosters[0];
-  const currentRow = tableRows([current], { pricing })[0];
+  const currentRow = boosterSummary(current, pricing);
 
   return (
     <div className="pev">
@@ -111,12 +117,10 @@ export default function PackEvDashboard({ data }) {
         ))}
       </div>
 
-      <h3>
-        {current.setName}, {current.booster.toLowerCase()}
-      </h3>
+      <h3>{boosterTitle(current)}</h3>
       <p className="pev-stats">
         pack {usd(currentRow.price)} · EV {usd(currentRow.value)} ·{" "}
-        <span className={currentRow.ratio >= 1 ? "elo-pos" : "elo-neg"}>{pct(currentRow.ratio)} of price</span>
+        <span className={ratioTone(currentRow.ratio)}>{pct(currentRow.ratio)} of price</span>
         {current.weeks ? ` · above price ${current.weeksAbove} of ${current.weeks} weeks` : ""}
       </p>
       <div className="elo-chartwrap">
@@ -145,13 +149,13 @@ export default function PackEvDashboard({ data }) {
                     <button type="button" className="pev-link" onClick={() => setSelected(key)}>
                       {b.setName}
                     </button>{" "}
-                    <span className="pev-dim">{b.release.slice(0, 4)}</span>
+                    <span className="pev-dim">{releaseYear(b.release)}</span>
                   </td>
-                  <td><span className="pev-key" style={{ background: ROLE_VAR[b.role] }} />{b.booster.replace(" Booster", "").toLowerCase()}</td>
+                  <td><span className="pev-key" style={{ background: ROLE_VAR[b.role] }} />{boosterShortName(b.booster)}</td>
                   <td>{usd(b.price)}</td>
                   <td>{usd(b.value)}</td>
-                  <td className={b.ratio == null ? "" : b.ratio >= 1 ? "elo-pos" : "elo-neg"}>{pct(b.ratio)}</td>
-                  <td>{b.weeks ? `${b.weeksAbove}/${b.weeks}` : "–"}</td>
+                  <td className={ratioTone(b.ratio)}>{pct(b.ratio)}</td>
+                  <td>{weeksAboveLabel(b)}</td>
                 </tr>
               );
             })}

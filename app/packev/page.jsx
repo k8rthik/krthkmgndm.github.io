@@ -1,22 +1,25 @@
 import Link from "next/link";
 import { getPackEvData } from "../../lib/packev";
 import PackEvDashboard from "../../components/packev/PackEvDashboard";
+import { packevSummary } from "../../components/packev/derive";
 import BackLink from "../../components/BackLink";
 
-export const metadata = {
-  title: "pack ev",
-  description:
-    "Expected value of Magic: The Gathering booster packs against their sealed price, for 39 sets since 2021.",
-};
+export function generateMetadata() {
+  return {
+    title: "pack ev",
+    description: packevSummary(getPackEvData().meta).description,
+  };
+}
 
 export default function PackEv() {
   const data = getPackEvData();
+  const summary = packevSummary(data.meta);
 
   return (
     <main className="page page--wide">
       <h1>pack ev</h1>
       <p className="subtitle">
-        is a sealed magic pack worth more opened? {data.meta.sets} sets, every booster, weekly since {data.meta.historyStart.slice(0, 4)}
+        is a sealed magic pack worth more opened? {summary.sets} sets, every booster, weekly since {summary.sinceYear}
       </p>
 
       <PackEvDashboard data={data} />
