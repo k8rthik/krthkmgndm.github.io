@@ -92,6 +92,13 @@ export const WARMUP_ITERS = 6;
 export const PRICE_TOL = 1.5;
 const WARM_STEP_OFFSET = 2;
 
+/**
+ * The marginal $/kW-day the siting table shows: valued at the price the fleet
+ * is settled against, so it follows the "settled at" control.
+ */
+export function siteValues(run) {
+  return run.opts.signal === "zonal" ? run.marginalZonal : run.marginal;
+}
 
 /** Share of the residential fleet that lands at each bus. */
 export function fleetWeights(repOnly) {

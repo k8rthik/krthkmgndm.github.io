@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DEFAULTS, simulate } from "./engine.js";
+import { DEFAULTS, simulate, siteValues } from "./engine.js";
 import { BUSES, ZONES } from "./grid.js";
 import { DAYS, DAY_IDS } from "./days.js";
 import {
@@ -87,7 +87,7 @@ export default function ErcotModel() {
         if (job !== jobRef.current) return;
         const r = simulate({ ...opts, homes: LADDER[i], warmStart: warm });
         warm = r.warmStart;
-        rows.push({ homes: LADDER[i], marginal: Array.from(r.marginal) });
+        rows.push({ homes: LADDER[i], marginal: Array.from(siteValues(r)) });
         i += 1;
         if (i < LADDER.length) setTimeout(step, 0);
         else setLadder(rows);
@@ -259,12 +259,16 @@ export default function ErcotModel() {
 
       <h2>where the next battery earns most</h2>
       <p className="elo-sub">
-        The arbitrage value of one more marginal megawatt at each bus, against that bus&rsquo;s own
-        settled prices. A marginal unit does not move the price, so this is what the next battery
-        would actually capture. Energy only &mdash; ancillary revenue is location-neutral and is not
-        counted, so these are floors.
+        The arbitrage value of one more marginal megawatt at each bus, against the price it would be
+        settled at &mdash;{" "}
+        {signal === "zonal"
+          ? "its Load Zone price, so both buses in a zone earn the same; switch to bus LMP to see where nodal participation pays"
+          : "that bus’s own LMP"}
+        . A marginal unit does not move the price, so this is what the next battery would actually
+        capture. Energy only &mdash; ancillary revenue is location-neutral and is not counted, so
+        these are floors.
       </p>
-      <Siting marginal={run.marginal} ladder={ladder} homes={homes} maxHomes={MAX_HOMES} />
+      <Siting marginal={siteValues(run)} ladder={ladder} homes={homes} maxHomes={MAX_HOMES} />
     </div>
   );
 }

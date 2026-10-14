@@ -1,5 +1,6 @@
 // Tests for the small pure pieces around the nodal-price model: the slider
-// mapping, the map shading, the matrix inverse and must-run nuclear. Expectations are worked by hand in
+// mapping, the map shading, the matrix inverse, must-run nuclear and which
+// marginal value the siting table reads. Expectations are worked by hand in
 // the comments.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
@@ -12,7 +13,7 @@ import {
 } from "../components/ercot/shade.js";
 import { invert } from "../components/ercot/linalg.js";
 import {
-  DEFAULTS, NUCLEAR_AVAILABILITY, mustRun,
+  DEFAULTS, NUCLEAR_AVAILABILITY, mustRun, simulate, siteValues,
 } from "../components/ercot/engine.js";
 import { BUS_INDEX } from "../components/ercot/grid.js";
 import { DAYS } from "../components/ercot/days.js";
@@ -133,5 +134,37 @@ describe("must-run nuclear", () => {
 describe("defaults", () => {
   test("the model opens on a day that exists", () => {
     assert.ok(DAYS[DEFAULTS.day], DEFAULTS.day);
+  });
+});
+
+describe("siting follows the settlement signal", () => {
+  // The mild spring day congests West Texas exports overnight: the Panhandle
+  // sits at -$8 while Far West/Permian swings between -$8 and +$14, so the two
+  // LZ_WEST buses have different nodal price series.
+  //
+  // marginalZonal values the next MW at its Load Zone price. Both buses read
+  // the *same* LZ_WEST series (the load-weighted average of their two LMPs),
+  // with the same battery and costs, so the arbitrage optimum is the same
+  // number — exactly equal, not merely close. marginal values it at the bus's
+  // own LMP: the Panhandle's is flat at -$8 for hours on end, a level with no
+  // time spread, so it is worth far less than Permian's swinging price.
+  const zonal = simulate({ day: "spring", homes: 0, signal: "zonal" });
+  const nodal = simulate({ day: "spring", homes: 0, signal: "nodal" });
+  const P = BUS_INDEX.PANH;
+  const W = BUS_INDEX.WPERM;
+
+  test("the day is congested", () => {
+    assert.ok(zonal.binding.some((h) => h.length > 0));
+  });
+
+  test("two buses in one zone share a zonal value but not a nodal one", () => {
+    assert.equal(zonal.marginalZonal[P], zonal.marginalZonal[W]);
+    assert.ok(Math.abs(zonal.marginal[P] - zonal.marginal[W]) > 0.01,
+      `${zonal.marginal[P]} vs ${zonal.marginal[W]}`);
+  });
+
+  test("the table reads the value for the settlement it is showing", () => {
+    assert.equal(siteValues(zonal), zonal.marginalZonal);
+    assert.equal(siteValues(nodal), nodal.marginal);
   });
 });
