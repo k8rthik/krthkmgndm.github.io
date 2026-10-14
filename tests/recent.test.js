@@ -6,7 +6,7 @@ import { recentItems } from "../lib/recent.js";
 
 const projects = [
   // ordered the way projects.json is: by prominence, not by date
-  { name: "Old Flagship", active: true, demo: "https://x.test/flagship" },
+  { name: "Old Flagship", active: true, links: [{ label: "demo", href: "https://x.test/flagship" }] },
   { name: "Dated Middle", active: true, added: "2026-05-01", links: [{ label: "model", href: "/middle" }] },
   { name: "Dated Newest", active: true, added: "2026-09-18", links: [{ label: "model", href: "/newest" }] },
   { name: "Archived", active: false, added: "2026-09-30", links: [{ label: "model", href: "/archived" }] },
@@ -67,7 +67,10 @@ describe("recentItems", () => {
         name: "Both", active: true, added: "2026-09-18",
         links: [{ label: "code", href: "https://gh.test/x" }, { label: "stats", href: "/stats" }],
       },
-      { name: "Demo only", active: true, added: "2026-09-17", demo: "https://d.test", code: "https://c.test" },
+      {
+        name: "Demo second", active: true, added: "2026-09-17",
+        links: [{ label: "code", href: "https://c.test" }, { label: "demo", href: "https://d.test" }],
+      },
     ];
     assert.deepEqual(recentItems(mixed, [], 2).map((i) => i.href), ["/stats", "https://d.test"]);
   });

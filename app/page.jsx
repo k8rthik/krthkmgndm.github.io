@@ -12,10 +12,9 @@ import DevlogPanel from "../components/DevlogPanel";
 export default function Home() {
   const posts = getAllPosts().filter((post) => post.active !== 0);
   const projects = getAllProjects();
-  const active = projects.filter((project) => project.active);
   const devlog = getDevlog();
 
-  const recent = recentItems(active, posts);
+  const recent = recentItems(projects, posts);
 
   return (
     <Accordion

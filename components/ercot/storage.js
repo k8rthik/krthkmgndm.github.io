@@ -108,14 +108,3 @@ export function arbitrage(price, power, energy, rt, deg) {
   }
   return { value: bestValue, ch, dis, soc };
 }
-
-/** State of charge trajectory implied by a charge/discharge schedule. */
-export function socPath(ch, dis, energy, rt) {
-  const eff = Math.sqrt(rt);
-  const soc = new Float64Array(ch.length + 1);
-  soc[0] = energy / 2;
-  for (let t = 0; t < ch.length; t++) {
-    soc[t + 1] = soc[t] + eff * ch[t] - dis[t] / eff;
-  }
-  return soc;
-}

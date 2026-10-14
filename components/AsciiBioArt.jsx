@@ -5,7 +5,7 @@ import { FRAMES } from "../lib/helixFrames";
 
 const N = FRAMES.length;
 
-export default function AsciiBioArt({ paused = false }) {
+export default function AsciiBioArt() {
   const [idx, setIdx] = useState(0);
   const containerRef = useRef(null);
   const rafRef = useRef(null);
@@ -49,7 +49,7 @@ export default function AsciiBioArt({ paused = false }) {
       rafRef.current = requestAnimationFrame(tick);
       const dt = now - last;
       last = now;
-      if (paused || !visibleRef.current) return;
+      if (!visibleRef.current) return;
       acc += dt;
       if (acc < targetMs) return;
       acc = 0;
@@ -59,7 +59,7 @@ export default function AsciiBioArt({ paused = false }) {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [paused]);
+  }, []);
 
   return (
     <div ref={containerRef} className="helix" aria-hidden="true">

@@ -1,13 +1,6 @@
 "use client";
 
-export default function SectionBar({
-  label,
-  open,
-  onClick,
-  variant,
-  count,
-  controls,
-}) {
+export default function SectionBar({ label, open, onClick, variant, controls }) {
   return (
     <button
       type="button"

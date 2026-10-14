@@ -87,13 +87,6 @@ export default function Accordion({
 
       <AsciiBioArt />
 
-      {/* status line disabled for now
-      <ul className="now" aria-label="status">
-        <li>reading atlas shrugged,</li>
-        <li>looping apple pie</li>
-        <li>playing ti4, root</li>
-      </ul>
-      */}
       </div>
 
       <div className="home__aside">{devlogSlot}</div>

@@ -23,23 +23,8 @@ describe("isValidHref", () => {
 });
 
 describe("projectLinks", () => {
-  test("an explicit links array wins over demo/code fields", () => {
-    const p = { demo: "https://x.test/d", code: "https://x.test/c", links: [{ label: "model", href: "/m" }] };
-    assert.deepEqual(projectLinks(p), [{ label: "model", href: "/m" }]);
-  });
-
-  test("an explicit empty array means no links, not the default pair", () => {
-    const p = { demo: "https://x.test/d", code: "https://x.test/c", links: [] };
-    assert.deepEqual(projectLinks(p), []);
-  });
-
-  test("the default demo/code pair only keeps members that are valid", () => {
-    // demo valid, code is the "#" placeholder → one link survives
-    assert.deepEqual(projectLinks({ demo: "https://x.test/d", code: "#" }), [
-      { label: "demo", href: "https://x.test/d" },
-    ]);
-    // neither field present → nothing, rather than two undefined hrefs
-    assert.deepEqual(projectLinks({}), []);
+  test("a project with no links array has no links", () => {
+    assert.deepEqual(projectLinks({ name: "x" }), []);
   });
 
   test("invalid entries inside an explicit array are dropped", () => {

@@ -3,7 +3,7 @@
 
 import {
   BUSES, ZONES, LINES, GTCS, CAPACITY, OFFER, CC_SPLIT, CT_SPLIT,
-  shiftFactors, gtcShiftFactors, AS_REQ,
+  shiftFactors, gtcShiftFactors,
 } from "./grid.js";
 import { DAYS } from "./days.js";
 import { buildUnits, makeLayout, solveHour } from "./sced.js";
@@ -18,7 +18,6 @@ export const GSF = gtcShiftFactors(SF);
 
 const UNITS = buildUnits(CAPACITY, OFFER, CC_SPLIT, CT_SPLIT);
 const LAYOUT = makeLayout(UNITS);
-export const UNIT_LIST = UNITS;
 
 export const DEFAULTS = {
   day: "summer",
@@ -84,8 +83,6 @@ export function fleetWeights(repOnly) {
   const s = w.reduce((a, c) => a + c, 0);
   return w.map((v) => v / s);
 }
-
-export function zoneOf(b) { return BUSES[b].zone; }
 
 export function simulate(optsIn) {
   const o = { ...DEFAULTS, ...optsIn };
@@ -173,7 +170,6 @@ export function simulate(optsIn) {
   // on the page.
   const maxIter = o.maxIter ?? 22;
   let gap = Infinity;
-  let foregoneUSD = 0, attainableUSD = 0;
   const prevLmp = new Float64Array(T * NB).fill(NaN);
   for (let it = 0; it < maxIter; it++) {
     hours = runSCED();
@@ -182,7 +178,6 @@ export function simulate(optsIn) {
     const zp = zonePrices(hours);
     const alpha = 1 / (it + 1 + (optsIn && optsIn.warmStart ? 2 : 0));
 
-    let foregone = 0, attainable = 0;
     for (let e = 0; e < entities.length; e++) {
       const en = entities[e];
       if (en.power <= 0 || en.energy <= 0) continue;
@@ -190,15 +185,6 @@ export function simulate(optsIn) {
       const price = new Float64Array(T);
       for (let t = 0; t < T; t++) price[t] = nodal ? hours[t].lmp[en.bus] : zp[BUSES[en.bus].zone][t];
       const best = arbitrage(price, en.power, en.energy, o.roundTrip, o.degCost);
-
-      // Frank-Wolfe gap: how much profit the current schedule leaves on the
-      // table against the best response to the very prices it produced.
-      let held = 0;
-      for (let t = 0; t < T; t++) {
-        held += price[t] * (dis[e][t] - ch[e][t]) - o.degCost * (dis[e][t] + ch[e][t]);
-      }
-      foregone += Math.max(0, best.value - held);
-      attainable += best.value;
 
       // Average the schedules, then net charge against discharge. Blending the
       // two legs separately leaves an hour both charging and discharging, which
@@ -216,11 +202,9 @@ export function simulate(optsIn) {
         level = Math.min(en.energy, Math.max(0, level + eff * ch[e][t] - dis[e][t] / eff));
       }
     }
-    foregoneUSD = foregone;
-    attainableUSD = attainable;
 
     // Convergence is judged on the prices, since those are what everything
-    // downstream is read off. The dollar gap is kept as a diagnostic.
+    // downstream is read off.
     let move = 0;
     for (let t = 0; t < T; t++) {
       for (let b = 0; b < NB; b++) move = Math.max(move, Math.abs(hours[t].lmp[b] - prevLmp[t * NB + b]));
@@ -232,24 +216,15 @@ export function simulate(optsIn) {
   hours = runSCED();
   if (!hours) return null;
 
-  return pack(o, entities, ch, dis, soc, hours, load, avail, zonePrices(hours), { iters, converged, priceMove: gap, foregoneUSD, attainableUSD });
+  return pack(o, entities, ch, dis, soc, hours, load, avail, zonePrices(hours), { iters, converged, priceMove: gap });
 }
 
 function pack(o, entities, ch, dis, soc, hours, load, avail, zp, meta) {
   const lmp = Array.from({ length: NB }, (_, b) => Float64Array.from(hours.map((h) => h.lmp[b])));
   const cong = Array.from({ length: NB }, (_, b) => Float64Array.from(hours.map((h) => h.congestion[b])));
   const lambda = Float64Array.from(hours.map((h) => h.lambda));
-  const reservePrice = Float64Array.from(hours.map((h) => h.reservePrice));
   const curtail = Float64Array.from(hours.map((h) => h.curtailed));
   const shed = Float64Array.from(hours.map((h) => h.shed.reduce((a, c) => a + c, 0)));
-
-  const sysLoad = Float64Array.from(load.map((l) => l.reduce((a, c) => a + c, 0)));
-  const fleetNet = new Float64Array(T);
-  const gridNet = new Float64Array(T);
-  for (let e = 0; e < entities.length; e++) {
-    const arr = entities[e].cls === "resi" ? fleetNet : gridNet;
-    for (let t = 0; t < T; t++) arr[t] += dis[e][t] - ch[e][t];
-  }
 
   // Binding constraints, hour by hour.
   const binding = hours.map((h) => {
@@ -273,7 +248,7 @@ function pack(o, entities, ch, dis, soc, hours, load, avail, zp, meta) {
   }
 
   // Realised fleet economics at the price it is actually settled against.
-  let fleetRevenue = 0, fleetPower = 0, fleetThroughput = 0;
+  let fleetRevenue = 0, fleetPower = 0;
   for (let e = 0; e < entities.length; e++) {
     const en = entities[e];
     if (en.cls !== "resi" || en.power <= 0) continue;
@@ -282,69 +257,34 @@ function pack(o, entities, ch, dis, soc, hours, load, avail, zp, meta) {
     for (let t = 0; t < T; t++) {
       const p = nodal ? hours[t].lmp[en.bus] : zp[BUSES[en.bus].zone][t];
       fleetRevenue += p * (dis[e][t] - ch[e][t]) - o.degCost * (dis[e][t] + ch[e][t]);
-      fleetThroughput += dis[e][t];
     }
   }
 
-  const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
   const loadWeighted = () => {
     let num = 0, den = 0;
     for (let t = 0; t < T; t++) for (let b = 0; b < NB; b++) { num += hours[t].lmp[b] * load[t][b]; den += load[t][b]; }
     return num / den;
   };
 
-  let peakHour = 0;
-  for (let t = 1; t < T; t++) if (sysLoad[t] > sysLoad[peakHour]) peakHour = t;
-
   const allP = [];
   for (let t = 0; t < T; t++) for (let b = 0; b < NB; b++) allP.push(hours[t].lmp[b]);
 
   return {
     opts: o, meta,
-    lmp, cong, lambda, reservePrice, curtail, shed, zp, binding,
-    sysLoad, fleetNet, gridNet,
+    lmp, cong, lambda, curtail, shed, zp, binding,
     flows: hours.map((h) => h.flow),
-    gtcFlows: hours.map((h) => h.gtcFlow),
     marginal, marginalZonal,
-    entities: entities.map((e, i) => ({ ...e, ch: ch[i], dis: dis[i], soc: soc[i] })),
     warmStart: { ch, dis, soc, power: entities.map((e) => e.power) },
     stats: {
       avgLoadWeighted: loadWeighted(),
       peakPrice: Math.max(...allP),
-      avgLambda: mean(Array.from(lambda)),
-      hoursAbove100: hours.filter((h) => Math.max(...h.lmp) > 100).length,
-      negativeBusHours: allP.filter((p) => p < 0).length,
       curtailGWh: curtail.reduce((a, c) => a + c, 0) / 1000,
       shedGWh: shed.reduce((a, c) => a + c, 0) / 1000,
-      avgReserve: mean(Array.from(reservePrice)),
       fleetPowerGW: fleetPower / 1000,
       fleetEnergyGWh: entities.filter((e) => e.cls === "resi").reduce((a, c) => a + c.energy, 0) / 1000,
       fleetRevPerKWday: fleetPower > 0 ? fleetRevenue / (fleetPower * 1000) : 0,
-      fleetThroughputGWh: fleetThroughput / 1000,
-      peakSysLoad: Math.max(...sysLoad) / 1000,
-      peakHour,
-      // What storage is actually delivering in the system's peak hour. (Peak
-      // *net* load is a poor statistic here: when a run of hours share the same
-      // price the schedule is indifferent between them, so the averaged
-      // iterate spreads charging across all of them.)
-      peakHourStorageGW: (fleetNet[peakHour] + gridNet[peakHour]) / 1000,
-      peakHourFleetGW: fleetNet[peakHour] / 1000,
     },
   };
-}
-
-/** A build-out path: the same day solved at a ladder of fleet sizes. */
-export function sweep(optsIn, homeLadder) {
-  return homeLadder.map((homes) => {
-    const r = simulate({ ...optsIn, homes });
-    return {
-      homes,
-      marginal: Array.from(r.marginal),
-      marginalZonal: Array.from(r.marginalZonal),
-      stats: r.stats,
-      zp: Object.fromEntries(ZONES.map((z) => [z, Array.from(r.zp[z])])),
-    };
-  });
 }
 
 export { ZONES, BUSES, LINES, GTCS };

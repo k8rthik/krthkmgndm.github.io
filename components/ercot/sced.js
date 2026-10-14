@@ -226,6 +226,6 @@ export function solveHour(ctx, hour) {
   };
 }
 
-export function clamp(v, lo, hi) {
+function clamp(v, lo, hi) {
   return v < lo ? lo : v > hi ? hi : v;
 }

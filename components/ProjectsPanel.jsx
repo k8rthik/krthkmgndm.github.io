@@ -1,5 +1,4 @@
 import Link from "next/link";
-import ProjectDemo from "./ProjectDemo";
 import ProjectLinks from "./ProjectLinks";
 
 export default function ProjectsPanel({ projects }) {
@@ -8,16 +7,9 @@ export default function ProjectsPanel({ projects }) {
       <ul className="panel__list" role="list">
         {projects.map((project) => (
           <li key={project.name} className="entry">
-            <ProjectDemo name={project.name}>
-              <p className="entry__title">
-                {project.name}
-                {!project.active && (
-                  <span className="entry__meta">(archived)</span>
-                )}
-              </p>
-              <p className="entry__desc">{project.description}</p>
-              <ProjectLinks project={project} className="entry__links" />
-            </ProjectDemo>
+            <p className="entry__title">{project.name}</p>
+            <p className="entry__desc">{project.description}</p>
+            <ProjectLinks project={project} className="entry__links" />
           </li>
         ))}
       </ul>

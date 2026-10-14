@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getAllProjects } from "../../lib/projects";
-import ProjectDemo from "../../components/ProjectDemo";
 import ProjectLinks from "../../components/ProjectLinks";
 
 export default function AllProjects() {
@@ -15,7 +14,7 @@ export default function AllProjects() {
       ) : (
         <dl className="entries">
           {projects.map((project) => (
-            <ProjectDemo key={project.name} name={project.name}>
+            <div key={project.name}>
               <dt>
                 {project.name}
                 {!project.active && <span className="meta">archived</span>}
@@ -24,7 +23,7 @@ export default function AllProjects() {
                 {project.description}
                 <ProjectLinks project={project} className="links" />
               </dd>
-            </ProjectDemo>
+            </div>
           ))}
         </dl>
       )}
