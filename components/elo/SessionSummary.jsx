@@ -2,8 +2,13 @@
 
 import { colorFor, isCore, fmt, sign } from "./format";
 
-export default function SessionSummary({ sessions, corePlayers, date, onDateChange }) {
-  const session = sessions.find((s) => s.date === date) ?? sessions[0];
+export default function SessionSummary({
+  sessions,
+  session,
+  corePlayers,
+  date,
+  onDateChange,
+}) {
   if (!session) return null;
 
   return (

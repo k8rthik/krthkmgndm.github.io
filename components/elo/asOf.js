@@ -80,7 +80,11 @@ export function statsAsOf(data, date) {
 // largest swing for scaling cell tints — mirrors bgelo's affinity card,
 // which this reconciles with exactly at the latest date (seat deltas sum
 // to the career perGame totals)
-export function affinityAsOf(events, players, date, maxGames = 10) {
+// the affinity card's column budget: the most-played games among the
+// given players
+export const AFFINITY_MAX_GAMES = 10;
+
+export function affinityAsOf(events, players, date, maxGames = AFFINITY_MAX_GAMES) {
   const core = new Set(players);
   const perGame = {};
   for (const n of players) perGame[n] = {};
@@ -116,6 +120,20 @@ export function affinityAsOf(events, players, date, maxGames = 10) {
   return { perGame, games, maxAbs };
 }
 
+// one seat's result against another at the same table, by finishing
+// order (the engine's normalized rank — not the BG Stats won flag)
+export function rankResult(a, b) {
+  if (a.rank < b.rank) return "won";
+  if (a.rank > b.rank) return "lost";
+  return "tie";
+}
+
+// share of meetings won, ties counting half; null with no meetings
+export function winShare({ w, l, t }) {
+  const games = w + l + t;
+  return games > 0 ? (w + 0.5 * t) / games : null;
+}
+
 // pairwise records among the given players through the given date — the
 // same finishing-order aggregation bgelo uses for the career matrix
 export function headToHeadAsOf(events, players, date) {
@@ -134,18 +152,46 @@ export function headToHeadAsOf(events, players, date) {
       for (let j = i + 1; j < seats.length; j++) {
         const a = seats[i];
         const b = seats[j];
-        if (a.rank < b.rank) {
-          records[a.name][b.name].w += 1;
-          records[b.name][a.name].l += 1;
-        } else if (a.rank > b.rank) {
-          records[a.name][b.name].l += 1;
-          records[b.name][a.name].w += 1;
+        const result = rankResult(a, b);
+        const ab = records[a.name][b.name];
+        const ba = records[b.name][a.name];
+        if (result === "won") {
+          ab.w += 1;
+          ba.l += 1;
+        } else if (result === "lost") {
+          ab.l += 1;
+          ba.w += 1;
         } else {
-          records[a.name][b.name].t += 1;
-          records[b.name][a.name].t += 1;
+          ab.t += 1;
+          ba.t += 1;
         }
       }
     }
   }
   return records;
+}
+
+// every rated play (through the given date) where both players sat,
+// newest first, scored from the row player's perspective
+export function pairLogAsOf(events, row, col, date) {
+  const log = [];
+  for (const e of events) {
+    if (e.date > date) continue;
+    const a = e.seats.find((s) => s.name === row);
+    const b = e.seats.find((s) => s.name === col);
+    if (!a || !b) continue;
+    log.push({ date: e.date, game: e.game, a, b, result: rankResult(a, b) });
+  }
+  return log.reverse();
+}
+
+// leaderboard order: by one column (dir 1 ascending, -1 descending),
+// equal values falling back to player name so the order is stable
+export function sortStats(stats, key, dir) {
+  return [...stats].sort((a, b) => {
+    const va = a[key];
+    const vb = b[key];
+    const cmp = typeof va === "string" ? va.localeCompare(vb) : va - vb;
+    return cmp * dir || a.name.localeCompare(b.name);
+  });
 }

@@ -53,6 +53,13 @@ export const fmtDuration = (hours) =>
 // keep true identities like "Brass: Birmingham"
 export const shortName = (g) => g.replace(/:\s*[^:]*edition$/i, "");
 
+// a game's curated skill note reads "Name — why"; the scatter tooltip
+// shows only the why. Uncurated notes carry no dash and no detail.
+export const skillNoteDetail = (note) => {
+  const at = (note ?? "").indexOf("—");
+  return at >= 0 ? note.slice(at + 1).trim() : "";
+};
+
 // hand-picked initialisms for names too long even shortened — used where
 // space is tightest (affinity column headers); full name stays in title=
 const ABBREV = { "The Old King's Crown": "TOKC" };

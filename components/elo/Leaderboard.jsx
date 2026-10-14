@@ -3,6 +3,7 @@
 import { Fragment, useMemo, useState } from "react";
 import { colorFor, isCore, fmt, ord, sign, shortName } from "./format";
 import { signatureGame, nemesis, playerHistoryAsOf } from "./insights";
+import { sortStats } from "./asOf";
 
 const COLUMNS = [
   { key: "name", label: "player", numeric: false },
@@ -89,12 +90,7 @@ export default function Leaderboard({
         : { key: col.key, dir: col.numeric ? -1 : 1 },
     );
 
-  const ordered = [...stats].sort((a, b) => {
-    const va = a[sort.key];
-    const vb = b[sort.key];
-    const cmp = typeof va === "string" ? va.localeCompare(vb) : va - vb;
-    return cmp * sort.dir;
-  });
+  const ordered = sortStats(stats, sort.key, sort.dir);
 
   return (
     <>

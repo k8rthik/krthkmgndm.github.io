@@ -2,10 +2,11 @@
 // and per-player extras. All respect the as-of date.
 // explicit .js extensions so these pure modules load in raw Node for the
 // test suite (Next's bundler accepts either form)
-import { cutoffHours } from "./asOf.js";
+import { cutoffHours, winShare } from "./asOf.js";
 import { fmt, sign, scoreOf } from "./format.js";
+import { slope } from "./stats.js";
 
-const START_ELO = 1000;
+export const START_ELO = 1000;
 
 // rating each seat carried INTO an event, reconstructed from the series
 // (one point per play plus the [0, START_ELO] anchor — successive diffs
@@ -125,19 +126,10 @@ export function recordsAsOf(events, series, corePlayers, date) {
     const sep = k.indexOf("|");
     const mu = gameMean[k.slice(sep + 1)];
     if (!mu || mu <= 0) continue;
-    const norm = ys.map((y) => y / mu);
-    const n = norm.length;
-    const xm = (n - 1) / 2;
-    const ym = norm.reduce((t, y) => t + y, 0) / n;
-    let cov = 0;
-    let varx = 0;
-    norm.forEach((y, i) => {
-      cov += (i - xm) * (y - ym);
-      varx += (i - xm) ** 2;
-    });
+    const n = ys.length;
     const name = k.slice(0, sep);
     const t = trends[name] ?? (trends[name] = { s: 0, w: 0, games: 0 });
-    t.s += (cov / varx) * (n - 1);
+    t.s += slope(ys.map((y) => y / mu)) * (n - 1);
     t.w += n - 1;
     t.games += 1;
   }
@@ -259,18 +251,22 @@ export function signatureGame(perGame) {
   return { game, delta: cell.delta };
 }
 
-// nemesis: worst win share among opponents faced at least 3 times
-// (falling back to anyone faced at all), ties broken by more meetings
+// a bad record only makes someone a nemesis after this many meetings
+export const NEMESIS_MIN_MEETINGS = 3;
+
+// nemesis: worst win share among opponents faced at least
+// NEMESIS_MIN_MEETINGS times (falling back to anyone faced at all),
+// ties broken by more meetings
 export function nemesis(h2h) {
   const entries = Object.entries(h2h ?? {})
     .map(([opp, r]) => ({ opp, ...r, games: r.w + r.l + r.t }))
     .filter((r) => r.games > 0);
   if (entries.length === 0) return null;
-  const seasoned = entries.filter((r) => r.games >= 3);
+  const seasoned = entries.filter((r) => r.games >= NEMESIS_MIN_MEETINGS);
   const pool = seasoned.length > 0 ? seasoned : entries;
   return pool.reduce((a, b) => {
-    const sa = (a.w + 0.5 * a.t) / a.games;
-    const sb = (b.w + 0.5 * b.t) / b.games;
+    const sa = winShare(a);
+    const sb = winShare(b);
     if (sb !== sa) return sb < sa ? b : a;
     return b.games > a.games ? b : a;
   });
@@ -302,9 +298,12 @@ export function playerHistoryAsOf(events, name, date) {
   return rows.reverse();
 }
 
+// recent form shows this many latest results
+export const FORM_LEN = 5;
+
 // per-player extras the inline profiles need beyond the leaderboard
 // stats: recent form
-export function profileExtrasAsOf(events, players, date, formLen = 5) {
+export function profileExtrasAsOf(events, players, date, formLen = FORM_LEN) {
   const core = new Set(players);
   const results = {};
 

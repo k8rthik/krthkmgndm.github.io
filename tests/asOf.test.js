@@ -8,6 +8,12 @@ import {
   headToHeadAsOf,
   sessionBand,
   cutoffHours,
+  rankResult,
+  winShare,
+  pairLogAsOf,
+  sortStats,
+  affinityAsOf,
+  AFFINITY_MAX_GAMES,
 } from "../components/elo/asOf.js";
 import { buildPayload } from "./helpers.js";
 
@@ -135,5 +141,113 @@ describe("cutoffHours / sessionBand", () => {
   test("a date with no play has no band", () => {
     assert.equal(sessionBand(events, "2026-01-05"), null);
     assert.equal(sessionBand(events, "2025-12-31"), null);
+  });
+});
+
+describe("rankResult", () => {
+  test("lower rank wins; equal ranks tie", () => {
+    assert.equal(rankResult({ rank: 1 }, { rank: 2 }), "won");
+    assert.equal(rankResult({ rank: 3 }, { rank: 2 }), "lost");
+    assert.equal(rankResult({ rank: 1 }, { rank: 1 }), "tie");
+  });
+});
+
+describe("winShare", () => {
+  test("ties count half", () => {
+    // (2 + 0.5 × 1) / 4 = 0.625
+    assert.equal(winShare({ w: 2, l: 1, t: 1 }), 0.625);
+    assert.equal(winShare({ w: 0, l: 3, t: 0 }), 0);
+    assert.equal(winShare({ w: 0, l: 0, t: 2 }), 0.5);
+  });
+
+  test("no meetings has no share", () => {
+    assert.equal(winShare({ w: 0, l: 0, t: 0 }), null);
+  });
+});
+
+describe("pairLogAsOf", () => {
+  // same three plays as the head-to-head fixture above
+  const { events } = buildPayload([
+    { date: "2026-01-01", game: "G1", seats: [["A", 1, 10], ["B", 2, 0], ["C", 3, -5], ["X", 4, -5]] },
+    { date: "2026-01-01", game: "G2", seats: [["A", 1, 0, false], ["B", 1, 0, false], ["C", 1, 0, false]] },
+    { date: "2026-01-08", game: "G3", seats: [["C", 1, 8], ["A", 2, -8]] },
+  ]);
+
+  test("every shared play, newest first, from the row player's side", () => {
+    const log = pairLogAsOf(events, "A", "C", "2026-01-08");
+    // h3 C beat A → lost; h2 full tie → tie; h1 A 1st vs C 3rd → won
+    assert.deepEqual(
+      log.map((p) => [p.date, p.game, p.result, p.a.name, p.b.name]),
+      [
+        ["2026-01-08", "G3", "lost", "A", "C"],
+        ["2026-01-01", "G2", "tie", "A", "C"],
+        ["2026-01-01", "G1", "won", "A", "C"],
+      ],
+    );
+    // the full seats ride along for rank/score/delta rendering
+    assert.equal(log[0].a.delta, -8);
+    assert.equal(log[0].b.rank, 1);
+  });
+
+  test("the as-of date drops later plays; plays missing either player are skipped", () => {
+    assert.deepEqual(
+      pairLogAsOf(events, "C", "A", "2026-01-01").map((p) => [p.game, p.result]),
+      [["G2", "tie"], ["G1", "lost"]],
+    );
+    // X only sat in h1
+    assert.deepEqual(pairLogAsOf(events, "A", "X", "2026-01-08").map((p) => p.game), ["G1"]);
+    assert.deepEqual(pairLogAsOf(events, "A", "Zed", "2026-01-08"), []);
+  });
+});
+
+describe("sortStats", () => {
+  const stats = [
+    { name: "Cat", elo: 1000, plays: 4 },
+    { name: "Ann", elo: 1100, plays: 4 },
+    { name: "Bob", elo: 1000, plays: 6 },
+  ];
+
+  test("numeric descending; equal values fall back to name ascending", () => {
+    // elo desc: Ann 1100, then Bob/Cat tied at 1000 → Bob before Cat
+    assert.deepEqual(sortStats(stats, "elo", -1).map((s) => s.name), ["Ann", "Bob", "Cat"]);
+    // plays asc: Ann/Cat tied at 4 → Ann, Cat; then Bob 6
+    assert.deepEqual(sortStats(stats, "plays", 1).map((s) => s.name), ["Ann", "Cat", "Bob"]);
+  });
+
+  test("string keys sort alphabetically in either direction", () => {
+    assert.deepEqual(sortStats(stats, "name", 1).map((s) => s.name), ["Ann", "Bob", "Cat"]);
+    assert.deepEqual(sortStats(stats, "name", -1).map((s) => s.name), ["Cat", "Bob", "Ann"]);
+  });
+
+  test("returns a new array, leaving the input order alone", () => {
+    const out = sortStats(stats, "elo", -1);
+    assert.notEqual(out, stats);
+    assert.deepEqual(stats.map((s) => s.name), ["Cat", "Ann", "Bob"]);
+  });
+});
+
+describe("affinityAsOf: column cap", () => {
+  // one play each of G1..G11 by Ann, plus a second play of G11 so it
+  // ranks first; the rest tie at one play and keep first-seen order
+  const games = Array.from({ length: 11 }, (_, i) => `G${i + 1}`);
+  const { events } = buildPayload(
+    [...games, "G11"].map((game) => ({
+      date: "2026-01-01", game, seats: [["Ann", 1, 1], ["Bob", 2, -1]],
+    })),
+  );
+
+  test("the cap is ten columns", () => {
+    assert.equal(AFFINITY_MAX_GAMES, 10);
+  });
+
+  test("eleven games played → exactly the cap shown, least-played dropped", () => {
+    const { games: shown } = affinityAsOf(events, ["Ann"], "2026-01-01");
+    // G11 (2 plays) first, then G1..G9 — G10 is the 11th and falls off
+    assert.deepEqual(shown, ["G11", "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]);
+  });
+
+  test("exactly ten games played → all ten shown", () => {
+    const { games: shown } = affinityAsOf(events.slice(0, 10), ["Ann"], "2026-01-01");
+    assert.equal(shown.length, 10);
   });
 });

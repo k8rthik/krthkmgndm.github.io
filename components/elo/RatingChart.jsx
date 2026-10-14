@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { colorFor, isCore, fmt, sign } from "./format";
 import { eventSpanAt } from "./series";
+import { START_ELO } from "./insights";
 
 const W = 1000;
 const H = 420;
@@ -130,7 +131,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
           {h === 0 ? "h" : ""}
         </text>
       ))}
-      <line x1={L} x2={W - R} y1={y(1000)} y2={y(1000)} className="elo-baseline" />
+      <line x1={L} x2={W - R} y1={y(START_ELO)} y2={y(START_ELO)} className="elo-baseline" />
 
       {lines.map((line) => (
         <g

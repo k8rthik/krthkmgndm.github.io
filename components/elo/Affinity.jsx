@@ -4,8 +4,10 @@ import { colorFor, sign, tightName } from "./format";
 
 // tint strength tracks |delta| against the biggest swing on the board;
 // near-zero cells stay close to the page background so the extremes pop
+const TINT_MIN = 10; // % of the hue in a near-zero cell
+const TINT_RANGE = 45; // extra % at the biggest swing on the board
 const tintFor = (delta, maxAbs) => {
-  const alpha = Math.round(10 + 45 * (Math.abs(delta) / maxAbs));
+  const alpha = Math.round(TINT_MIN + TINT_RANGE * (Math.abs(delta) / maxAbs));
   const hue = delta >= 0 ? "var(--elo-pos)" : "var(--elo-neg)";
   return `color-mix(in srgb, ${hue} ${alpha}%, var(--bg))`;
 };

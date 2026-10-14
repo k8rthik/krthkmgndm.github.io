@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { fmt } from "./format";
+import { fmt, shortName, skillNoteDetail } from "./format";
 
 const W = 1000;
 const H = 380;
@@ -16,12 +16,9 @@ const x = (c) => L + ((c - 1) / 4) * (W - L - R);
 const y = (s) => T + (1 - s) * (H - T - B);
 const radius = (g) => 5 + ((g.weightMultiplier - W_MIN) / (W_MAX - W_MIN)) * 15;
 
-function shortName(name) {
-  return name
-    .replace(": Fourth Edition", " 4e")
-    .replace(": Birmingham", "")
-    .replace(": Party Edition", "");
-}
+// a bubble earns a text label when it's a staple or a heavyweight
+const LABEL_MIN_PLAYS = 4;
+const LABEL_MIN_MULTIPLIER = 1.3;
 
 // most-played games pick their label spot first; skip if nothing fits cleanly
 function placeLabels(games, counts) {
@@ -31,7 +28,10 @@ function placeLabels(games, counts) {
   });
   const placed = [];
   const toLabel = games
-    .filter((g) => counts[g.name] >= 4 || g.weightMultiplier >= 1.3)
+    .filter(
+      (g) =>
+        counts[g.name] >= LABEL_MIN_PLAYS || g.weightMultiplier >= LABEL_MIN_MULTIPLIER,
+    )
     .sort((a, b) => counts[b.name] - counts[a.name]);
 
   for (const g of toLabel) {
@@ -88,7 +88,7 @@ export default function GameScatter({ games, events, tooltip, highlight }) {
         <div>
           complexity {g.bggWeight.toFixed(2)} / 5 · skill {fmt(g.skillIntensity * 100)}%
         </div>
-        <div className="elo-tip__sub">{g.skillNote.split("—")[1] || ""}</div>
+        <div className="elo-tip__sub">{skillNoteDetail(g.skillNote)}</div>
       </>,
       ev.clientX,
       ev.clientY,

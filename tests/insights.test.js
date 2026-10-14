@@ -9,6 +9,9 @@ import {
   nemesis,
   profileExtrasAsOf,
   playerHistoryAsOf,
+  NEMESIS_MIN_MEETINGS,
+  FORM_LEN,
+  START_ELO,
 } from "../components/elo/insights.js";
 import { buildPayload } from "./helpers.js";
 
@@ -196,10 +199,26 @@ describe("nemesis", () => {
     assert.equal(nem.opp, "Y");
   });
 
+  test("the meetings floor is 3, inclusive", () => {
+    assert.equal(NEMESIS_MIN_MEETINGS, 3);
+    // X: exactly 3 meetings, share 1/3 — clears the floor and is chosen
+    // over Y's worse share (0) from only 2 meetings
+    assert.equal(nemesis({ X: { w: 1, l: 2, t: 0 }, Y: { w: 0, l: 2, t: 0 } }).opp, "X");
+  });
+
+  test("ties count half toward win share", () => {
+    // X: (1 + 0.5 × 2) / 4 = 0.5 · Y: 1/3 — Y is the nemesis
+    assert.equal(nemesis({ X: { w: 1, l: 1, t: 2 }, Y: { w: 1, l: 2, t: 0 } }).opp, "Y");
+  });
+
   test("returns null with no opponents", () => {
     assert.equal(nemesis({}), null);
     assert.equal(nemesis(undefined), null);
   });
+});
+
+test("START_ELO is the series anchor", () => {
+  assert.equal(START_ELO, 1000);
 });
 
 describe("playerHistoryAsOf", () => {
@@ -254,6 +273,13 @@ describe("profileExtrasAsOf", () => {
     const extras = profileExtrasAsOf(events, ["Ann", "Bob"], "2026-01-06");
     // Ann: W W W L W W → last five: W W L W W
     assert.deepEqual(extras.Ann.form, [true, true, false, true, true]);
+  });
+
+  test("form length is 5: exactly five results show all five", () => {
+    assert.equal(FORM_LEN, 5);
+    const extras = profileExtrasAsOf(events, ["Ann", "Bob"], "2026-01-05");
+    // Ann's first five: W W W L W
+    assert.deepEqual(extras.Ann.form, [true, true, true, false, true]);
   });
 
   test("respects the as-of date", () => {

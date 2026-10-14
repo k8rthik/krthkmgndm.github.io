@@ -72,6 +72,7 @@ export default function EloDashboard({ data }) {
       <h2>session summaries</h2>
       <SessionSummary
         sessions={sessions}
+        session={session}
         corePlayers={corePlayers}
         date={date}
         onDateChange={setDate}

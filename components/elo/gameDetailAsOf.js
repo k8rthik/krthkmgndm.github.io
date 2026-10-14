@@ -9,6 +9,7 @@
 // play can have zero official winners (full tie) or several (BG Stats
 // flags on a broken tie).
 import { scoreOf } from "./format.js";
+import { slope } from "./stats.js";
 
 // a score trend needs this many scored plays — three points fit anything
 export const TREND_MIN_SCORED_PLAYS = 4;
@@ -100,16 +101,7 @@ export function gameDetailAsOf(events, game, date) {
   let trend = null;
   if (playMeans.length >= TREND_MIN_SCORED_PLAYS) {
     const mu = playMeans.reduce((t, m) => t + m, 0) / playMeans.length;
-    if (mu > 0) {
-      const xm = (playMeans.length - 1) / 2;
-      let cov = 0;
-      let varx = 0;
-      playMeans.forEach((m, i) => {
-        cov += (i - xm) * (m / mu - 1); // normalized ys average exactly 1
-        varx += (i - xm) ** 2;
-      });
-      trend = cov / varx;
-    }
+    if (mu > 0) trend = slope(playMeans.map((m) => m / mu));
   }
 
   // the reigning winner(s): whoever won the latest play, with their
