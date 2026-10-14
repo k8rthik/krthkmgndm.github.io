@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { fmtDuration, shortName } from "./format";
-import { gameDetailAsOf } from "./gameDetail";
+import { gameDetailAsOf } from "./gameDetailAsOf";
 import GameDetail from "./GameDetail";
 
 function Half({ rows, offset, selected, onSelect }) {

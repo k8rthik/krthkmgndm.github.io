@@ -13,7 +13,7 @@ import {
   gameDetailAsOf,
   TREND_MIN_SCORED_PLAYS,
   STREAK_MIN_LEN,
-} from "../components/elo/gameDetail.js";
+} from "../components/elo/gameDetailAsOf.js";
 
 // Minimal event: the derivation reads date, game, and per-seat
 // name/rank/score/won/role. won defaults to rank === 1; role (the BG
