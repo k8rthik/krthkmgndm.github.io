@@ -2,103 +2,26 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { DIR_FROM_KEY, generateMaze, isExit, move, renderMaze } from "../lib/maze";
 
-const COLS = 13;
+// maze size in cells; the rendered grid is (2·ROWS+1) × (2·COLS+1) characters
 const ROWS = 8;
-const OPP = { n: "s", s: "n", e: "w", w: "e" };
-
-function generateMaze() {
-  const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
-  const walls = Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({
-      n: true,
-      s: true,
-      e: true,
-      w: true,
-    })),
-  );
-  const stack = [[0, 0]];
-  visited[0][0] = true;
-  while (stack.length) {
-    const [r, c] = stack[stack.length - 1];
-    const opts = [];
-    if (r > 0 && !visited[r - 1][c]) opts.push(["n", r - 1, c]);
-    if (r < ROWS - 1 && !visited[r + 1][c]) opts.push(["s", r + 1, c]);
-    if (c < COLS - 1 && !visited[r][c + 1]) opts.push(["e", r, c + 1]);
-    if (c > 0 && !visited[r][c - 1]) opts.push(["w", r, c - 1]);
-    if (!opts.length) {
-      stack.pop();
-      continue;
-    }
-    const [dir, nr, nc] = opts[Math.floor(Math.random() * opts.length)];
-    walls[r][c][dir] = false;
-    walls[nr][nc][OPP[dir]] = false;
-    visited[nr][nc] = true;
-    stack.push([nr, nc]);
-  }
-  return walls;
-}
-
-function renderMaze(walls, player, atExit) {
-  const H = 2 * ROWS + 1;
-  const W = 2 * COLS + 1;
-  const grid = Array.from({ length: H }, () => Array(W).fill("#"));
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      grid[2 * r + 1][2 * c + 1] = " ";
-      if (!walls[r][c].n) grid[2 * r][2 * c + 1] = " ";
-      if (!walls[r][c].s) grid[2 * r + 2][2 * c + 1] = " ";
-      if (!walls[r][c].e) grid[2 * r + 1][2 * c + 2] = " ";
-      if (!walls[r][c].w) grid[2 * r + 1][2 * c] = " ";
-    }
-  }
-  if (!atExit) grid[2 * (ROWS - 1) + 1][2 * (COLS - 1) + 1] = ">";
-  grid[2 * player.r + 1][2 * player.c + 1] = "@";
-  return grid.map((row) => row.join("")).join("\n");
-}
-
-const DIR_FROM_KEY = {
-  ArrowUp: "n",
-  ArrowDown: "s",
-  ArrowLeft: "w",
-  ArrowRight: "e",
-  w: "n",
-  s: "s",
-  a: "w",
-  d: "e",
-  W: "n",
-  S: "s",
-  A: "w",
-  D: "e",
-  k: "n",
-  j: "s",
-  h: "w",
-  l: "e",
-};
-
-const STEP = {
-  n: (p) => ({ r: p.r - 1, c: p.c }),
-  s: (p) => ({ r: p.r + 1, c: p.c }),
-  e: (p) => ({ r: p.r, c: p.c + 1 }),
-  w: (p) => ({ r: p.r, c: p.c - 1 }),
-};
+const COLS = 13;
+const START = { r: 0, c: 0 };
 
 export default function NotFound() {
   const router = useRouter();
-  const [walls, setWalls] = useState(() => generateMaze());
-  const [player, setPlayer] = useState({ r: 0, c: 0 });
+  const [walls, setWalls] = useState(() => generateMaze(ROWS, COLS));
+  const [player, setPlayer] = useState(START);
   const [steps, setSteps] = useState(0);
   const containerRef = useRef(null);
 
-  const atExit = player.r === ROWS - 1 && player.c === COLS - 1;
-  const rendered = useMemo(
-    () => renderMaze(walls, player, atExit),
-    [walls, player, atExit],
-  );
+  const atExit = isExit(walls, player);
+  const rendered = useMemo(() => renderMaze(walls, player), [walls, player]);
 
   const reset = useCallback(() => {
-    setWalls(generateMaze());
-    setPlayer({ r: 0, c: 0 });
+    setWalls(generateMaze(ROWS, COLS));
+    setPlayer(START);
     setSteps(0);
   }, []);
 
@@ -124,10 +47,10 @@ export default function NotFound() {
     if (!dir) return;
     e.preventDefault();
 
-    setPlayer((p) => {
-      if (walls[p.r][p.c][dir]) return p;
-      return STEP[dir](p);
-    });
+    // bumping into a wall isn't a step
+    const next = move(walls, player, dir);
+    if (next === player) return;
+    setPlayer(next);
     setSteps((n) => n + 1);
   };
 
