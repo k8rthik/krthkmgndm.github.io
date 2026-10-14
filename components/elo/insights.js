@@ -245,7 +245,8 @@ export function recordsAsOf(events, series, corePlayers, date) {
 export const SIGNATURE_MIN_PLAYS = 3;
 
 // signature game: best win rate among games played at least
-// SIGNATURE_MIN_PLAYS times, from one player's affinity cells; equal
+// SIGNATURE_MIN_PLAYS times and won at least once (a 0-for-5 is no one's
+// signature), from one player's affinity cells; equal
 // rates go to the larger sample, then alphabetically. Wins are the
 // official won flags, as in kingpin — a full tie credits nobody, a
 // broken tie flagged for several credits each. Not the career elo
@@ -254,7 +255,7 @@ export const SIGNATURE_MIN_PLAYS = 3;
 export function signatureGame(perGame) {
   let best = null;
   for (const [game, c] of Object.entries(perGame ?? {})) {
-    if (c.plays < SIGNATURE_MIN_PLAYS) continue;
+    if (c.plays < SIGNATURE_MIN_PLAYS || c.wins === 0) continue;
     const rate = c.wins / c.plays;
     if (
       !best ||
@@ -272,15 +273,13 @@ export function signatureGame(perGame) {
 export const NEMESIS_MIN_MEETINGS = 3;
 
 // nemesis: worst win share among opponents faced at least
-// NEMESIS_MIN_MEETINGS times (falling back to anyone faced at all),
-// ties broken by more meetings
+// NEMESIS_MIN_MEETINGS times, ties broken by more meetings. null when
+// nobody clears the floor — one 0-1 loss isn't a nemesis (rule 2).
 export function nemesis(h2h) {
-  const entries = Object.entries(h2h ?? {})
+  const pool = Object.entries(h2h ?? {})
     .map(([opp, r]) => ({ opp, ...r, games: r.w + r.l + r.t }))
-    .filter((r) => r.games > 0);
-  if (entries.length === 0) return null;
-  const seasoned = entries.filter((r) => r.games >= NEMESIS_MIN_MEETINGS);
-  const pool = seasoned.length > 0 ? seasoned : entries;
+    .filter((r) => r.games >= NEMESIS_MIN_MEETINGS);
+  if (pool.length === 0) return null;
   return pool.reduce((a, b) => {
     const sa = winShare(a);
     const sb = winShare(b);

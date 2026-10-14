@@ -181,6 +181,13 @@ describe("signatureGame", () => {
     assert.equal(signatureGame({ Zeta: cell(4, 2), Alpha: cell(4, 2) }).game, "Alpha");
   });
 
+  test("a winless game is never a signature, however often it was played", () => {
+    // Grind: 0-for-5 clears the play floor but has no win to its name
+    assert.equal(signatureGame({ Grind: cell(5, 0) }), null);
+    // with a 1-for-3 alongside it, the 1-for-3 is the signature
+    assert.equal(signatureGame({ Grind: cell(5, 0), Once: cell(3, 1) }).game, "Once");
+  });
+
   test("absent (null) when no game reaches the floor — no fallback", () => {
     assert.equal(signatureGame({ A: cell(2, 2), B: cell(1, 1) }), null);
     assert.equal(signatureGame({}), null);
@@ -211,12 +218,14 @@ describe("nemesis", () => {
     assert.equal(nem.opp, "X");
   });
 
-  test("falls back to anyone faced when nobody clears the floor", () => {
-    const nem = nemesis({
-      X: { w: 1, l: 1, t: 0 },
-      Y: { w: 0, l: 1, t: 0 },
-    });
-    assert.equal(nem.opp, "Y"); // share 0 beats share 0.5
+  test("absent (null) when nobody clears the floor — losing 0-1 once isn't a nemesis", () => {
+    // X: 2 meetings, Y: 1 — both under 3, so no row rather than a fallback
+    assert.equal(nemesis({ X: { w: 1, l: 1, t: 0 }, Y: { w: 0, l: 1, t: 0 } }), null);
+  });
+
+  test("exactly NEMESIS_MIN_MEETINGS meetings qualifies, ties included", () => {
+    // 0 wins, 2 losses, 1 tie = 3 meetings, share (0 + 0.5) / 3 = 1/6
+    assert.equal(nemesis({ X: { w: 0, l: 2, t: 1 } }).opp, "X");
   });
 
   test("equal shares break toward more meetings", () => {
