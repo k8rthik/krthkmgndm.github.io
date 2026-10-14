@@ -20,7 +20,7 @@ const UNITS = buildUnits(CAPACITY, OFFER, CC_SPLIT, CT_SPLIT);
 const LAYOUT = makeLayout(UNITS);
 
 export const DEFAULTS = {
-  day: "summer",
+  day: "spring",
   homes: 0,
   kwhPerHome: 25,          // Base Power Gen 1: 11.4 kW / 25 kWh
   kwPerHome: 11.4,
@@ -70,12 +70,28 @@ function availability(day) {
   return avail;
 }
 
-function mustRun(day) {
+// Fleet-wide nuclear availability. Nuclear is must-run at this factor on every
+// day: it does not take the day's thermalDerate, which models ambient and fuel
+// outages on the gas and coal fleet.
+export const NUCLEAR_AVAILABILITY = 0.95;
+
+/** Must-run injection at each bus, MW: its nuclear at fleet availability. */
+export function mustRun() {
   const m = new Float64Array(NB);
-  for (let b = 0; b < NB; b++) m[b] = CAPACITY[BUSES[b].id].nuclear * 0.95;
-  // Winter derates nuclear alongside everything else only mildly; keep it firm.
+  for (let b = 0; b < NB; b++) m[b] = CAPACITY[BUSES[b].id].nuclear * NUCLEAR_AVAILABILITY;
   return m;
 }
+
+// Fixed-point iteration. MAX_ITER caps the work per solve; the price-move test
+// is not trusted until WARMUP_ITERS have passed, since the first averaged
+// schedules can sit still by accident; PRICE_TOL is the largest change in any
+// bus-hour LMP, $/MWh, that counts as settled. A warm start is already near the
+// fixed point, so its step sequence starts WARM_STEP_OFFSET terms further in.
+export const MAX_ITER = 22;
+export const WARMUP_ITERS = 6;
+export const PRICE_TOL = 1.5;
+const WARM_STEP_OFFSET = 2;
+
 
 /** Share of the residential fleet that lands at each bus. */
 export function fleetWeights(repOnly) {
@@ -88,7 +104,7 @@ export function simulate(optsIn) {
   const o = { ...DEFAULTS, ...optsIn };
   const load = busLoads(o.day);
   const avail = availability(o.day);
-  const must = mustRun(o.day);
+  const must = mustRun();
   const ctx = { layout: LAYOUT, sf: SF, gsf: GSF };
 
   // --- storage entities -------------------------------------------------------
@@ -168,7 +184,7 @@ export function simulate(optsIn) {
   // and does converge. `gap` is the relative distance between the fleet's
   // current schedule and its best response - the convergence measure reported
   // on the page.
-  const maxIter = o.maxIter ?? 22;
+  const maxIter = o.maxIter ?? MAX_ITER;
   let gap = Infinity;
   const prevLmp = new Float64Array(T * NB).fill(NaN);
   for (let it = 0; it < maxIter; it++) {
@@ -176,7 +192,7 @@ export function simulate(optsIn) {
     if (!hours) break;
     iters = it + 1;
     const zp = zonePrices(hours);
-    const alpha = 1 / (it + 1 + (optsIn && optsIn.warmStart ? 2 : 0));
+    const alpha = 1 / (it + 1 + (optsIn && optsIn.warmStart ? WARM_STEP_OFFSET : 0));
 
     for (let e = 0; e < entities.length; e++) {
       const en = entities[e];
@@ -211,7 +227,7 @@ export function simulate(optsIn) {
       for (let b = 0; b < NB; b++) prevLmp[t * NB + b] = hours[t].lmp[b];
     }
     gap = move;
-    if (it > 6 && move < 1.5) { converged = true; break; }
+    if (it > WARMUP_ITERS && move < PRICE_TOL) { converged = true; break; }
   }
   hours = runSCED();
   if (!hours) return null;

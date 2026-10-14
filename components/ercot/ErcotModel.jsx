@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { simulate } from "./engine.js";
+import { DEFAULTS, simulate } from "./engine.js";
 import { BUSES, ZONES } from "./grid.js";
 import { DAYS, DAY_IDS } from "./days.js";
 import {
-  ZONE_LABEL, ZONE_VAR, usd, hhmm, homesLabel, homesFromSlider, sliderFromHomes,
+  ZONE_LABEL, ZONE_VAR, SLIDER_MAX, usd, hhmm, homesLabel, homesFromSlider, sliderFromHomes,
 } from "./format.js";
 import PriceChart from "./PriceChart";
 import NetworkMap from "./NetworkMap";
@@ -14,30 +14,39 @@ import Siting from "./Siting";
 
 const MAX_HOMES = 8e6;
 const LADDER = [0, 25e3, 100e3, 300e3, 800e3, 2e6, 4e6, 8e6];
+const DEFAULT_HOUR = 20;          // 20:00, inside the evening ramp
+const RESOLVE_DEBOUNCE_MS = 140;  // wait for the slider to settle before re-solving
 
 // Base Power's published position, for scale. ~500 MWh of fleet across Texas
 // and Illinois at 25 kWh a home is on the order of 20,000 homes; the signed
 // utility programmes (CoServ, El Paso Electric, Austin Energy) are a further
 // 200 MW+ of contracted capacity that is not yet in the ground.
+const BASE_TODAY_HOMES = 20000;
+const SIGNED_PROGRAMME_KW = 200e3;
 const ANCHORS = [
-  { homes: 20000, label: "Base today" },
-  { homes: 200e6 / 11.4 / 1000, label: "signed programmes" },
+  { homes: BASE_TODAY_HOMES, label: "Base today" },
+  { homes: SIGNED_PROGRAMME_KW / DEFAULTS.kwPerHome, label: "signed programmes" },
   { homes: 1e6, label: "1M homes" },
 ];
 
+const CORE_KWH = 39.2;
 const SPECS = {
-  gen1: { label: "Gen 1 · 11.4 kW / 25 kWh", kwh: 25, kw: 11.4 },
-  core: { label: "Base Core · 39.2 kWh", kwh: 39.2, kw: 11.4 },
+  gen1: {
+    label: `Gen 1 · ${DEFAULTS.kwPerHome} kW / ${DEFAULTS.kwhPerHome} kWh`,
+    kwh: DEFAULTS.kwhPerHome,
+    kw: DEFAULTS.kwPerHome,
+  },
+  core: { label: `Base Core · ${CORE_KWH} kWh`, kwh: CORE_KWH, kw: DEFAULTS.kwPerHome },
 };
 
 export default function ErcotModel() {
-  const [day, setDay] = useState("spring");
-  const [slider, setSlider] = useState(sliderFromHomes(20000, MAX_HOMES));
+  const [day, setDay] = useState(DEFAULTS.day);
+  const [slider, setSlider] = useState(sliderFromHomes(BASE_TODAY_HOMES, MAX_HOMES));
   const [spec, setSpec] = useState("gen1");
-  const [backup, setBackup] = useState(20);
-  const [signal, setSignal] = useState("zonal");
-  const [repOnly, setRepOnly] = useState(true);
-  const [hour, setHour] = useState(20);
+  const [backup, setBackup] = useState(Math.round(DEFAULTS.backupReserve * 100));
+  const [signal, setSignal] = useState(DEFAULTS.signal);
+  const [repOnly, setRepOnly] = useState(DEFAULTS.repOnly);
+  const [hour, setHour] = useState(DEFAULT_HOUR);
   const [ghost, setGhost] = useState(true);
 
   const [run, setRun] = useState(null);
@@ -96,7 +105,7 @@ export default function ErcotModel() {
       if (job !== jobRef.current) return;
       setRun(homes === 0 ? base : simulate({ ...opts, homes, warmStart: base.warmStart }));
       setBusy(false);
-    }, 140);
+    }, RESOLVE_DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [base, homes, opts]);
 
@@ -151,7 +160,7 @@ export default function ErcotModel() {
           <input
             type="range"
             min="0"
-            max="1000"
+            max={SLIDER_MAX}
             value={slider}
             onChange={(e) => setSlider(+e.target.value)}
           />
@@ -228,7 +237,7 @@ export default function ErcotModel() {
       </p>
       <label className="erc-hour">
         hour{" "}
-        <input type="range" min="0" max="23" value={hour} onChange={(e) => setHour(+e.target.value)} />{" "}
+        <input type="range" min="0" max={run.lambda.length - 1} value={hour} onChange={(e) => setHour(+e.target.value)} />{" "}
         {hhmm(hour)}
       </label>
       <div className="elo-chartwrap">

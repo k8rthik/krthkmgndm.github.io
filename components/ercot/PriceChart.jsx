@@ -41,14 +41,15 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
   const lo = ticks[0];
   const hi = ticks[ticks.length - 1];
 
-  const x = (i) => L + (i / 23) * (W - L - R);
+  const last = lambda.length - 1; // final hour index of the day
+  const x = (i) => L + (i / last) * (W - L - R);
   const y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
   const path = (vals) =>
     vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
 
   // de-overlap the end labels, same approach as the rating chart
   const labels = [...lines, { key: "lambda", label: "λ", color: "var(--dim)", values: Array.from(lambda) }]
-    .map((s) => ({ ...s, ey: y(s.values[23]) }))
+    .map((s) => ({ ...s, ey: y(s.values[last]) }))
     .sort((a, b) => a.ey - b.ey)
     .reduce((acc, s) => {
       const prev = acc[acc.length - 1];
@@ -59,7 +60,7 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
     if (!ref.current || !onHour) return;
     const r = ref.current.getBoundingClientRect();
     const px = ((ev.clientX - r.left) / r.width) * W;
-    onHour(Math.max(0, Math.min(23, Math.round(((px - L) / (W - L - R)) * 23))));
+    onHour(Math.max(0, Math.min(last, Math.round(((px - L) / (W - L - R)) * last))));
   };
 
   return (

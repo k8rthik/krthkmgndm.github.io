@@ -33,16 +33,18 @@ export function homesLabel(h) {
   return String(h);
 }
 
-// The slider is logarithmic: position 0 means no fleet at all, then
-// 10,000 homes up to the cap.
+// The slider is logarithmic: position 0 means no fleet at all, then positions
+// 1..SLIDER_MAX run from 10,000 homes to the cap in SLIDER_MAX - 1 log steps.
+export const SLIDER_MAX = 1000;
 const FLOOR = 10000;
+const STEPS = SLIDER_MAX - 1;
 
 export function homesFromSlider(v, max) {
   if (v <= 0) return 0;
-  return Math.round(FLOOR * Math.pow(max / FLOOR, (v - 1) / 999));
+  return Math.round(FLOOR * Math.pow(max / FLOOR, (v - 1) / STEPS));
 }
 
 export function sliderFromHomes(h, max) {
   if (h <= 0) return 0;
-  return Math.round(1 + (999 * Math.log(h / FLOOR)) / Math.log(max / FLOOR));
+  return Math.round(1 + (STEPS * Math.log(h / FLOOR)) / Math.log(max / FLOOR));
 }

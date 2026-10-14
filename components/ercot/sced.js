@@ -55,7 +55,8 @@ export function makeLayout(units) {
 }
 
 /**
- * @param {object} ctx  { layout, sf, gsf, thermalDerate }
+ * @param {object} ctx  { layout, sf, gsf } (the day's thermal derate is
+ *                      already folded into hour.avail by the caller)
  * @param {object} hour { avail: Float64Array(nUnits), load: Float64Array(NB),
  *                        mustRun: Float64Array(NB), storNet: Float64Array(NB),
  *                        storHead: Float64Array(NB) }

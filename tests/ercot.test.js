@@ -15,7 +15,7 @@ import {
 } from "../components/ercot/grid.js";
 import { buildUnits, makeLayout, solveHour } from "../components/ercot/sced.js";
 import { arbitrage } from "../components/ercot/storage.js";
-import { fleetWeights } from "../components/ercot/engine.js";
+import { fleetWeights, NUCLEAR_AVAILABILITY } from "../components/ercot/engine.js";
 
 const NB = BUSES.length;
 const NL = LINES.length;
@@ -44,7 +44,7 @@ function hour({ totalLoad, windCF, solarCF }) {
   const mustRun = new Float64Array(NB);
   for (let b = 0; b < NB; b++) {
     load[b] = BUSES[b].loadShare * totalLoad;
-    mustRun[b] = CAPACITY[BUSES[b].id].nuclear * 0.95;
+    mustRun[b] = CAPACITY[BUSES[b].id].nuclear * NUCLEAR_AVAILABILITY;
   }
   return {
     avail, load, mustRun,

@@ -1,7 +1,10 @@
 "use client";
 
-import { BUSES, LINES, GTCS, BUS_INDEX } from "./grid.js";
+import { BUSES, LINES, GTCS, BUS_INDEX, LINE_INDEX } from "./grid.js";
 import { usd } from "./format.js";
+import { shade, priceSpread } from "./shade.js";
+
+const TONE_FILL = { neutral: "var(--code-bg)", lo: "var(--erc-lo)", hi: "var(--erc-hi)" };
 
 const W = 1000;
 const H = 620;
@@ -11,26 +14,17 @@ const PY = 46;
 const x = (b) => PX + b.x * (W - 2 * PX);
 const y = (b) => PY + b.y * (H - 2 * PY);
 
-// three steps either side of lambda, so the map reads as a diverging scale
-// rather than a rainbow
-function shade(v, lambda, spread) {
-  const t = Math.max(-1, Math.min(1, (v - lambda) / spread));
-  if (Math.abs(t) < 0.06) return { fill: "var(--code-bg)", op: 1 };
-  const op = Math.abs(t) < 0.34 ? 0.3 : Math.abs(t) < 0.7 ? 0.62 : 1;
-  return { fill: t < 0 ? "var(--erc-lo)" : "var(--erc-hi)", op };
-}
-
 export default function NetworkMap({ lmp, lambda, flow, binding }) {
   const bindLine = new Map(binding.filter((b) => b.kind === "line").map((b) => [b.id, b]));
   const bindGtc = new Map(binding.filter((b) => b.kind === "gtc").map((b) => [b.id, b]));
-  const spread = Math.max(6, ...lmp.map((v) => Math.abs(v - lambda)));
+  const spread = priceSpread(lmp, lambda);
 
   return (
     <svg className="elo-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Eight-bus network, priced">
       {GTCS.map((g) => {
         const pts = new Set();
         for (const [id] of g.members) {
-          const l = LINES.find((z) => z.id === id);
+          const l = LINES[LINE_INDEX[id]];
           pts.add(l.from);
           pts.add(l.to);
         }
@@ -94,7 +88,7 @@ export default function NetworkMap({ lmp, lambda, flow, binding }) {
         const s = shade(lmp[i], lambda, spread);
         return (
           <g key={b.id}>
-            <circle cx={x(b)} cy={y(b)} r="26" fill={s.fill} fillOpacity={s.op} stroke="var(--fg)" strokeWidth="1" />
+            <circle cx={x(b)} cy={y(b)} r="26" fill={TONE_FILL[s.tone]} fillOpacity={s.op} stroke="var(--fg)" strokeWidth="1" />
             <text className="elo-lbl" x={x(b)} y={y(b) + 4} textAnchor="middle">
               {Math.round(lmp[i])}
             </text>

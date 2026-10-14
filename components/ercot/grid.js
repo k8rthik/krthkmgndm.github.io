@@ -5,6 +5,8 @@
 // GTC limits are the author's allocation: ERCOT does not publish an 8-bus
 // equivalent of its 18,000-bus Network Operations Model.
 
+import { invert } from "./linalg.js";
+
 export const SWCAP = 5000;        // system-wide offer cap / VOLL, $/MWh (PUCT 16 TAC 25.505)
 export const LOW_CAP = -251;      // low system-wide offer cap, $/MWh
 
@@ -131,30 +133,6 @@ export function shiftFactors() {
     for (let b = 0; b < nb; b++) sf[li][b] -= ref;
   }
   return sf;
-}
-
-function invert(M) {
-  const n = M.length;
-  const A = M.map((row, i) => {
-    const r = new Float64Array(2 * n);
-    r.set(row, 0);
-    r[n + i] = 1;
-    return r;
-  });
-  for (let c = 0; c < n; c++) {
-    let p = c;
-    for (let i = c + 1; i < n; i++) if (Math.abs(A[i][c]) > Math.abs(A[p][c])) p = i;
-    [A[c], A[p]] = [A[p], A[c]];
-    const d = A[c][c];
-    for (let j = 0; j < 2 * n; j++) A[c][j] /= d;
-    for (let i = 0; i < n; i++) {
-      if (i === c) continue;
-      const f = A[i][c];
-      if (f === 0) continue;
-      for (let j = 0; j < 2 * n; j++) A[i][j] -= f * A[c][j];
-    }
-  }
-  return A.map((r) => r.slice(n));
 }
 
 // GTC shift factors: the algebraic sum of the member lines' shift factors.
