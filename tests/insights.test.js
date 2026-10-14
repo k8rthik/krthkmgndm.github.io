@@ -10,35 +10,7 @@ import {
   profileExtrasAsOf,
   playerHistoryAsOf,
 } from "../components/elo/insights.js";
-
-// Build a payload from event definitions the way the real pipeline does:
-// h = 1, 2, 3…, series = [0, 1000] anchor plus one post-play point per
-// seat, derived by accumulating deltas (the invariant the derivations
-// rely on — see tests/data-invariants.test.js for the real-data check).
-function buildPayload(defs) {
-  const elo = {};
-  const series = {};
-  const events = defs.map((d, i) => {
-    const h = i + 1;
-    for (const [name, , delta] of d.seats) {
-      elo[name] = (elo[name] ?? 1000) + delta;
-      (series[name] ?? (series[name] = [[0, 1000]])).push([h, elo[name]]);
-    }
-    return {
-      h,
-      date: d.date,
-      game: d.game,
-      seats: d.seats.map(([name, rank, delta, won, score]) => ({
-        name,
-        rank,
-        delta,
-        won: won ?? rank === 1,
-        score: score ?? null,
-      })),
-    };
-  });
-  return { events, series };
-}
+import { buildPayload } from "./helpers.js";
 
 const row = (rows, label) => rows.find((r) => r.label === label);
 
