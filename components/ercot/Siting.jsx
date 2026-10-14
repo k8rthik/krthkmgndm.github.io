@@ -2,6 +2,7 @@
 
 import { BUSES } from "./grid.js";
 import { ZONE_LABEL, homesLabel } from "./format.js";
+import { linePath } from "../chart/scale.js";
 
 const SW = 130;
 const SH = 26;
@@ -12,7 +13,7 @@ const SH = 26;
 function Spark({ xs, ys, yMax, xMax, markX }) {
   const px = (v) => (Math.log10(1 + v) / Math.log10(1 + xMax)) * (SW - 2);
   const py = (v) => SH - 3 - (v / yMax) * (SH - 6);
-  const d = ys.map((v, i) => `${i ? "L" : "M"}${(1 + px(xs[i])).toFixed(1)},${py(v).toFixed(1)}`).join("");
+  const d = linePath(ys.map((v, i) => [1 + px(xs[i]), py(v)]));
   return (
     <svg className="erc-spark" viewBox={`0 0 ${SW} ${SH}`} aria-hidden="true">
       <line className="elo-grid" x1="0" y1={SH - 3} x2={SW} y2={SH - 3} />

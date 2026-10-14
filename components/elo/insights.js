@@ -3,8 +3,9 @@
 // explicit .js extensions so these pure modules load in raw Node for the
 // test suite (Next's bundler accepts either form)
 import { cutoffHours, winShare } from "./asOf.js";
-import { fmt, sign, scoreOf } from "./format.js";
+import { scoreOf } from "./format.js";
 import { slope } from "./stats.js";
+import { num, signed } from "../../lib/format.js";
 
 export const START_ELO = 1000;
 
@@ -175,7 +176,7 @@ export function recordsAsOf(events, series, corePlayers, date) {
     rows.push({
       label: "apex",
       holder: peak.name,
-      value: fmt(peak.elo),
+      value: num(peak.elo),
       detail: "highest peak elo",
     });
   if (winStreak && winStreak.len > 1)
@@ -211,7 +212,7 @@ export function recordsAsOf(events, series, corePlayers, date) {
     rows.push({
       label: "studious",
       holder: student.name,
-      value: `${sign(student.trend * 100)}%`,
+      value: `${signed(student.trend * 100)}%`,
       detail: "score gain per replay",
     });
 

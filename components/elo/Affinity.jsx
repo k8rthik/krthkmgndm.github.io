@@ -1,6 +1,7 @@
 "use client";
 
-import { colorFor, sign, tightName } from "./format";
+import { colorFor, tightName } from "./format";
+import { signed } from "../../lib/format.js";
 
 // tint strength tracks |delta| against the biggest swing on the board;
 // near-zero cells stay close to the page background so the extremes pop
@@ -66,7 +67,7 @@ export default function Affinity({ affinity, corePlayers, tooltip }) {
                     }
                     onMouseLeave={tooltip.hide}
                   >
-                    {sign(cell.delta)}
+                    {signed(cell.delta)}
                   </td>
                 );
               })}

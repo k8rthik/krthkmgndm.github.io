@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
-import { fmt, shortName, skillNoteDetail } from "./format";
+import { shortName, skillNoteDetail } from "./format";
+import { linear } from "../chart/scale.js";
+import { num } from "../../lib/format.js";
 
 const W = 1000;
 const H = 380;
@@ -12,8 +14,9 @@ const B = 34;
 const W_MIN = 0.5;
 const W_MAX = 1.5;
 
-const x = (c) => L + ((c - 1) / 4) * (W - L - R);
-const y = (s) => T + (1 - s) * (H - T - B);
+// BGG weight runs 1–5; skill intensity 0–1
+const x = linear([1, 5], [L, W - R]);
+const y = linear([0, 1], [H - B, T]);
 const radius = (g) => 5 + ((g.weightMultiplier - W_MIN) / (W_MAX - W_MIN)) * 15;
 
 // a bubble earns a text label when it's a staple or a heavyweight
@@ -84,7 +87,7 @@ export default function GameScatter({ games, counts, tooltip, highlight }) {
           {g.weightMultiplier.toFixed(2)}
         </div>
         <div>
-          complexity {g.bggWeight.toFixed(2)} / 5 · skill {fmt(g.skillIntensity * 100)}%
+          complexity {g.bggWeight.toFixed(2)} / 5 · skill {num(g.skillIntensity * 100)}%
         </div>
         <div className="elo-tip__sub">{skillNoteDetail(g.skillNote)}</div>
       </>,
@@ -110,7 +113,7 @@ export default function GameScatter({ games, counts, tooltip, highlight }) {
         <g key={s}>
           <line x1={L} x2={W - R} y1={y(s)} y2={y(s)} className="elo-grid" />
           <text x={L - 8} y={y(s) + 4} textAnchor="end">
-            {fmt(s * 100)}%
+            {num(s * 100)}%
           </text>
         </g>
       ))}

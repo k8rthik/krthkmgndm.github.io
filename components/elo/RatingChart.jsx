@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { colorFor, isCore, fmt, sign } from "./format";
+import { colorFor, isCore } from "./format";
 import { eventSpanAt } from "./series";
 import { START_ELO } from "./insights";
+import { linePath, linear, spreadLabels, viewBoxX } from "../chart/scale.js";
+import { num, signed } from "../../lib/format.js";
 
 const W = 1000;
 const H = 420;
@@ -19,26 +21,18 @@ function buildLayout(series, corePlayers) {
   const xMax = Math.max(...allPts.map((p) => p[0]));
   const yMin = Math.floor((Math.min(...allPts.map((p) => p[1])) - 15) / 50) * 50;
   const yMax = Math.ceil((Math.max(...allPts.map((p) => p[1])) + 15) / 50) * 50;
-  const x = (h) => L + (h / xMax) * (W - L - R);
-  const y = (v) => T + (1 - (v - yMin) / (yMax - yMin)) * (H - T - B);
+  const x = linear([0, xMax], [L, W - R]);
+  const y = linear([yMin, yMax], [H - B, T]);
 
   const lines = names.map((name) => {
     const pts = series[name];
-    const d = pts
-      .map((p, i) => `${i ? "L" : "M"}${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`)
-      .join("");
+    const d = linePath(pts.map(([h, v]) => [x(h), y(v)]));
     const last = pts[pts.length - 1];
     return { name, d, ex: x(last[0]), ey: y(last[1]) };
   });
 
   // de-overlap end labels top-to-bottom; nudged labels get a leader line
-  const labels = [...lines]
-    .sort((a, b) => a.ey - b.ey)
-    .reduce((acc, line) => {
-      const prev = acc[acc.length - 1];
-      const ly = prev ? Math.max(line.ey, prev.ly + LABEL_GAP) : line.ey;
-      return [...acc, { ...line, ly }];
-    }, []);
+  const labels = spreadLabels(lines, LABEL_GAP);
 
   return { xMax, yMin, yMax, x, y, lines, labels };
 }
@@ -56,9 +50,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
 
   const handleMove = (ev) => {
     if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const hx = ((ev.clientX - rect.left) / rect.width) * W;
-    const hours = ((hx - L) / (W - L - R)) * xMax;
+    const hours = x.invert(viewBoxX(ev.clientX, svgRef.current.getBoundingClientRect(), W));
     const span = eventSpanAt(events, hours);
     if (!span) return;
     const best = span.event;
@@ -68,7 +60,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
         <div className="elo-tip__title">{best.game}</div>
         <div className="elo-tip__sub">
           {best.date} · {best.estimated ? "~" : ""}
-          {fmt(span.end - span.start, 1)}h
+          {num(span.end - span.start, 1)}h
         </div>
         <table>
           <tbody>
@@ -79,7 +71,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
                   {s.score != null ? ` · ${s.score}` : ""}
                 </td>
                 <td className={s.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                  {sign(s.delta, 1)}
+                  {signed(s.delta, 1)}
                 </td>
               </tr>
             ))}
@@ -121,7 +113,7 @@ export default function RatingChart({ series, events, corePlayers, tooltip, band
         <g key={v}>
           <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} className="elo-grid" />
           <text x={L - 8} y={y(v) + 4} textAnchor="end">
-            {fmt(v)}
+            {num(v)}
           </text>
         </g>
       ))}

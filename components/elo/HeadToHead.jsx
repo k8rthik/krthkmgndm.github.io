@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { fmt, ord, sign } from "./format";
+import { ord } from "./format";
 import { pairLogAsOf, winShare } from "./asOf";
+import { num, signed } from "../../lib/format.js";
 
 // tint strength (in % of the hue) per unit of win share away from even:
 // a 100% or 0% share mixes in 45% of the hue
@@ -71,7 +72,7 @@ export default function HeadToHead({ records, corePlayers, tooltip, events, date
                         tooltip.show(
                           <div>
                             {row} vs {col}: {r.w}–{r.l}
-                            {r.t ? ` (${r.t} ties)` : ""} · {fmt(share * 100)}% win
+                            {r.t ? ` (${r.t} ties)` : ""} · {num(share * 100)}% win
                             share
                           </div>,
                           ev.clientX,
@@ -127,14 +128,14 @@ export default function HeadToHead({ records, corePlayers, tooltip, events, date
                       {ord(p.a.rank)}
                       {p.a.score != null ? ` · ${p.a.score}` : ""}{" "}
                       <span className={p.a.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                        {sign(p.a.delta, 1)}
+                        {signed(p.a.delta, 1)}
                       </span>
                     </td>
                     <td>
                       {ord(p.b.rank)}
                       {p.b.score != null ? ` · ${p.b.score}` : ""}{" "}
                       <span className={p.b.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                        {sign(p.b.delta, 1)}
+                        {signed(p.b.delta, 1)}
                       </span>
                     </td>
                   </tr>

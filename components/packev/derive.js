@@ -133,19 +133,3 @@ export function milestoneGrid(milestones, roles) {
   return { columns, rows };
 }
 
-export function niceTicks(lo, hi, count = 4) {
-  const raw = (hi - lo) / count || 1;
-  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
-  const n = raw / mag;
-  const step = (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
-  const out = [];
-  const end = Math.ceil(hi / step - 1e-9) * step;
-  for (let v = Math.floor(lo / step + 1e-9) * step; v <= end + step * 1e-9; v += step) {
-    out.push(Number(v.toFixed(10)));
-  }
-  return out;
-}
-
-export const pct = (x, d = 0) => (x == null ? "–" : `${(x * 100).toFixed(d)}%`);
-export const usd = (x, d = 2) =>
-  x == null ? "–" : `${x < 0 ? "−" : ""}$${Math.abs(x).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d })}`;

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { colorFor, fmt } from "./format";
+import { colorFor } from "./format";
 import { cutoffHours } from "./asOf";
+import { num } from "../../lib/format.js";
 
 const DURATION_MS = 15000;
 const ROW_H = 22;
@@ -141,7 +142,7 @@ export default function EloRace({ series, events, corePlayers, date }) {
                 }}
               />
             </span>
-            <span className="elo-race__val">{fmt(s.elo)}</span>
+            <span className="elo-race__val">{num(s.elo)}</span>
           </div>
         ))}
       </div>

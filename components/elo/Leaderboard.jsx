@@ -1,9 +1,10 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import { colorFor, isCore, fmt, ord, sign, shortName } from "./format";
+import { colorFor, isCore, ord, shortName } from "./format";
 import { signatureGame, nemesis, playerHistoryAsOf } from "./insights";
 import { sortStats } from "./asOf";
+import { num, signed } from "../../lib/format.js";
 
 const COLUMNS = [
   { key: "name", label: "player", numeric: false },
@@ -42,7 +43,7 @@ function ProfileRow({ player, affinity, h2h, extra }) {
               <span className="elo-profile__k">best game</span>
               <span>
                 <span title={sig.game}>{shortName(sig.game)}</span>{" "}
-                {fmt(sig.rate * 100)}%{" "}
+                {num(sig.rate * 100)}%{" "}
                 <span className="elo-dim">
                   ({sig.wins}–{sig.plays - sig.wins})
                 </span>
@@ -146,15 +147,15 @@ export default function Leaderboard({
                       </span>
                     </td>
                     <td>
-                      <strong>{fmt(p.elo)}</strong>{" "}
-                      <span className="elo-dim">±{fmt(p.ci90)}</span>
+                      <strong>{num(p.elo)}</strong>{" "}
+                      <span className="elo-dim">±{num(p.ci90)}</span>
                     </td>
-                    <td>{fmt(p.peak)}</td>
+                    <td>{num(p.peak)}</td>
                     <td>{p.plays}</td>
                     <td>{p.wins}</td>
-                    <td>{fmt(p.winRate * 100)}%</td>
+                    <td>{num(p.winRate * 100)}%</td>
                     <td className={p.pae >= 0 ? "elo-pos" : "elo-neg"}>
-                      {sign(p.pae, 2)}
+                      {signed(p.pae, 2)}
                     </td>
                   </tr>
                   {expanded && (
@@ -201,9 +202,9 @@ export default function Leaderboard({
                     </td>
                     <td>{p.score !== null ? p.score : "—"}</td>
                     <td className={p.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                      {sign(p.delta, 1)}
+                      {signed(p.delta, 1)}
                     </td>
-                    <td>{fmt(p.elo)}</td>
+                    <td>{num(p.elo)}</td>
                   </tr>
                 ))}
               </tbody>

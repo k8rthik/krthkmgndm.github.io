@@ -4,13 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULTS, simulate, siteValues } from "./engine.js";
 import { BUSES, ZONES } from "./grid.js";
 import { DAYS, DAY_IDS } from "./days.js";
-import {
-  ZONE_LABEL, ZONE_VAR, SLIDER_MAX, usd, hhmm, homesLabel, homesFromSlider, sliderFromHomes,
-} from "./format.js";
+import { ZONE_LABEL, ZONE_VAR, SLIDER_MAX, hhmm, homesLabel, homesFromSlider, sliderFromHomes } from "./format.js";
 import PriceChart from "./PriceChart";
 import NetworkMap from "./NetworkMap";
 import Decomposition from "./Decomposition";
 import Siting from "./Siting";
+import { usd } from "../../lib/format.js";
 
 const MAX_HOMES = 8e6;
 const LADDER = [0, 25e3, 100e3, 300e3, 800e3, 2e6, 4e6, 8e6];

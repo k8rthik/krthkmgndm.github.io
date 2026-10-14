@@ -1,9 +1,10 @@
 "use client";
 
-import { fmt, sign, shortName } from "./format";
+import { shortName } from "./format";
+import { num, signed } from "../../lib/format.js";
 
 // scores are usually whole; show one decimal only when averaging made one
-const fmtScore = (x) => fmt(x, Number.isInteger(x) ? 0 : 1);
+const fmtScore = (x) => num(x, Number.isInteger(x) ? 0 : 1);
 
 function ScoreRec({ rec }) {
   return (
@@ -47,7 +48,7 @@ export default function GameDetail({ game, detail, date }) {
           <>
             <span className="elo-profile__k">score trend</span>
             <span className={detail.trend >= 0 ? "elo-pos" : "elo-neg"}>
-              {sign(detail.trend * 100, 1)}% per play
+              {signed(detail.trend * 100, 1)}% per play
             </span>
           </>
         )}
@@ -120,7 +121,7 @@ export default function GameDetail({ game, detail, date }) {
                     <td>{f.role}</td>
                     <td>{f.plays}</td>
                     <td>{f.wins}</td>
-                    <td>{fmt((f.wins / f.plays) * 100)}%</td>
+                    <td>{num((f.wins / f.plays) * 100)}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -147,7 +148,7 @@ export default function GameDetail({ game, detail, date }) {
                 <td>{r.name}</td>
                 <td>{r.plays}</td>
                 <td>{r.wins}</td>
-                <td>{fmt((r.wins / r.plays) * 100)}%</td>
+                <td>{num((r.wins / r.plays) * 100)}%</td>
                 <td>{r.avgScore !== null ? fmtScore(r.avgScore) : "—"}</td>
                 <td>{r.bestScore !== null ? fmtScore(r.bestScore) : "—"}</td>
               </tr>

@@ -14,14 +14,13 @@ import {
   boosterTitle,
   defaultBooster,
   milestoneGrid,
-  pct,
   ratioTone,
   releaseYear,
   seriesPoints,
   tableRows,
-  usd,
   weeksAboveLabel,
 } from "./derive";
+import { usd, pct } from "../../lib/format.js";
 
 const PRICING = [
   ["market", "market prices"],
@@ -63,7 +62,7 @@ export default function PackEvDashboard({ data }) {
           </button>
         ))}
         <span className="subtitle">
-          {pricing === "bulk" ? `cards under ${usd(meta.bulkFloor)} count as $0` : "TCGplayer market price for every card"}
+          {pricing === "bulk" ? `cards under ${usd(meta.bulkFloor, 2)} count as $0` : "TCGplayer market price for every card"}
         </span>
       </div>
 
@@ -119,7 +118,7 @@ export default function PackEvDashboard({ data }) {
 
       <h3>{boosterTitle(current)}</h3>
       <p className="pev-stats">
-        pack {usd(currentRow.price)} · EV {usd(currentRow.value)} ·{" "}
+        pack {usd(currentRow.price, 2)} · EV {usd(currentRow.value, 2)} ·{" "}
         <span className={ratioTone(currentRow.ratio)}>{pct(currentRow.ratio)} of price</span>
         {current.weeks ? ` · above price ${current.weeksAbove} of ${current.weeks} weeks` : ""}
       </p>
@@ -152,8 +151,8 @@ export default function PackEvDashboard({ data }) {
                     <span className="pev-dim">{releaseYear(b.release)}</span>
                   </td>
                   <td><span className="pev-key" style={{ background: ROLE_VAR[b.role] }} />{boosterShortName(b.booster)}</td>
-                  <td>{usd(b.price)}</td>
-                  <td>{usd(b.value)}</td>
+                  <td>{usd(b.price, 2)}</td>
+                  <td>{usd(b.value, 2)}</td>
                   <td className={ratioTone(b.ratio)}>{pct(b.ratio)}</td>
                   <td>{weeksAboveLabel(b)}</td>
                 </tr>

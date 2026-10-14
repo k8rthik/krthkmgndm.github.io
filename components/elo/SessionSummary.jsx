@@ -1,6 +1,7 @@
 "use client";
 
-import { colorFor, isCore, fmt, sign } from "./format";
+import { colorFor, isCore } from "./format";
+import { num, signed } from "../../lib/format.js";
 
 export default function SessionSummary({
   sessions,
@@ -55,12 +56,12 @@ export default function SessionSummary({
                   </span>
                 </td>
                 <td>
-                  <strong>{fmt(p.eloEnd)}</strong>
+                  <strong>{num(p.eloEnd)}</strong>
                 </td>
                 <td className={p.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                  {sign(p.delta, 1)}
+                  {signed(p.delta, 1)}
                 </td>
-                <td className={p.pae >= 0 ? "elo-pos" : "elo-neg"}>{sign(p.pae, 2)}</td>
+                <td className={p.pae >= 0 ? "elo-pos" : "elo-neg"}>{signed(p.pae, 2)}</td>
               </tr>
             ))}
           </tbody>

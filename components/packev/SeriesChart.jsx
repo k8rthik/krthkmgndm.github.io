@@ -1,13 +1,12 @@
 "use client";
 
-import { dateTickIndices, monthYear, niceTicks, ratioTone, usd, pct } from "./derive";
+import { dateTickIndices, monthYear, ratioTone } from "./derive";
+import { pct, usd } from "../../lib/format.js";
+import { clampIndex, linePath, linear, niceTicks, plotArea, viewBoxX } from "../chart/scale.js";
 
 const W = 1000;
 const H = 280;
-const L = 56;
-const R = 70;
-const T = 12;
-const B = 28;
+const AREA = plotArea({ width: W, height: H, left: 56, right: 70, top: 12, bottom: 28 });
 
 // One set-booster's EV against its sealed price, week by week.
 export default function SeriesChart({ points, color, tooltip, label }) {
@@ -17,23 +16,22 @@ export default function SeriesChart({ points, color, tooltip, label }) {
   const yMax = Math.max(...points.flatMap((p) => [p.ev, p.price]));
   const ticks = niceTicks(0, yMax, 4);
   const top = ticks[ticks.length - 1];
-  const x = (i) => L + (i / (points.length - 1)) * (W - L - R);
-  const y = (v) => T + (1 - v / top) * (H - T - B);
-  const path = (key) => points.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p[key]).toFixed(1)}`).join("");
+  const x = linear([0, points.length - 1], [AREA.left, AREA.right]);
+  const y = linear([0, top], [AREA.bottom, AREA.top]);
+  const path = (key) => linePath(points.map((p, i) => [x(i), y(p[key])]));
   const dateTicks = dateTickIndices(points.length);
   const last = points[points.length - 1];
 
   const hover = (ev) => {
-    const r = ev.currentTarget.getBoundingClientRect();
-    const i = Math.round(((((ev.clientX - r.left) / r.width) * W - L) / (W - L - R)) * (points.length - 1));
-    const p = points[Math.max(0, Math.min(points.length - 1, i))];
+    const px = viewBoxX(ev.clientX, ev.currentTarget.getBoundingClientRect(), W);
+    const p = points[clampIndex(x.invert(px), points.length)];
     tooltip.show(
       <>
         <div className="elo-tip__title">week of {p.week}</div>
         <table>
           <tbody>
-            <tr><td>EV</td><td>{usd(p.ev)}</td></tr>
-            <tr><td>pack</td><td>{usd(p.price)}</td></tr>
+            <tr><td>EV</td><td>{usd(p.ev, 2)}</td></tr>
+            <tr><td>pack</td><td>{usd(p.price, 2)}</td></tr>
             <tr><td>EV ÷ price</td><td className={ratioTone(p.ratio)}>{pct(p.ratio)}</td></tr>
           </tbody>
         </table>
@@ -48,8 +46,8 @@ export default function SeriesChart({ points, color, tooltip, label }) {
       onPointerMove={hover} onPointerLeave={tooltip.hide}>
       {ticks.map((t) => (
         <g key={t}>
-          <line className={t === 0 ? "elo-baseline" : "elo-grid"} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
-          <text x={L - 8} y={y(t) + 4} textAnchor="end">{usd(t, top < 10 ? 2 : 0)}</text>
+          <line className={t === 0 ? "elo-baseline" : "elo-grid"} x1={AREA.left} x2={AREA.right} y1={y(t)} y2={y(t)} />
+          <text x={AREA.left - 8} y={y(t) + 4} textAnchor="end">{usd(t, top < 10 ? 2 : 0)}</text>
         </g>
       ))}
       {dateTicks.map((i) => (
@@ -57,8 +55,8 @@ export default function SeriesChart({ points, color, tooltip, label }) {
       ))}
       <path d={path("price")} fill="none" stroke="var(--dim)" strokeWidth="1.5" strokeDasharray="5 3" />
       <path d={path("ev")} fill="none" stroke={color} strokeWidth="2" />
-      <text className="elo-lbl" x={W - R + 6} y={y(last.ev) + 4} fill={color}>EV</text>
-      <text className="elo-lbl" x={W - R + 6} y={y(last.price) + (Math.abs(y(last.price) - y(last.ev)) < 13 ? 17 : 4)}>pack</text>
+      <text className="elo-lbl" x={AREA.right + 6} y={y(last.ev) + 4} fill={color}>EV</text>
+      <text className="elo-lbl" x={AREA.right + 6} y={y(last.price) + (Math.abs(y(last.price) - y(last.ev)) < 13 ? 17 : 4)}>pack</text>
     </svg>
   );
 }

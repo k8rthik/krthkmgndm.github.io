@@ -2,27 +2,14 @@
 
 import { useRef } from "react";
 import { ZONES } from "./grid.js";
-import { ZONE_LABEL, ZONE_VAR, usd, hhmm } from "./format.js";
+import { ZONE_LABEL, ZONE_VAR, hhmm } from "./format.js";
+import { usd } from "../../lib/format.js";
+import { clampIndex, linePath, linear, niceTicks, plotArea, spreadLabels, viewBoxX } from "../chart/scale.js";
 
 const W = 1000;
 const H = 320;
-const L = 52;
-const R = 78;
-const T = 14;
-const B = 28;
 const LABEL_GAP = 13;
-
-function niceTicks(lo, hi) {
-  const raw = (hi - lo) / 5;
-  const mag = Math.pow(10, Math.floor(Math.log10(raw || 1)));
-  const n = raw / mag;
-  const step = (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
-  const out = [];
-  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-9; v += step) {
-    out.push(Math.abs(v) < step * 1e-9 ? 0 : v);
-  }
-  return out;
-}
+const AREA = plotArea({ width: W, height: H, left: 52, right: 78, top: 14, bottom: 28 });
 
 export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
   const ref = useRef(null);
@@ -37,30 +24,26 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
   const all = [...lines.flatMap((s) => s.values), ...lambda];
   if (ghost) all.push(...ZONES.flatMap((z) => Array.from(ghost[z])));
   const pad = (Math.max(...all) - Math.min(...all)) * 0.12 || 1;
-  const ticks = niceTicks(Math.min(...all) - pad, Math.max(...all) + pad);
+  const ticks = niceTicks(Math.min(...all) - pad, Math.max(...all) + pad, 5);
   const lo = ticks[0];
   const hi = ticks[ticks.length - 1];
 
   const last = lambda.length - 1; // final hour index of the day
-  const x = (i) => L + (i / last) * (W - L - R);
-  const y = (v) => T + (1 - (v - lo) / (hi - lo)) * (H - T - B);
-  const path = (vals) =>
-    vals.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const x = linear([0, last], [AREA.left, AREA.right]);
+  const y = linear([lo, hi], [AREA.bottom, AREA.top]);
+  const path = (vals) => linePath(vals.map((v, i) => [x(i), y(v)]));
 
   // de-overlap the end labels, same approach as the rating chart
-  const labels = [...lines, { key: "lambda", label: "λ", color: "var(--dim)", values: Array.from(lambda) }]
-    .map((s) => ({ ...s, ey: y(s.values[last]) }))
-    .sort((a, b) => a.ey - b.ey)
-    .reduce((acc, s) => {
-      const prev = acc[acc.length - 1];
-      return [...acc, { ...s, ly: prev ? Math.max(s.ey, prev.ly + LABEL_GAP) : s.ey }];
-    }, []);
+  const labels = spreadLabels(
+    [...lines, { key: "lambda", label: "λ", color: "var(--dim)", values: Array.from(lambda) }]
+      .map((s) => ({ ...s, ey: y(s.values[last]) })),
+    LABEL_GAP,
+  );
 
   const pick = (ev) => {
     if (!ref.current || !onHour) return;
-    const r = ref.current.getBoundingClientRect();
-    const px = ((ev.clientX - r.left) / r.width) * W;
-    onHour(Math.max(0, Math.min(last, Math.round(((px - L) / (W - L - R)) * last))));
+    const px = viewBoxX(ev.clientX, ref.current.getBoundingClientRect(), W);
+    onHour(clampIndex(x.invert(px), last + 1));
   };
 
   return (
@@ -75,8 +58,8 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
     >
       {ticks.map((t) => (
         <g key={t}>
-          <line className={t === 0 ? "elo-baseline" : "elo-grid"} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
-          <text x={L - 8} y={y(t) + 4} textAnchor="end">{usd(t)}</text>
+          <line className={t === 0 ? "elo-baseline" : "elo-grid"} x1={AREA.left} x2={AREA.right} y1={y(t)} y2={y(t)} />
+          <text x={AREA.left - 8} y={y(t) + 4} textAnchor="end">{usd(t)}</text>
         </g>
       ))}
       {[0, 3, 6, 9, 12, 15, 18, 21].map((h) => (
@@ -103,7 +86,7 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
 
       {hour !== null && hour !== undefined && (
         <g>
-          <line className="elo-baseline" x1={x(hour)} x2={x(hour)} y1={T} y2={H - B} strokeDasharray="3 3" />
+          <line className="elo-baseline" x1={x(hour)} x2={x(hour)} y1={AREA.top} y2={AREA.bottom} strokeDasharray="3 3" />
           {lines.map((s) => (
             <circle key={s.key} className="elo-dot" cx={x(hour)} cy={y(s.values[hour])} r="3.5" fill={s.color} />
           ))}
@@ -111,16 +94,16 @@ export default function PriceChart({ zp, lambda, ghost, hour, onHour }) {
       )}
 
       {labels.map((s) => (
-        <text key={s.key} className="elo-lbl" x={W - R + 6} y={Math.min(s.ly + 4, H - B)} fill={s.color}>
+        <text key={s.key} className="elo-lbl" x={AREA.right + 6} y={Math.min(s.ly + 4, AREA.bottom)} fill={s.color}>
           {s.label}
         </text>
       ))}
 
       <rect
-        x={L}
-        y={T}
-        width={W - L - R}
-        height={H - T - B}
+        x={AREA.left}
+        y={AREA.top}
+        width={AREA.right - AREA.left}
+        height={AREA.bottom - AREA.top}
         fill="transparent"
         style={{ cursor: "crosshair" }}
       />

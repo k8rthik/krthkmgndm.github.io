@@ -1,8 +1,9 @@
 "use client";
 
 import { BUSES, LINES, GTCS, BUS_INDEX, LINE_INDEX } from "./grid.js";
-import { usd } from "./format.js";
+
 import { shade, priceSpread } from "./shade.js";
+import { usd } from "../../lib/format.js";
 
 const TONE_FILL = { neutral: "var(--code-bg)", lo: "var(--erc-lo)", hi: "var(--erc-hi)" };
 

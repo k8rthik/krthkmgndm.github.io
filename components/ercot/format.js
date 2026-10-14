@@ -16,11 +16,6 @@ export const ZONE_VAR = {
   LZ_SOUTH: "var(--erc-z4)",
 };
 
-export function usd(v, d = 0) {
-  const n = Math.abs(v).toFixed(d);
-  return `${v < 0 ? "−" : ""}$${n}`;
-}
-
 export function hhmm(h) {
   return `${String(h).padStart(2, "0")}:00`;
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import { BUSES } from "./grid.js";
-import { ZONE_LABEL, usd } from "./format.js";
+import { ZONE_LABEL } from "./format.js";
 import { congestionTone } from "./shade.js";
+import { usd } from "../../lib/format.js";
 
 const TONE_CLASS = { lo: "erc-lo", hi: "erc-hi", none: "elo-dim" };
 

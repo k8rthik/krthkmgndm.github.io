@@ -1,31 +1,31 @@
 "use client";
 
-import { BREAK_EVEN, WEEKS_PER_YEAR, niceTicks, pct, yearLabel, yearTicks } from "./derive";
+import { BREAK_EVEN, WEEKS_PER_YEAR, yearLabel, yearTicks } from "./derive";
+import { pct } from "../../lib/format.js";
+import { linePath, linear, niceTicks, plotArea, viewBoxX } from "../chart/scale.js";
 
 const W = 420;
 const H = 220;
-const L = 44;
-const R = 10;
-const T = 10;
-const B = 24;
+const AREA = plotArea({ width: W, height: H, left: 44, right: 10, top: 10, bottom: 24 });
 
 // Median EV / pack price by weeks since release, with the middle 50% of
 // set-boosters as a band. One panel per booster role, shared y scale.
 export default function AgingChart({ points, color, yMax, xMax, tooltip, label }) {
-  const x = (age) => L + (age / xMax) * (W - L - R);
-  const y = (v) => T + (1 - v / yMax) * (H - T - B);
+  const x = linear([0, xMax], [AREA.left, AREA.right]);
+  const y = linear([0, yMax], [AREA.bottom, AREA.top]);
   const ticks = niceTicks(0, yMax, 4).filter((t) => t <= yMax + 1e-9);
   const years = yearTicks(xMax);
 
-  const line = points.map((p, i) => `${i ? "L" : "M"}${x(p.age).toFixed(1)},${y(p.median).toFixed(1)}`).join("");
+  const line = linePath(points.map((p) => [x(p.age), y(p.median)]));
+  // the p75 edge left to right, then back along p25, closed
   const band =
-    points.map((p, i) => `${i ? "L" : "M"}${x(p.age).toFixed(1)},${y(p.p75).toFixed(1)}`).join("") +
-    [...points].reverse().map((p) => `L${x(p.age).toFixed(1)},${y(p.p25).toFixed(1)}`).join("") +
-    "Z";
+    linePath([
+      ...points.map((p) => [x(p.age), y(p.p75)]),
+      ...points.toReversed().map((p) => [x(p.age), y(p.p25)]),
+    ]) + "Z";
 
   const hover = (ev) => {
-    const r = ev.currentTarget.getBoundingClientRect();
-    const age = (((ev.clientX - r.left) / r.width) * W - L) / (W - L - R) * xMax;
+    const age = x.invert(viewBoxX(ev.clientX, ev.currentTarget.getBoundingClientRect(), W));
     const p = points.reduce((a, b) => (Math.abs(b.age - age) < Math.abs(a.age - age) ? b : a));
     tooltip.show(
       <>
@@ -44,8 +44,8 @@ export default function AgingChart({ points, color, yMax, xMax, tooltip, label }
       onPointerMove={points.length ? hover : undefined} onPointerLeave={tooltip.hide}>
       {ticks.map((t) => (
         <g key={t}>
-          <line className={t === BREAK_EVEN ? "elo-baseline" : "elo-grid"} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
-          <text x={L - 6} y={y(t) + 4} textAnchor="end">{pct(t)}</text>
+          <line className={t === BREAK_EVEN ? "elo-baseline" : "elo-grid"} x1={AREA.left} x2={AREA.right} y1={y(t)} y2={y(t)} />
+          <text x={AREA.left - 6} y={y(t) + 4} textAnchor="end">{pct(t)}</text>
         </g>
       ))}
       {years.map((yr) => (

@@ -20,7 +20,6 @@ import {
   defaultBooster,
   milestoneGrid,
   monthYear,
-  niceTicks,
   packevSummary,
   ratioTone,
   releaseYear,
@@ -119,26 +118,8 @@ describe("milestoneGrid", () => {
   });
 });
 
-describe("niceTicks", () => {
-  test("covers the range with round steps", () => {
-    // span 1.6 / 4 = 0.4 = 4 x 0.1 -> 3 <= 4 < 7 rounds to 5 x 0.1 = 0.5: 0, 0.5, 1, 1.5, 2
-    assert.deepEqual(niceTicks(0, 1.6, 4), [0, 0.5, 1, 1.5, 2]);
-    // span 45 / 4 = 11.25 = 1.125 x 10 -> under 1.5 rounds to 1 x 10: 0 .. 50 by 10
-    assert.deepEqual(niceTicks(0, 45, 4), [0, 10, 20, 30, 40, 50]);
-  });
-});
-
 test("every role has a colour variable", () => {
   for (const r of ["Play / Draft", "Set", "Collector"]) assert.match(ROLE_VAR[r], /^var\(--pev-/);
-});
-
-test("formatters", async () => {
-  const { pct, usd } = await import("../components/packev/derive.js");
-  assert.equal(pct(0.564), "56%");
-  assert.equal(pct(1.0234, 1), "102.3%");
-  assert.equal(pct(null), "–");
-  assert.equal(usd(1234.5), "$1,234.50");
-  assert.equal(usd(-3, 0), "−$3");
 });
 
 describe("agingScale", () => {
