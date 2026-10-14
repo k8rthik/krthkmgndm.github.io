@@ -1,0 +1,49 @@
+/* /packev — booster pack EV */
+
+.pev-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 0.6em;
+  align-items: baseline;
+  margin: 0 0 0.8em;
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.pev-controls button[aria-pressed="true"] { font-weight: bold; }
+
+.pev-panels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.2em;
+}
+
+.pev-panel {
+  flex: 1 1 16em;
+  min-width: 0;
+  margin: 0;
+}
+
+.pev-panel figcaption,
+.pev-stats {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--muted);
+}
+
+.pev-key {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  margin-right: 0.45em;
+}
+
+/* the row picker is a .btn-link that stays underlined, like the set links */
+.pev-link { text-decoration: underline; }
+
+table.elo-data.pev-list td:nth-child(2) { text-align: left; }
+.pev-list tr[aria-selected="true"] td { background: var(--code-bg); }
+
+/* the full list is long; it scrolls inside its own box */
+.pev-scroll { max-height: 30em; overflow-y: auto; }

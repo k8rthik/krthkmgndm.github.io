@@ -12,7 +12,7 @@ function Half({ rows, offset, selected, onSelect }) {
         <thead>
           <tr>
             <th>nr</th>
-            <th style={{ textAlign: "left" }}>game</th>
+            <th className="elo-left">game</th>
             <th>plays</th>
             <th>time</th>
             <th>players</th>
@@ -28,7 +28,7 @@ function Half({ rows, offset, selected, onSelect }) {
               onClick={() => onSelect(r.game)}
             >
               <td className="elo-dim">{offset + i + 1}</td>
-              <td style={{ textAlign: "left" }} title={r.game}>
+              <td className="elo-left" title={r.game}>
                 {shortName(r.game)}
               </td>
               <td>{r.plays}</td>

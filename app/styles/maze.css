@@ -1,0 +1,34 @@
+/* 404 maze */
+.maze-page h1 {
+  margin-bottom: 0.2em;
+}
+
+.maze {
+  display: inline-block;
+  margin: 1em 0 0.75em;
+  padding: 0.4em 0.6em;
+  border: 1px solid var(--rule);
+  outline: none;
+}
+
+.maze:focus-visible {
+  border-color: var(--link);
+  box-shadow: 0 0 0 2px var(--rule-soft);
+}
+
+.maze__grid {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1.05em;
+  line-height: 1;
+  color: var(--fg);
+  white-space: pre;
+  user-select: none;
+}
+
+.maze__status {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--muted);
+}

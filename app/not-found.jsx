@@ -88,7 +88,7 @@ export default function NotFound() {
             steps: {steps} · arrows / wasd / hjkl ·{" "}
             <button
               type="button"
-              className="maze__link"
+              className="btn-link"
               onClick={() => {
                 reset();
                 containerRef.current?.focus();

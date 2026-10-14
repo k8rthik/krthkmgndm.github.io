@@ -8,18 +8,18 @@ export default function Records({ records }) {
         <thead>
           <tr>
             <th>record</th>
-            <th style={{ textAlign: "left" }}>holder</th>
+            <th className="elo-left">holder</th>
             <th>mark</th>
-            <th style={{ textAlign: "left" }}>context</th>
+            <th className="elo-left">context</th>
           </tr>
         </thead>
         <tbody>
           {records.map((r) => (
             <tr key={r.label}>
               <td>{r.label}</td>
-              <td style={{ textAlign: "left" }}>{r.holder}</td>
+              <td className="elo-left">{r.holder}</td>
               <td>{r.value}</td>
-              <td style={{ textAlign: "left" }} className="elo-dim">
+              <td className="elo-left elo-dim">
                 {r.detail}
               </td>
             </tr>

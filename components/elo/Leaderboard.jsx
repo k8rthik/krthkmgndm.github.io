@@ -23,7 +23,7 @@ function ProfileRow({ player, affinity, h2h, extra }) {
   const nem = nemesis(h2h[player]);
   return (
     <tr className="elo-profile">
-      <td colSpan={COLUMNS.length} style={{ textAlign: "left" }}>
+      <td colSpan={COLUMNS.length} className="elo-left">
         <div className="elo-profile__grid">
           {extra && (
             <>
@@ -183,7 +183,7 @@ export default function Leaderboard({
               <thead>
                 <tr>
                   <th>date</th>
-                  <th style={{ textAlign: "left" }}>game</th>
+                  <th className="elo-left">game</th>
                   <th>result</th>
                   <th>score</th>
                   <th>Δ elo</th>
@@ -194,7 +194,7 @@ export default function Leaderboard({
                 {history.map((p, i) => (
                   <tr key={`${p.date}-${i}`}>
                     <td>{p.date}</td>
-                    <td style={{ textAlign: "left" }} title={p.game}>
+                    <td className="elo-left" title={p.game}>
                       {shortName(p.game)}
                     </td>
                     <td className={p.won ? "elo-pos" : "elo-neg"}>

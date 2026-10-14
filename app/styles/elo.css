@@ -1,0 +1,179 @@
+/* /bgelo — pod elo dashboard */
+
+.elo h2 { margin-top: 1em; }
+.elo h2:first-child { margin-top: 0.5em; }
+
+.elo-pname {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+/* a column header that sorts the leaderboard */
+.elo-sortbtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.elo-sortbtn:hover { color: var(--link); }
+
+/* games table: two side-by-side halves on wide screens, one plain
+   table (.elo-games-one) on narrow — toggled in the mobile block */
+.elo-games-cols { display: flex; gap: 0 2.5em; align-items: flex-start; }
+.elo-games-cols .elo-tablewrap { flex: 1 1 18em; }
+.elo-games-one { display: none; }
+
+/* head-to-head and affinity matrices: tinted cells on a background-
+   colored grid */
+table.elo-h2h,
+table.elo-aff {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.8em;
+}
+
+table.elo-h2h th,
+table.elo-aff th {
+  font-weight: bold;
+  color: var(--muted);
+  padding: 0.25em 0.4em;
+  text-align: center;
+}
+
+table.elo-h2h td,
+table.elo-aff td {
+  text-align: center;
+  padding: 0.4em 0.3em;
+  border: 2px solid var(--bg);
+}
+
+table.elo-h2h td { min-width: 3.2em; }
+table.elo-aff td { min-width: 3.6em; }
+
+table.elo-h2h th.elo-h2h__rowh { text-align: right; }
+
+table.elo-h2h td.elo-h2h__cell { cursor: pointer; }
+
+table.elo-aff th.elo-aff__colh {
+  /* wide enough that "King's Crown" never spills to a third line */
+  max-width: 9em;
+  white-space: normal;
+  vertical-align: bottom;
+}
+
+table.elo-aff th.elo-aff__rowh {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* inline player profile — a leaderboard row expands into this on click */
+.elo-rowclick { cursor: pointer; }
+
+.elo-rowclick--open td { background: var(--code-bg); }
+
+.elo-profile td {
+  background: var(--code-bg);
+  white-space: nowrap;
+}
+
+.elo-profile__grid {
+  display: grid;
+  grid-template-columns: max-content auto;
+  gap: 0.2em 1.2em;
+  padding: 0.15em 0;
+}
+
+.elo-profile__k { color: var(--muted); }
+
+/* per-game stat sheet — a games-table row expands into this below the
+   table; reuses the profile k/v grid */
+.elo-gamedetail { margin: 0 0 0.75em; }
+
+/* elo race — animated bar race over pod playtime (shelved; see EloRace in
+   EloDashboard.jsx) */
+.elo-race {
+  position: relative;
+  margin: 0 0 0.4em;
+}
+
+.elo-race__row {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  height: 22px;
+  font-family: var(--mono);
+  font-size: 0.8em;
+  transition: transform 450ms ease;
+}
+
+.elo-race__name {
+  flex: none;
+  width: 6.5em;
+  text-align: right;
+}
+
+.elo-race__track { flex: 1; }
+
+.elo-race__bar {
+  display: block;
+  height: 12px;
+  min-width: 2px;
+}
+
+.elo-race__val {
+  flex: none;
+  width: 3.5em;
+  color: var(--muted);
+}
+
+.elo-race__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 0 0 0.4em;
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.elo-race__controls input[type="range"] {
+  flex: 1;
+  max-width: 18em;
+  accent-color: var(--muted);
+}
+
+/* Mobile: custom layouts instead of shrunken desktop ones. */
+@media (max-width: 40em) {
+  /* the games halves collapse into the single numbered table; long
+     game names wrap so all five columns fit on screen */
+  .elo-games-cols { display: none; }
+  .elo-games-one { display: block; }
+  .elo-games-one td:nth-child(2) { white-space: normal; }
+
+  /* hall of fame: let the context column wrap instead of truncating */
+  .elo-records td:last-child { white-space: normal; }
+
+  /* horizontally-scrolling tables keep their name column anchored */
+  .elo-lb th:first-child,
+  .elo-lb td:first-child:not([colspan]) {
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 1;
+  }
+  .elo-lb .elo-rowclick--open td:first-child { background: var(--code-bg); }
+  table.elo-aff th.elo-aff__rowh {
+    position: sticky;
+    left: 0;
+    background: var(--bg);
+    z-index: 1;
+  }
+}

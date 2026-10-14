@@ -169,7 +169,7 @@ export default function ErcotModel() {
             <button
               key={a.label}
               type="button"
-              className="maze__link"
+              className="btn-link"
               onClick={() => setSlider(sliderFromHomes(Math.round(a.homes), MAX_HOMES))}
             >
               {a.label} ({homesLabel(Math.round(a.homes))})

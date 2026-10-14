@@ -112,7 +112,7 @@ export default function HeadToHead({ records, corePlayers, tooltip, events, date
                 {log.map((p, i) => (
                   <tr key={`${p.date}-${i}`}>
                     <td>{p.date}</td>
-                    <td style={{ textAlign: "left" }}>{p.game}</td>
+                    <td className="elo-left">{p.game}</td>
                     <td
                       className={
                         p.result === "won"

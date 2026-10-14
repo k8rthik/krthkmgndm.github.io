@@ -41,7 +41,7 @@ export default function OpenBsl() {
         src={DEMO_URL}
         title="openbsl viewer demo"
         loading="lazy"
-        style={{ width: "100%", height: "38rem", border: "1px solid var(--rule)" }}
+        className="embed-frame"
       />
 
       <h2>how it works</h2>

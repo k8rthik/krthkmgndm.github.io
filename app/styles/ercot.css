@@ -1,0 +1,59 @@
+/* /ercot — nodal price model */
+
+.erc-lo { color: var(--erc-lo); }
+.erc-hi { color: var(--erc-hi); }
+
+.elo-chart text.erc-bind { fill: var(--erc-hi); }
+
+.erc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.5em;
+  align-items: baseline;
+  margin: 0 0 0.6em;
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.erc-controls label { display: inline-block; }
+
+.erc-controls input[type="range"] {
+  display: block;
+  width: 100%;
+  max-width: 26em;
+  accent-color: var(--muted);
+}
+
+.erc-wide { flex: 1 1 22em; }
+
+.erc-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 1em;
+  color: var(--muted);
+}
+
+.erc-hour {
+  display: block;
+  margin: 0 0 0.6em;
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.erc-hour input[type="range"] {
+  width: 18em;
+  max-width: 60%;
+  vertical-align: middle;
+  accent-color: var(--muted);
+}
+
+.erc-spark {
+  display: block;
+  width: 130px;
+  height: 26px;
+}
+
+@media (max-width: 40em) {
+  .erc-controls input[type="range"] { max-width: 100%; }
+  .erc-spark { width: 90px; }
+}

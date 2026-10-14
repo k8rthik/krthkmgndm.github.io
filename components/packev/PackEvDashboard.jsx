@@ -91,7 +91,7 @@ export default function PackEvDashboard({ data }) {
                 <td><span className="pev-key" style={{ background: ROLE_VAR[row.role] }} />{row.role}</td>
                 {row.cells.map((c, i) => (
                   <td key={grid.columns[i]}>
-                    {c ? <>{pct(c.shareAbove)} <span className="pev-dim">of {c.n}</span></> : "–"}
+                    {c ? <>{pct(c.shareAbove)} <span className="elo-dim">of {c.n}</span></> : "–"}
                   </td>
                 ))}
               </tr>
@@ -145,10 +145,10 @@ export default function PackEvDashboard({ data }) {
               return (
                 <tr key={key} aria-selected={key === selected}>
                   <td>
-                    <button type="button" className="pev-link" onClick={() => setSelected(key)}>
+                    <button type="button" className="btn-link pev-link" onClick={() => setSelected(key)}>
                       {b.setName}
                     </button>{" "}
-                    <span className="pev-dim">{releaseYear(b.release)}</span>
+                    <span className="elo-dim">{releaseYear(b.release)}</span>
                   </td>
                   <td><span className="pev-key" style={{ background: ROLE_VAR[b.role] }} />{boosterShortName(b.booster)}</td>
                   <td>{usd(b.price, 2)}</td>

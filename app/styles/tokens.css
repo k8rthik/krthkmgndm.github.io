@@ -1,0 +1,75 @@
+/* Every color and font on the site. Components use these variables only —
+   never a literal color — so both themes come free. Dashboard palettes are
+   validated for CVD + contrast per mode; dark values are re-picked, not
+   auto-flipped. */
+
+:root {
+  --serif: Times, "Times New Roman", serif;
+  --mono: "Courier New", Courier, monospace;
+
+  --bg:           #ffffff;
+  --fg:           #000000;
+  --muted:        #555555;
+  --dim:          #888888;
+  --rule:         #cccccc;
+  --rule-soft:    #dddddd;
+  --code-bg:      #f4f4f4;
+  --link:         #0000ee;
+  --link-visited: #551a8b;
+
+  /* /bgelo: categorical player slots (fixed order, color follows the
+     player) and the pos/neg pair */
+  --elo-s1: #3333ee;
+  --elo-s2: #d97706;
+  --elo-s3: #cf649f;
+  --elo-s4: #1a7a1a;
+  --elo-s5: #6a35c8;
+  --elo-s6: #b82a2a;
+  --elo-s7: #007a99;
+  --elo-s8: #877205;
+  --elo-s9: #b03aa0;
+  --elo-s10: #96491d;
+  --elo-pos: #3333ee;
+  --elo-neg: #b82a2a;
+
+  /* /ercot: no new palette. The four load zones are a fixed-order
+     categorical set exactly like the player slots, and above/below lambda
+     is the same pos/neg pair. Aliases resolve at use, so the dark values
+     below keep applying. */
+  --erc-z1: var(--elo-s1);
+  --erc-z2: var(--elo-s2);
+  --erc-z3: var(--elo-s4);
+  --erc-z4: var(--elo-s5);
+  --erc-lo: var(--elo-pos);
+  --erc-hi: var(--elo-neg);
+
+  /* /packev: the three booster roles alias the slots the same way */
+  --pev-main: var(--elo-s1);
+  --pev-set: var(--elo-s4);
+  --pev-coll: var(--elo-s2);
+}
+
+[data-theme="dark"] {
+  --bg:           #0e0e0e;
+  --fg:           #e6e6e6;
+  --muted:        #9a9a9a;
+  --dim:          #6a6a6a;
+  --rule:         #2e2e2e;
+  --rule-soft:    #242424;
+  --code-bg:      #1a1a1a;
+  --link:         #7fb0ff;
+  --link-visited: #c89bff;
+
+  --elo-s1: #5588e8;
+  --elo-s2: #b8822a;
+  --elo-s3: #cc5d99;
+  --elo-s4: #3d8f3d;
+  --elo-s5: #8a5fe0;
+  --elo-s6: #d15252;
+  --elo-s7: #1099b5;
+  --elo-s8: #948718;
+  --elo-s9: #cc55bb;
+  --elo-s10: #c0763a;
+  --elo-pos: #5588e8;
+  --elo-neg: #d15252;
+}

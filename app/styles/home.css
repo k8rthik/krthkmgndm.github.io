@@ -1,0 +1,201 @@
+/* the homepage: header, "recently", selected work, the collapsible
+   projects/blog panels, the helix, and the devlog aside */
+
+/* two-column split: main content left, devlog aside right on desktop.
+   below the mobile breakpoint the aside drops under everything else. */
+.home--split {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.home__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.home__aside {
+  flex: 0 0 17rem;
+  max-width: 17rem;
+  /* clear the fixed light/dark toggle pinned to the top-right corner
+     so the devlog [edit] control doesn't collide with it */
+  margin-top: 1.75rem;
+}
+
+.home__header {
+  display: block;
+  margin-bottom: 0;
+}
+
+.home__name {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0 0 0.3em;
+}
+
+/* reading width for homepage prose — the bio, the selected-work teasers and
+   the archive descriptions all wrap at a comfortable line length */
+.home__bio,
+.selected,
+.entry__desc {
+  max-width: 70ch;
+}
+
+.home__bio { margin: 0 0 0.4em; }
+
+.home__contact {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  margin: 0 0 0.6em;
+  line-height: 1.5;
+}
+
+/* helper: opt into serif inside a mono block */
+.home__contact .serif {
+  font-family: var(--serif);
+  font-size: 1.1em;
+}
+
+.home__colophon {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--muted);
+  margin: 0.5em 0 0;
+}
+
+.home__colophon-time,
+.home__colophon-commit { display: block; }
+
+/* "recently:" — plain running text between the colophon and the bars */
+.home__recently {
+  margin: 0.6em 0 0.5em;
+}
+
+/* section bars — let browser <button> defaults render. tiny tweak: no caret rotation animation */
+.bar {
+  margin: 0.15em 0 0.3em;
+}
+
+.bar__caret {
+  display: inline-block;
+  margin-left: 0.25em;
+}
+
+.bar[aria-expanded="true"] .bar__caret {
+  transform: rotate(180deg);
+}
+
+/* hide closed panels using their aria-hidden state */
+.panel[aria-hidden="true"] {
+  display: none;
+}
+
+.panel__scroll { padding: 0.3em 0 0.6em; }
+
+.panel__list {
+  list-style: none;
+  margin: 0 0 0.6em;
+  padding-left: 0;
+}
+
+.panel__footer {
+  margin: 0.5em 0 0;
+  font-size: 0.9em;
+  color: var(--muted);
+}
+
+.entry { margin: 0 0 1em; }
+
+/* selected work — open by default, a plain heading over a plain list */
+.selected { margin: 0.9em 0 0.4em; }
+
+.selected__heading {
+  font-size: 1em;
+  margin: 0 0 0.5em;
+  padding-bottom: 0.15em;
+  border-bottom: 1px solid var(--rule);
+}
+
+.entry__title {
+  display: inline;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.entry__meta {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.9em;
+  margin-left: 0.4em;
+}
+
+.entry__desc {
+  margin: 0.2em 0 0.3em;
+}
+
+.entry__links {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.entry__links code { font-family: var(--mono); }
+
+/* helix — keep it as visible ascii decoration, low-key.
+   overflow-y stays hidden: with only overflow-x set it computes to auto,
+   and fractional line heights in the 9px pre summon a vertical scrollbar.
+   the vertical padding matters: at line-height 1 the first/last rows' glyph
+   ink overflows the line boxes, and overflow clips at the padding edge —
+   without the padding the top and bottom of the art get shaved off. */
+.helix {
+  margin: 1.5em 0;
+  padding: 4px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.helix__pre {
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1;
+  color: var(--dim);
+  margin: 0;
+  white-space: pre;
+  user-select: none;
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bar__caret {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  /* shrink the helix so it fits a 375px viewport. at 5.5px the art fits
+     without scrolling, so drop the scroll container entirely
+     (overflow-y: hidden would otherwise still clip the glyph ink). */
+  .helix { overflow: visible; }
+
+  .helix__pre {
+    font-size: 5.5px;
+    line-height: 1;
+  }
+
+  /* stack the split: devlog drops below the main column, full width */
+  .home--split {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .home__aside {
+    flex-basis: auto;
+    max-width: 100%;
+    width: 100%;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 1rem;
+  }
+}
