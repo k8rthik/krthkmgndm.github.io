@@ -1,10 +1,9 @@
 import crypto from "crypto";
 import { normalizeEntry } from "../../../lib/devlogSchema";
+import { readStore, writeStore } from "../../../lib/devlogStore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const FILE = "devlog.json";
 
 // --- helpers ---------------------------------------------------------------
 
@@ -34,68 +33,8 @@ function config() {
 
 function newId(date) {
   const compact = date.replace(/-/g, "");
-  const rand = Math.random().toString(36).slice(2, 6);
+  const rand = crypto.randomBytes(2).toString("hex");
   return `${compact}-${rand}`;
-}
-
-async function gh(path, token, init = {}) {
-  const res = await fetch(`https://api.github.com${path}`, {
-    ...init,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/vnd.github+json",
-      "User-Agent": "krthkmgndm-devlog",
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...(init.headers || {}),
-    },
-  });
-  return res;
-}
-
-// Read current devlog.json from the repo. Returns { entries, sha }.
-async function readStore({ token, repo, branch }) {
-  const res = await gh(
-    `/repos/${repo}/contents/${FILE}?ref=${encodeURIComponent(branch)}`,
-    token
-  );
-  if (res.status === 404) return { entries: [], sha: null };
-  if (!res.ok) {
-    throw new Error(`github read failed (${res.status})`);
-  }
-  const data = await res.json();
-  const decoded = Buffer.from(data.content, "base64").toString("utf-8");
-  let entries = [];
-  try {
-    const parsed = JSON.parse(decoded);
-    if (Array.isArray(parsed)) entries = parsed;
-  } catch {
-    entries = [];
-  }
-  return { entries, sha: data.sha };
-}
-
-// Commit the new entries array back to the repo.
-async function writeStore({ token, repo, branch }, entries, sha, message) {
-  const content = Buffer.from(
-    JSON.stringify(entries, null, 2) + "\n",
-    "utf-8"
-  ).toString("base64");
-
-  const res = await gh(`/repos/${repo}/contents/${FILE}`, token, {
-    method: "PUT",
-    body: JSON.stringify({
-      message,
-      content,
-      branch,
-      ...(sha ? { sha } : {}),
-    }),
-  });
-
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`github write failed (${res.status}) ${detail}`.trim());
-  }
-  return res.json();
 }
 
 // --- handler ---------------------------------------------------------------
