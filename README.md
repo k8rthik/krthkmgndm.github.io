@@ -39,7 +39,9 @@ Editing posts to `/api/devlog`, which commits the change back to
 triggers a normal Vercel rebuild, so new entries go live ~30s after saving.
 
 Set these environment variables in Vercel (Project → Settings → Environment
-Variables) to enable editing:
+Variables) to enable editing. They are read in one place, `serverEnv()` in
+`lib/config.js`, and listed in `.env.example` (copy it to `.env.local` for
+local development):
 
 | Variable          | Required | Description                                                                 |
 | ----------------- | -------- | --------------------------------------------------------------------------- |
