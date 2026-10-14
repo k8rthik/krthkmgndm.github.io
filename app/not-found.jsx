@@ -9,15 +9,20 @@ const ROWS = 8;
 const COLS = 13;
 const START = { r: 0, c: 0 };
 
+// Blank space the size of the maze, shown until it is generated. The maze is
+// random, so generating it during render would give the static HTML and the
+// browser different mazes (a hydration mismatch); it is made after mount.
+const BLANK = Array(2 * ROWS + 1).fill(" ".repeat(2 * COLS + 1)).join("\n");
+
 export default function NotFound() {
   const router = useRouter();
-  const [walls, setWalls] = useState(() => generateMaze(ROWS, COLS));
+  const [walls, setWalls] = useState(null);
   const [player, setPlayer] = useState(START);
   const [steps, setSteps] = useState(0);
   const containerRef = useRef(null);
 
-  const atExit = isExit(walls, player);
-  const rendered = useMemo(() => renderMaze(walls, player), [walls, player]);
+  const atExit = walls !== null && isExit(walls, player);
+  const rendered = useMemo(() => (walls ? renderMaze(walls, player) : BLANK), [walls, player]);
 
   const reset = useCallback(() => {
     setWalls(generateMaze(ROWS, COLS));
@@ -26,8 +31,9 @@ export default function NotFound() {
   }, []);
 
   useEffect(() => {
+    reset();
     containerRef.current?.focus();
-  }, []);
+  }, [reset]);
 
   const handleKey = (e) => {
     const key = e.key;
@@ -44,7 +50,7 @@ export default function NotFound() {
     }
 
     const dir = DIR_FROM_KEY[key];
-    if (!dir) return;
+    if (!dir || !walls) return;
     e.preventDefault();
 
     // bumping into a wall isn't a step
