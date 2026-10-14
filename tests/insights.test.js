@@ -12,7 +12,9 @@ import {
   NEMESIS_MIN_MEETINGS,
   FORM_LEN,
   START_ELO,
+  SIGNATURE_MIN_PLAYS,
 } from "../components/elo/insights.js";
+import { affinityAsOf } from "../components/elo/asOf.js";
 import { buildPayload } from "./helpers.js";
 
 const row = (rows, label) => rows.find((r) => r.label === label);
@@ -151,25 +153,52 @@ describe("recordsAsOf: studious", () => {
 });
 
 describe("signatureGame", () => {
-  test("prefers games with 2+ plays even at a lower delta", () => {
-    const sig = signatureGame({
-      OneOff: { plays: 1, wins: 1, delta: 50 },
-      Regular: { plays: 3, wins: 2, delta: 30 },
-    });
-    assert.deepEqual(sig, { game: "Regular", delta: 30 });
+  // cells as affinityAsOf builds them: plays, wins (official won flags),
+  // and the career elo delta — which must NOT drive the pick (rule 1)
+  const cell = (plays, wins, delta = 0) => ({ plays, wins, delta });
+
+  test("the floor is 3 plays: exactly 3 qualifies, 2 does not", () => {
+    assert.equal(SIGNATURE_MIN_PLAYS, 3);
+    // Two is 2-for-2 (100%) but under the floor; Three is 1-for-3
+    assert.deepEqual(
+      signatureGame({ Two: cell(2, 2), Three: cell(3, 1) }),
+      { game: "Three", wins: 1, plays: 3, rate: 1 / 3 },
+    );
   });
 
-  test("falls back to single plays when nothing is seasoned", () => {
-    const sig = signatureGame({
-      A: { plays: 1, wins: 0, delta: -5 },
-      B: { plays: 1, wins: 1, delta: 12 },
-    });
-    assert.deepEqual(sig, { game: "B", delta: 12 });
+  test("ranks by win rate, ignoring the elo delta", () => {
+    // Swingy: 1-for-4 (25%) with a huge early delta · Steady: 3-for-4 (75%)
+    assert.deepEqual(
+      signatureGame({ Swingy: cell(4, 1, 500), Steady: cell(4, 3, -10) }),
+      { game: "Steady", wins: 3, plays: 4, rate: 0.75 },
+    );
   });
 
-  test("returns null with no games", () => {
+  test("equal rates break toward more plays, then by name", () => {
+    // A 2-for-3 and B 4-for-6 are both 2/3 — B has the larger sample
+    assert.equal(signatureGame({ A: cell(3, 2), B: cell(6, 4) }).game, "B");
+    // same rate and plays: alphabetical, whatever the key order
+    assert.equal(signatureGame({ Zeta: cell(4, 2), Alpha: cell(4, 2) }).game, "Alpha");
+  });
+
+  test("absent (null) when no game reaches the floor — no fallback", () => {
+    assert.equal(signatureGame({ A: cell(2, 2), B: cell(1, 1) }), null);
     assert.equal(signatureGame({}), null);
     assert.equal(signatureGame(undefined), null);
+  });
+
+  test("wins follow the official won flag through ties and shared wins", () => {
+    // G three times: Ann wins outright; a full tie (nobody flagged);
+    // a broken tie where BG Stats flags both Ann and Bob. Ann: 2 of 3.
+    const { events } = buildPayload([
+      { date: "2026-01-01", game: "G", seats: [["Ann", 1, 5], ["Bob", 2, -5]] },
+      { date: "2026-01-08", game: "G", seats: [["Ann", 1, 0, false], ["Bob", 1, 0, false]] },
+      { date: "2026-01-15", game: "G", seats: [["Ann", 1, 0, true], ["Bob", 2, 0, true]] },
+    ]);
+    const { perGame } = affinityAsOf(events, ["Ann", "Bob"], "2026-01-15");
+    assert.deepEqual(signatureGame(perGame.Ann), { game: "G", wins: 2, plays: 3, rate: 2 / 3 });
+    // Bob: only the shared win — 1 of 3
+    assert.deepEqual(signatureGame(perGame.Bob), { game: "G", wins: 1, plays: 3, rate: 1 / 3 });
   });
 });
 

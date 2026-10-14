@@ -240,15 +240,32 @@ export function recordsAsOf(events, series, corePlayers, date) {
   return rows;
 }
 
-// signature game: best career delta among games they've played at least
-// twice (falling back to any game), from the full affinity map
+// a game only becomes someone's signature once they've played it this
+// many times — 2-for-2 isn't a signature
+export const SIGNATURE_MIN_PLAYS = 3;
+
+// signature game: best win rate among games played at least
+// SIGNATURE_MIN_PLAYS times, from one player's affinity cells; equal
+// rates go to the larger sample, then alphabetically. Wins are the
+// official won flags, as in kingpin — a full tie credits nobody, a
+// broken tie flagged for several credits each. Not the career elo
+// delta: early high-sigma swings would crown the first sessions
+// forever (CLAUDE.md rule 1). null when nothing clears the floor.
 export function signatureGame(perGame) {
-  const entries = Object.entries(perGame ?? {});
-  const seasoned = entries.filter(([, c]) => c.plays >= 2);
-  const pool = seasoned.length > 0 ? seasoned : entries;
-  if (pool.length === 0) return null;
-  const [game, cell] = pool.reduce((a, b) => (b[1].delta > a[1].delta ? b : a));
-  return { game, delta: cell.delta };
+  let best = null;
+  for (const [game, c] of Object.entries(perGame ?? {})) {
+    if (c.plays < SIGNATURE_MIN_PLAYS) continue;
+    const rate = c.wins / c.plays;
+    if (
+      !best ||
+      rate > best.rate ||
+      (rate === best.rate &&
+        (c.plays > best.plays ||
+          (c.plays === best.plays && game.localeCompare(best.game) < 0)))
+    )
+      best = { game, wins: c.wins, plays: c.plays, rate };
+  }
+  return best;
 }
 
 // a bad record only makes someone a nemesis after this many meetings

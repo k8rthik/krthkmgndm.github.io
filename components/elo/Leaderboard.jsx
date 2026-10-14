@@ -42,8 +42,9 @@ function ProfileRow({ player, affinity, h2h, extra }) {
               <span className="elo-profile__k">best game</span>
               <span>
                 <span title={sig.game}>{shortName(sig.game)}</span>{" "}
-                <span className={sig.delta >= 0 ? "elo-pos" : "elo-neg"}>
-                  {sign(sig.delta)}
+                {fmt(sig.rate * 100)}%{" "}
+                <span className="elo-dim">
+                  ({sig.wins}–{sig.plays - sig.wins})
                 </span>
               </span>
             </>
