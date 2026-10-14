@@ -1,27 +1,25 @@
 ---
-title: "pack ev: is a magic pack worth more opened?"
+title: "just buy singles?"
 date: "2026-10-09"
-description: "Pricing every card a booster can contain across 39 sets and five years of TCGplayer history, and what that says about when opening beats keeping a pack sealed"
+description: "Five years of TCGplayer history to explain why opening sealed is a bad idea"
 slug: "pack-ev"
 time: 9
 active: 1
 ---
 
 > "Just Buy Singles"
->
+> 
 > — The Professor, Tolarian Community College
 
-Every Magic player has heard some version of that advice, and most learned it the expensive way. A booster costs more than the cards inside are worth, so if you want a specific card, buying it outright beats chasing it through packs. The advice is right often enough that nobody questions it. I wanted to know how right: how much packs lose, whether every kind of booster loses equally, and whether a pack is ever worth opening.
+Every Magic player has heard at some point, and some have learned it the expensive way. A booster usually costs more than the cards inside are worth, but I wanted to know how much. By using historical TCGPlayer, I found out how much value packs lose, whether every kind of booster loses equally, and when a pack is ever worth opening.
 
-The measure is a pack's *expected value* (EV). Sum, over every card the pack could contain, the chance of pulling that card times its price, then compare the total to what the pack sells for sealed. When EV is below the sealed price, the pack is worth more unopened, and buying it to open loses money on average.
-
-I built [pack-ev](https://github.com/k8rthik/pack-ev) to compute that for every booster sold since mid-2021: 39 sets and 94 booster products, priced weekly from a week after release to today. The short answer is that the slogan holds for Collector Boosters, holds for Play Boosters only if you can't sell bulk, and was wrong about Set Boosters. The [dashboard](/packev) has the numbers; this post covers how they're made and what they show.
+The measure is a pack's *expected value* (EV). Sum, over every card the pack could contain, the chance of pulling that card times its price, then compare the total to what the pack sells for sealed. This [dashboard](/packev) has the raw numbers, and this post covers how they're made and what they illustrate.
 
 # What's in a pack
 
-Wizards of the Coast publishes a "Collecting" article for each set that lists every slot of every booster with its odds. The rare slot of a Lorwyn Eclipsed Play Booster, for example, holds a rare 78.2% of the time, a mythic 13.6%, a fable frame rare 4.6%, and so on down to borderless cards listed only as "less than 1%". The odds are given per group of cards, not per card, so the model treats every card within a group (say, the 26 rare fable frame cards) as equally likely.
+Wizards of the Coast currently publishes a "Collecting" article for each set that lists every slot of every booster with its odds. The rare slot of a Lorwyn Eclipsed Play Booster, for example, holds a rare 78.2% of the time, a mythic 13.6%, a fable frame rare 4.6%, and so on down to borderless cards listed only as "less than 1%". The odds are given per group of cards, not per card, so I assumed each card within a group was equally likely. Sets from 2024 on have fully published odds, but older Draft and Set Boosters have only a handful of published rates. As a substitute, I used [MTGJSON](https://mtgjson.com)'s estimated booster sheets.
 
-Each set is a small TOML file that turns its article into card pools and slot odds. Pools are selected from [Scryfall](https://scryfall.com) by collector number, frame treatment and rarity, and every pool size the article states is checked: if WOTC says there are 81 commons and the filter finds 80, the set fails validation instead of quietly skewing the EV. Sets from 2024 on have fully published odds. For older Draft and Set Boosters WOTC published only a handful of rates, so [MTGJSON](https://mtgjson.com)'s estimated booster sheets fill the gaps, and WOTC's number wins wherever both exist.
+Each set is a small TOML file that turns its pack data into card pools and slot odds. The card pools were drawn from [Scryfall](https://scryfall.com). 
 
 Transcribing 39 articles turned up a few errors on WOTC's side. The Hobbit and Marvel's Spider-Man both list their Play Booster wildcard as about 74% common and 4% uncommon, almost certainly the two numbers swapped. I kept the published figures: commons and uncommons are both bulk, so the swap moves EV by cents.
 
@@ -45,11 +43,11 @@ Cheap cards are sampled rather than fetched. The cards that make up the top 98% 
 
 Align every booster on weeks since release and each product type's life cycle comes into focus. "Beats sealed" means the pack's EV at TCGplayer market prices exceeds that week's sealed price. Each column counts only boosters old enough to have reached that age, so the two-year column covers 25 of the 39 Play and Draft Boosters and 26 of the 40 Collector Boosters.
 
-| booster type | launch | 3 months | 1 year | 2 years |
-|---|---|---|---|---|
-| Set Boosters (15) | 80% | 100% | 87% | 80% |
-| Play / Draft Boosters (39) | 56% | 62% | 72% | 52% |
-| Collector Boosters (40) | 48% | 11% | 18% | 12% |
+| booster type               | launch | 3 months | 1 year | 2 years |
+| -------------------------- | ------ | -------- | ------ | ------- |
+| Set Boosters (15)          | 80%    | 100%     | 87%    | 80%     |
+| Play / Draft Boosters (39) | 56%    | 62%      | 72%    | 52%     |
+| Collector Boosters (40)    | 48%    | 11%      | 18%    | 12%     |
 
 **Collector Boosters are a coin flip at launch and a bad trade after.** In release week about half of them beat sealed. Three months later it's about one in ten, and by year two the median Collector Booster's contents are worth 76% of its sealed price. Today, across all 40, the median is 57%. The worst ratios belong to the most collectible products: a Phyrexia: All Will Be One Collector Booster sells for $109.69 and its contents are worth $25.85; a Lord of the Rings one sells for $198.95 against $55.03. Sealed Collector Boosters tend to appreciate while the singles inside them lose value, so the gap widens with age.
 
