@@ -1,9 +1,9 @@
 ---
 title: "openbsl: reading physiology lab data without the lab's software"
 date: "2026-09-29"
-description: "Parsing Biopac Student Lab recordings, rebuilding the measurement workflow in a browser, and why automatic ECG delineation lost to a mouse"
+description: "Parsing Biopac Student Lab recordings, rebuilding the measurement workflow in a browser, why automatic ECG delineation lost to a mouse, and where automation did work: the heart's electrical axis and Korotkoff sounds"
 slug: "openbsl"
-time: 8
+time: 13
 active: 1
 ---
 
@@ -67,7 +67,7 @@ Each lesson is one config object in `lessons.js`:
 }
 ```
 
-`match` maps marker text to conditions and is checked in order. In Lesson 7 "Seated, right hand above head" also contains "seated", so the specific patterns go first. `ch` says which channel's P-P a component uses (QRS amplitude from the ECG, pulse amplitude from the plethysmograph). `report` turns annotations into the lab's tables: means over the labelled cycles, pulse-wave speed from a distance you type in, and an increased/decreased/no-change column (±5%) for the heart-sounds lesson. Lessons 5, 7 and 17 are configured. Anything else falls back to one condition per segment.
+`match` maps marker text to conditions and is checked in order. In Lesson 7 "Seated, right hand above head" also contains "seated", so the specific patterns go first. `ch` says which channel's P-P a component uses (QRS amplitude from the ECG, pulse amplitude from the plethysmograph). `report` turns annotations into the lab's tables: means over the labelled cycles, pulse-wave speed from a distance you type in, and an increased/decreased/no-change column (±5%) for the heart-sounds lesson. Lessons 5, 6, 7, 16 and 17 are configured. Anything else falls back to one condition per segment.
 
 # Testing without publishing anyone's ECG
 
@@ -75,10 +75,50 @@ I can't put real recordings in a public repo or demo, so `openbsl.synthetic` gen
 
 Because the true beat times are known, the detector is tested against ground truth instead of against itself: every beat found within 5 ms at 48, 75 and 140 BPM, on an inverted lead too, and the demo's 64 and 72 BPM segments recovered to within 0.5 BPM. The report tables are tested in Node against hand-computed values. For example, 40 + 60 cm over a 250 ms R-to-pulse delay has to come out as 400.0 cm/s, and a 5% rise exactly on the boundary has to read "no change".
 
+# Update: Lessons 6 and 16, where automation does work
+
+*October 2026.* Two more lessons came along, and both turned out to be the exception to the section above: the measurement they need is large and sharp enough to automate, as long as you're careful about which feature you trust.
+
+## Lesson 6: the mean electrical axis
+
+Lesson 6 records Lead I and Lead III, has BSL compute Lead II, and asks you to confirm Einthoven's law (I + III = II), then to estimate the heart's mean electrical axis by drawing the Lead I and Lead III QRS amplitudes on a protractor diagram. The measurement is BSL's *Delta*: the last point of the selection minus the first, dragged from the isoelectric line (the midpoint between the previous T wave and this P wave) to the peak, keeping the sign. The viewer didn't have Delta, so it got one.
+
+The protractor construction (perpendiculars from the two lead vectors, meeting at the tip of the resultant) has a closed form. With Lead I along 0° and Lead III along +120°:
+
+```
+x = Lead I,   y = (2 · Lead III + Lead I) / √3,   axis = atan2(y, x)
+```
+
+`openbsl axis` measures Q, R and S on each lead for one representative beat per condition and writes the report's three graphs as SVG vectorgrams, with the perpendiculars drawn in so you can see the construction. The tests build synthetic leads by projecting known heart vectors onto each lead, so the recovered axis is checked against the angle it was built from.
+
+Two things went wrong on the way, both instructive:
+
+- **The Einthoven test failed by 3 µV.** I'd taken the baseline as a median over 40 ms, which seemed like the robust choice. But the median isn't linear: median(I) + median(III) ≠ median(I + III), so the deltas stopped adding up even though Lead II *is* I + III, sample for sample. The baseline is now a mean, and the law holds exactly.
+- **The seated condition included the deep breaths.** The procedure records 10 seconds of quiet sitting, then the subject starts breathing deeply, and the recorder presses "start of inhale" a few seconds later. In one recording the axis swung from about +48° to +105° on the first deep breath, two seconds *before* the first marker. Seated cycles now come only from the first 10 seconds, which took the beat-to-beat spread from 14° down to 2°.
+
+## Lesson 16: finding Korotkoff sounds
+
+Lesson 16 is blood pressure: a cuff with a pressure transducer, a stethoscope with a microphone in its head, and an ECG. One person listens and presses a key at the first sound (systolic) and when the sounds stop (diastolic). The report then asks you to find the same two points on the microphone trace and compare.
+
+On the microphone trace the sounds don't stand out. The stethoscope sits under the cuff and hears every rustle, and plenty of bumps are as loud as the sounds. What distinguishes a Korotkoff sound is timing: the artery snaps open once per beat, so each sound arrives at nearly the same delay after the R wave, and that delay drifts smoothly (from about 400 ms near systolic, when the artery only opens at the very peak of the pulse, to about 270 ms near diastolic). So the detector scores each beat by how far the 20–150 Hz envelope rises above that beat's own pre-R noise, 120–480 ms after R. It then keeps runs of at least three beats whose delays agree to within 60 ms. Random bumps almost never line up like that.
+
+It reports a result only if the sounds *appear*. There have to be quiet beats before the first one, the sounds have to be at least 1.5× louder than those beats, and they have to fill most of the beats between first and last. Each of those gates exists because of a real recording:
+
+- **The cuff settling.** Right after pumping, the cuff drops more than 6 mmHg in a second while it settles. My "valve opened, deflation over" detector took that for the end, and analysed one second of each trial. Now only the fall that carries the cuff below 30 mmHg counts.
+- **A thump that was there all along.** In one trial the microphone picked up a heartbeat-locked thump from the cuff, from the moment it started deflating. That's beat-locked, consistent, and not a Korotkoff sound. It produced a confident 189 mmHg systolic until the loudness-contrast gate went in.
+
+On synthetic recordings with known pressures the detector is within 3.5 mmHg in 57 of 60 trials, and makes no detections on noise-only recordings.
+
+On real data, the microphone heard systolic 6–28 mmHg before the person listening, in every trial. Diastolic agreed within a few mmHg. In the lying-down trials the first sounds are faint taps that grow over several beats before anyone presses the key. That's phase I of the Korotkoff sounds, and it's exactly what the report's first question is fishing for.
+
+My own recording had no sounds at all on the microphone. To check whether they were just faint, I averaged all 167 beats between the markers against 235 beats above systolic. There was no difference in any band. Then I took the other subject's real sounds, scaled them down, and added them to my noise: at 10% of their loudness the same test still found them. So whatever reached the microphone in my trials was at least ten times quieter.
+
+Then I looked at the raw traces, which I should have done first. The cuff pressure isn't a smooth ramp: each heartbeat adds a small ripple as the artery pushes on the cuff. In a good recording that ripple grows as the cuff deflates and peaks between systolic and diastolic, which is what automatic blood pressure monitors measure. In mine it was largest at the top of the cuff range and shrank all the way down. That's the pulse hammering on the upper edge of a cuff that isn't compressing the artery under it. A misplaced cuff and stethoscope explain the missing sounds; quiet arteries don't. The fix is the procedure's own placement step, not better signal processing.
+
 # What's missing
 
 - **Annotations live in localStorage.** They survive reloads but not a cleared browser, so export the CSV when you're done.
 - **No undo** beyond deleting a row.
-- **Only three lessons have report tables.** BSL has dozens of lessons (EMG, EEG, spirometry). Adding one is a config object and a test, and the reader already handles their files.
+- **Only five lessons have report tables** (5, 6, 7, 16, 17). BSL has dozens of lessons (EMG, EEG, spirometry). Adding one is a config object and a test, and the reader already handles their files.
 
 Code is [on GitHub](https://github.com/k8rthik/openbsl), MIT licensed.

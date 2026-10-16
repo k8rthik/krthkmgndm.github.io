@@ -45,7 +45,7 @@
   {
     "name": "openbsl",
     "added": "2026-09-29",
-    "description": "Reads Biopac Student Lab physiology recordings (ECG, pulse, heart sounds) without the proprietary BSL software. Exports them to CSV and builds a static browser viewer that reproduces BSL's measurement workflow: drag-select a region, read off Delta T, BPM and peak-to-peak amplitude, label it, and the lesson's data report tables fill themselves in. Beat detection is tested against synthetic ECG with known ground truth. Automatic P/T-wave delineation was benchmarked on real student leads and rejected: on a noisy lead its beat-to-beat jitter was as large as the effects the lab measures.",
+    "description": "Reads Biopac Student Lab physiology recordings (ECG, pulse, heart sounds) without the proprietary BSL software. Exports them to CSV and builds a static browser viewer that reproduces BSL's measurement workflow: drag-select a region, read off Delta T, BPM and peak-to-peak amplitude, label it, and the lesson's data report tables fill themselves in. Beat detection is tested against synthetic ECG with known ground truth. Automatic P/T-wave delineation was benchmarked on real student leads and rejected: on a noisy lead its beat-to-beat jitter was as large as the effects the lab measures. Lessons 6 and 16 are automated where the signal allows it: the mean electrical axis from Lead I and III QRS amplitudes, and Korotkoff sounds found by their lock to the heartbeat rather than their loudness, validated on synthetic recordings with known pressures.",
     "links": [
       { "label": "case study", "href": "/openbsl" },
       { "label": "code", "href": "https://github.com/k8rthik/openbsl" },
