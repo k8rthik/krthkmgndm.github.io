@@ -1,0 +1,105 @@
+[
+  {
+    "name": "pack-ev",
+    "added": "2026-10-09",
+    "description": "Simulates every possible pack for 94 Magic booster products since 2021 using Python and Parquet.",
+    "links": [
+      { "label": "dashboard", "href": "/packev" },
+      { "label": "blog", "href": "/post/pack-ev" },
+      { "label": "code", "href": "https://github.com/k8rthik/pack-ev" }
+    ],
+    "active": true
+  },
+  {
+    "name": "TM-Env",
+    "added": "2026-10-01",
+    "description": "Terra Mystica environment for multi-agent RL, strapped to a rules engine to develop AI that beats the top 1% of human players.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/bgai" }
+    ],
+    "active": true
+  },
+  {
+    "name": "bgelo",
+    "description": "Glicko-1 rating engine for multiplayer board games, auto-tuned by a forecast backtester.",
+    "links": [
+      { "label": "stats", "href": "/bgelo" },
+      { "label": "blog", "href": "/post/bgelo" }
+    ],
+    "active": true
+  },
+  {
+    "name": "ercot-nodal",
+    "added": "2026-09-18",
+    "description": "Linear-programming dispatch model of the ERCOT grid that prices every node to find where batteries pay off.",
+    "links": [
+      { "label": "model", "href": "/ercot" }
+    ],
+    "active": true
+  },
+  {
+    "name": "openbsl",
+    "added": "2026-09-29",
+    "description": "Open-source reconstruction of the Biopac Student Lab software, in the browser.",
+    "links": [
+      { "label": "case study", "href": "/openbsl" },
+      { "label": "code", "href": "https://github.com/k8rthik/openbsl" },
+      { "label": "blog", "href": "/post/openbsl" }
+    ],
+    "active": true
+  },
+  {
+    "name": "dr.active",
+    "added": "2026-10-01",
+    "description": "RDKit random forest and GNN model that predicts protein-ligand binding affinity from SMILES over 55,000 ChEMBL records.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/dr.active" }
+    ],
+    "active": true
+  },
+  {
+    "name": "Ripple",
+    "description": "Minnehack 2025 finalist: a community-challenge app with peer verification and local leaderboards.",
+    "links": [
+      { "label": "demo", "href": "https://socialchain-liart.vercel.app/" },
+      { "label": "code", "href": "https://github.com/k8rthik/socialchain" }
+    ],
+    "active": true
+  },
+  {
+    "name": "GopherGuessr",
+    "description": "GeoGuessr for the UMN campus; I built the React gameplay frontend.",
+    "links": [
+      { "label": "play", "href": "https://gopher.nimbus.page" },
+      { "label": "code", "href": "https://github.com/Divyesh-Thirukonda/gopherguessr" }
+    ],
+    "active": true
+  },
+  {
+    "name": "BioScrolls",
+    "added": "2026-10-01",
+    "description": "Fine-tuned BioBERT pipeline that mines PubMed into a knowledge graph of 8,921 gene, drug and disease links.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/gd-lit-miner" }
+    ],
+    "active": true
+  },
+  {
+    "name": "dr.optimus",
+    "added": "2026-10-01",
+    "description": "Double-DQN agent with a GNN Q-head that edits molecules toward drug-like targets, reproducing MolDQN.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/dr.optimus" }
+    ],
+    "active": true
+  },
+  {
+    "name": "folduzz",
+    "added": "2026-10-01",
+    "description": "DCGAN that generates protein distance maps, trained on 735 PDB structures.",
+    "links": [
+      { "label": "code", "href": "https://github.com/k8rthik/protein-gan" }
+    ],
+    "active": true
+  }
+]

@@ -3,22 +3,18 @@ import { formatPostDate } from "../lib/dates";
 
 export default function PostsPanel({ posts }) {
   if (posts.length === 0) {
-    return (
-      <div className="panel__scroll">
-        <p className="entry__desc">nothing here yet. soon.</p>
-      </div>
-    );
+    return <p className="entry__desc">nothing here yet. soon.</p>;
   }
 
   return (
-    <div className="panel__scroll">
+    <>
       <ul className="panel__list" role="list">
         {posts.map((post) => (
           <li key={post.slug} className="entry">
             <p className="entry__title">
-              <Link href={`/post/${post.slug}`}>{post.title}</Link>
+              <Link href={`/post/${post.slug}`}>{post.slug}.md</Link>{" "}
               <span className="entry__meta">
-                {formatPostDate(post.date)} · {post.time} min
+                {formatPostDate(post.date)}
               </span>
             </p>
             {post.description && (
@@ -28,8 +24,8 @@ export default function PostsPanel({ posts }) {
         ))}
       </ul>
       <p className="panel__footer">
-        the full archive lives <Link href="/all-posts">here</Link>.
+        <Link href="/all-posts">all posts →</Link>
       </p>
-    </div>
+    </>
   );
 }

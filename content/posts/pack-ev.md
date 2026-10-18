@@ -1,9 +1,8 @@
 ---
 title: "just buy singles?"
 date: "2026-10-09"
-description: "Five years of TCGplayer history to explain why opening sealed is a bad idea"
+description: "Five years of TCGplayer history to explain why opening sealed is a bad idea."
 slug: "pack-ev"
-time: 9
 active: 1
 ---
 

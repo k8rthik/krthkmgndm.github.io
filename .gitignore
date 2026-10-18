@@ -67,4 +67,3 @@ next-env.d.ts
 
 # env files (the documented template is committed)
 .env*
-!.env.example

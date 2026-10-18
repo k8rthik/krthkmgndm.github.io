@@ -31,6 +31,29 @@ h1, h2, h3 { margin-bottom: 0.25em; }
 .page { max-width: 50rem; }
 .page--wide { max-width: 62rem; }
 
+/* shared by the homepage lists and the /all-* index pages */
+
+/* a plain ruled heading */
+.section__heading {
+  font-size: 1em;
+  margin: 0 0 0.5em;
+  padding-bottom: 0.15em;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* dates, read times: muted italic */
+.entry__meta {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+/* [code] [blog] brackets: the one place mono shows up in a list */
+.entry__links {
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
 /* a <button> that reads as a link */
 .btn-link {
   background: transparent;

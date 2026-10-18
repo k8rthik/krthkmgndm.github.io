@@ -4,8 +4,8 @@
 @import "./styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/home.css";
-@import "./styles/devlog.css";
 @import "./styles/pages.css";
+@import "./styles/dir.css";
 @import "./styles/maze.css";
 @import "./styles/dashboard.css";
 @import "./styles/elo.css";

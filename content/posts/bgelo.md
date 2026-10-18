@@ -1,9 +1,8 @@
 ---
 title: "bgelo: an elo engine for board game night"
 date: "2026-08-03"
-description: "A component-by-component walkthrough of the pod's rating engine — pairwise Glicko-1, context weights, calibration, and every custom decision in between"
+description: "Building a rating system for board games."
 slug: "bgelo"
-time: 15
 active: 1
 ---
 

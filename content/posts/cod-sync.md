@@ -1,9 +1,8 @@
 ---
 title: "cod-sync: keeping Cockatrice decks in sync without losing your printings"
 date: "2026-07-10"
-description: "A small CLI that diffs your .cod decks against Moxfield, Archidekt, or ManaBox and applies only the changes you approve"
+description: "Keeping Cockatrice decks in sync with Moxfield, Archidekt and ManaBox."
 slug: "cod-sync"
-time: 6
 active: 0
 ---
 

@@ -14,10 +14,10 @@ styling. That restraint is the design; protect it.
 ## Architecture
 
 - `app/` routes · `components/` UI · `lib/` loaders and pure helpers ·
-  `posts/*.md` blog content · `projects.json` project list
-- `lib/config.js` holds site-wide config (identity, links, repo) and every
-  env var via `serverEnv()` — documented in `.env.example`. Page- and
-  post-specific values stay with their page.
+  `data/` generated payloads (never hand-edit)
+- `content/` is everything edited by hand: `site.js` (identity, links,
+  homepage counts), `projects.json`, `posts/*.md`. Page- and post-specific
+  values stay with their page.
 - Shared across dashboards: `components/chart/scale.js` (scales, paths,
   pointer mapping, label spacing, ticks) and `lib/format.js` (num, signed,
   usd, pct). Don't re-implement either inside a chart.
@@ -30,6 +30,24 @@ styling. That restraint is the design; protect it.
 - Dashboard split: `components/elo/asOf.js` + `insights.js` are pure
   derivations (raw-Node loadable, fully tested); components are dumb
   renderers. New logic goes in the derivation layer, not in JSX.
+
+## Writing descriptions
+
+Applies to `content/projects.json` and post frontmatter `description`.
+
+- **One sentence, ending in a period.** It says what the thing *is*,
+  not how it was built.
+- **Projects: concise, technical, impressive.** Lead with the tech
+  (*"RDKit random forest and GNN model that predicts…"*), then what it
+  does, then at most one number, and only if it impresses on its own
+  (*"over 55,000 ChEMBL records"*). Cut trivia a visitor can't weigh
+  (*"replays 3,552 of 3,553 games"*) and findings that read as weak out
+  of context (*"falls to a median 76% of cost"*).
+- **Posts: short and snappy.** What the post is about, in plain words
+  (*"Building a rating system for board games."*). No list of sections,
+  no colon-chained subclauses.
+- Implementation detail, caveats and methodology belong in the post or
+  the project's own page, not the one-liner.
 
 ## Rules that keep this site from sloppifying
 

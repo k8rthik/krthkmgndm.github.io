@@ -1,10 +1,20 @@
 # keerthik.dev
 
 Personal site built with Next.js (App Router), deployed on Vercel.
-Blog posts live in `posts/*.md`; the `/bgelo` board-game rating
+Blog posts live in `content/posts/*.md`; the `/bgelo` board-game rating
 dashboard is fed by [bgelo]'s exported payload in `data/elo.json`.
 
 [bgelo]: https://github.com/k8rthik
+
+## Editing content
+
+Everything edited by hand lives in `content/`:
+
+- `content/site.js`: name, bio, email, links, how many projects/posts the homepage lists
+- `content/projects.json`: the project list; `added` (YYYY-MM-DD) sets recency order. Description style is in CLAUDE.md under "Writing descriptions"
+- `content/posts/*.md`: blog posts (`active: 0` in frontmatter hides a draft from the lists)
+
+`data/` holds generated payloads; never edit those by hand.
 
 ## Development
 
@@ -27,37 +37,3 @@ testing guidelines for contributors (human or AI) are in
 python3 -m bgelo.refresh     # re-rate from the latest BG Stats export
 python3 -m bgelo.site_sync   # copy payload here, commit, push
 ```
-
-## Devlog
-
-A git-log style column on the home page (right on desktop, stacked below on
-mobile). Entries live in `devlog.json` and can be added/removed from the
-front end via the `[edit]` toggle — no backend commits required.
-
-Editing posts to `/api/devlog`, which commits the change back to
-`devlog.json` in this repo using the GitHub contents API. The commit
-triggers a normal Vercel rebuild, so new entries go live ~30s after saving.
-
-Set these environment variables in Vercel (Project → Settings → Environment
-Variables) to enable editing. They are read in one place, `serverEnv()` in
-`lib/config.js`, and listed in `.env.example` (copy it to `.env.local` for
-local development):
-
-| Variable          | Required | Description                                                                 |
-| ----------------- | -------- | --------------------------------------------------------------------------- |
-| `DEVLOG_PASSWORD` | yes      | Password entered in the front-end editor to unlock adding/removing entries. |
-| `GITHUB_TOKEN`    | yes      | Token used to commit `devlog.json`. See scope below.                        |
-| `GITHUB_REPO`     | no       | `owner/repo` to commit to. Defaults to `k8rthik/krthkmgndm.github.io`.      |
-| `GITHUB_BRANCH`   | no       | Branch to commit to. Defaults to `main`.                                     |
-
-`GITHUB_TOKEN` should be a **fine-grained personal access token** scoped to
-this repository with **Contents: Read and write** permission (that's the only
-permission it needs). Classic tokens work too with the `repo` scope.
-
-Without these vars the editor UI still renders, but saving reports that
-editing isn't configured. The token is only ever used server-side in the API
-route and is never sent to the browser.
-
-Images: paste an image URL in the editor (only `http(s)://` or repo-relative
-`/paths` are accepted). File uploads can be layered on later using the same
-commit mechanism.

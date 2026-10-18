@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { BIO, DOMAIN, NAME } from "../lib/config";
+import { BIO, DOMAIN, NAME } from "../content/site";
 
 // plain text on white, same as the site: name, the visible bio, the domain.
 // Colors are literal because the image renderer can't read CSS variables.

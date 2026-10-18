@@ -3,7 +3,7 @@ import ProjectLinks from "./ProjectLinks";
 
 export default function ProjectsPanel({ projects }) {
   return (
-    <div className="panel__scroll">
+    <>
       <ul className="panel__list" role="list">
         {projects.map((project) => (
           <li key={project.name} className="entry">
@@ -14,8 +14,8 @@ export default function ProjectsPanel({ projects }) {
         ))}
       </ul>
       <p className="panel__footer">
-        <Link href="/all-projects">all projects</Link>.
+        <Link href="/all-projects">all projects →</Link>
       </p>
-    </div>
+    </>
   );
 }

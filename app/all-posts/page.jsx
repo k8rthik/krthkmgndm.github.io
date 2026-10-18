@@ -1,39 +1,16 @@
-import Link from "next/link";
 import { getPublishedPosts } from "../../lib/posts";
-import { formatPostDate } from "../../lib/dates";
-import BackLink from "../../components/BackLink";
+import DirListing from "../../components/DirListing";
+
+export const metadata = { title: "writing" };
 
 export default function AllPosts() {
-  const posts = getPublishedPosts();
+  const rows = getPublishedPosts().map((post) => ({
+    key: post.slug,
+    date: post.date,
+    name: `${post.slug}.md`,
+    href: `/post/${post.slug}`,
+    desc: post.description,
+  }));
 
-  return (
-    <main className="page">
-      <h1>All writing</h1>
-      <p className="subtitle">everything, oldest dates at the bottom</p>
-
-      <hr />
-
-      {posts.length === 0 ? (
-        <p>No posts yet.</p>
-      ) : (
-        <dl className="entries">
-          {posts.map((post) => (
-            <div key={post.slug}>
-              <dt>
-                <Link href={`/post/${post.slug}`}>{post.title}</Link>
-                <span className="meta">
-                  {formatPostDate(post.date)} · {post.time} min
-                </span>
-              </dt>
-              <dd>{post.description}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
-
-      <hr />
-
-      <BackLink />
-    </main>
-  );
+  return <DirListing dir="writing" rows={rows} empty="no posts yet." />;
 }

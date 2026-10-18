@@ -23,7 +23,7 @@ export default async function Post({ params }) {
       <header>
         <h1>{post.title}</h1>
         <p className="dateline">
-          {formatPostDate(post.date)} · {post.time} minute read
+          {formatPostDate(post.date)}
         </p>
       </header>
 

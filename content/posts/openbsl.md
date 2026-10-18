@@ -1,9 +1,8 @@
 ---
 title: "openbsl: reading physiology lab data without the lab's software"
 date: "2026-09-29"
-description: "Parsing Biopac Student Lab recordings, rebuilding the measurement workflow in a browser, why automatic ECG delineation lost to a mouse, and where automation did work: the heart's electrical axis and Korotkoff sounds"
+description: "Open-source reconstruction of the Biopac Student Lab software."
 slug: "openbsl"
-time: 13
 active: 1
 ---
 

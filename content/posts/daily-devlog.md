@@ -1,9 +1,8 @@
 ---
 title: "Daily Devlog"
 date: "2025-03-30"
-description: "The title."
+description: "Daily notes on what I'm building."
 slug: "devlog"
-time: 10
 active: 0
 ---
 

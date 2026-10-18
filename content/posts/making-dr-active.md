@@ -1,9 +1,8 @@
 ---
 title: "Devlog: dr.active"
 date: "2024-12-08"
-description: "The process of developing and deploying dr.active"
+description: "Developing and deploying dr.active."
 slug: "making-dr-active"
-time: 8
 active: 0
 ---
 

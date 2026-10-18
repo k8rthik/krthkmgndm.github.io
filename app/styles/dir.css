@@ -1,0 +1,35 @@
+/* /all-projects and /all-posts — an oil.nvim-style directory buffer.
+   one row per entry: date | name | description. the rows share one grid
+   so the columns line up down the page like a file listing. */
+
+.dir__rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  column-gap: 2ch;
+  row-gap: 0.55em;
+}
+
+.dir__row { display: contents; }
+
+.dir__date { color: var(--muted); white-space: nowrap; }
+
+.dir__name {
+  max-width: 28ch;
+  font-weight: bold;
+}
+
+.dir__desc { max-width: 70ch; }
+
+/* archived entries: present, but greyed like ignored files */
+.dir__row--dim .dir__name,
+.dir__row--dim .dir__desc { color: var(--dim); }
+
+@media (max-width: 720px) {
+  /* drop the date column; the description goes under its name */
+  .dir__rows { grid-template-columns: 1fr; row-gap: 0.15em; }
+  .dir__date { display: none; }
+  .dir__name { max-width: none; margin-top: 0.6em; }
+}

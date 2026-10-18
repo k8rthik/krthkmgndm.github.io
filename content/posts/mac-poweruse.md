@@ -1,9 +1,8 @@
 ---
 title: "A Poweruser's Guide to Mac"
 date: "2024-12-24"
-description: "A collection of tips and tricks to maximize your efficiency on MacOS"
+description: "Tips and tricks for getting more out of macOS."
 slug: "macos-poweruser-guide"
-time: 0
 active: 0
 ---
 

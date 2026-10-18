@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/react";
 import ThemeToggle from "../components/ThemeToggle";
 import HomeLink from "../components/HomeLink";
-import { BIO, DOMAIN, SITE_TITLE, SITE_URL, TITLE_TEMPLATE } from "../lib/config";
+import { BIO, DOMAIN, SITE_TITLE, SITE_URL, TITLE_TEMPLATE } from "../content/site";
 import "./globals.css";
 
 // share previews use app/opengraph-image.jsx; X falls back to og:image

@@ -1,11 +1,10 @@
-// Fixture tests for project link rendering and the selected-work split,
+// Fixture tests for project link rendering,
 // plus invariants on the real projects.json. Expectations are written out by
 // hand from the fixtures, not derived by re-running the production code.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { projectLinks, isValidHref } from "../lib/projectLinks.js";
-import { selectedWork, archiveProjects } from "../lib/selectedWork.js";
 
 describe("isValidHref", () => {
   test("accepts site-relative paths and https urls", () => {
@@ -40,44 +39,8 @@ describe("projectLinks", () => {
   });
 });
 
-const fixture = [
-  { name: "Archive A", active: true, links: [] },
-  { name: "Second", active: true, featured: 2, teaser: "t2", links: [{ label: "demo", href: "https://x.test/2" }] },
-  { name: "First", active: true, featured: 1, teaser: "t1", links: [{ label: "demo", href: "/1" }] },
-  { name: "Inactive Featured", active: false, featured: 3, teaser: "t3", links: [{ label: "demo", href: "/3" }] },
-  { name: "No Teaser", active: true, featured: 4, links: [{ label: "demo", href: "/4" }] },
-  { name: "No Proof", active: true, featured: 5, teaser: "t5", links: [{ label: "code", href: "#" }] },
-];
-
-describe("selectedWork", () => {
-  test("orders by featured rank, not file order", () => {
-    assert.deepEqual(selectedWork(fixture).map((p) => p.name), ["First", "Second"]);
-  });
-
-  test("a featured project needs to be active, have a teaser and have a valid link", () => {
-    // Inactive Featured, No Teaser and No Proof are all ranked but must be absent
-    const names = selectedWork(fixture).map((p) => p.name);
-    assert.ok(!names.includes("Inactive Featured"));
-    assert.ok(!names.includes("No Teaser"));
-    assert.ok(!names.includes("No Proof"));
-  });
-
-  test("empty and missing input give an empty list", () => {
-    assert.deepEqual(selectedWork([]), []);
-    assert.deepEqual(selectedWork(undefined), []);
-  });
-});
-
-describe("archiveProjects", () => {
-  test("keeps active projects that are not shown as selected work, in file order", () => {
-    // First and Second are selected; Inactive Featured is inactive;
-    // No Teaser and No Proof failed selection, so they fall back to the archive
-    assert.deepEqual(archiveProjects(fixture).map((p) => p.name), ["Archive A", "No Teaser", "No Proof"]);
-  });
-});
-
 describe("projects.json", () => {
-  const projects = JSON.parse(fs.readFileSync(new URL("../projects.json", import.meta.url), "utf-8"));
+  const projects = JSON.parse(fs.readFileSync(new URL("../content/projects.json", import.meta.url), "utf-8"));
 
   test("every project carries an explicit links array of valid links", () => {
     // explicit arrays stop projectLinks from recreating a stale demo/code pair
@@ -96,18 +59,5 @@ describe("projects.json", () => {
     for (const p of projects) {
       for (const l of p.links) assert.ok(!l.href.includes("/demos/"), `${p.name}: ${l.href}`);
     }
-  });
-
-  test("selected work is TM-Env, ercot-nodal, GopherGuessr in that order", () => {
-    // a dropped teaser or dead link silently demotes a project to the archive
-    assert.deepEqual(
-      selectedWork(projects).map((p) => p.name),
-      ["TM-Env", "ercot-nodal", "GopherGuessr"]
-    );
-  });
-
-  test("featured ranks are unique", () => {
-    const ranks = projects.filter((p) => p.featured != null).map((p) => p.featured);
-    assert.equal(new Set(ranks).size, ranks.length);
   });
 });
